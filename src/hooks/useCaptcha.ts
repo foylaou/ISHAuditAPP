@@ -1,3 +1,4 @@
+// hooks/useCaptcha.ts
 'use client'
 
 import { useState } from 'react';
@@ -11,24 +12,21 @@ interface UseCaptchaReturn {
 }
 
 export const useCaptcha = (): UseCaptchaReturn => {
+  const [token, setToken] = useState<string | null>(null);
   const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
-  const [token, setToken] = useState<string | null>(null); // 保存 Turnstile 返回的 token
 
   const handleCaptchaSuccess = (token: string) => {
+    setToken(token);
     setIsCaptchaVerified(true);
-    setToken(token); // 保存成功回傳的 token
   };
 
   const handleCaptchaError = () => {
-    setIsCaptchaVerified(false);
     setToken(null);
+    setIsCaptchaVerified(false);
   };
 
-  const verifyCaptcha = async () => {
-    if (!token) {
-      console.error('CAPTCHA token is missing');
-      return false;
-    }
+  const verifyCaptcha = async (): Promise<boolean> => {
+    if (!token) return false;
 
     try {
       const response = await fetch('/api/CAPTCHA', {
@@ -36,18 +34,10 @@ export const useCaptcha = (): UseCaptchaReturn => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ cfTurnstileResponse: token }), // 傳遞 token 給後端
+        body: JSON.stringify({ token }),
       });
 
-      const result = await response.json();
-
-      if (response.ok) {
-        console.log('CAPTCHA 驗證成功:', result);
-        return true;
-      } else {
-        console.error('CAPTCHA 驗證失敗:', result.Errors || '未知錯誤');
-        return false;
-      }
+      return response.ok;
     } catch (error) {
       console.error('CAPTCHA verification failed:', error);
       return false;
@@ -59,6 +49,6 @@ export const useCaptcha = (): UseCaptchaReturn => {
     isCaptchaVerified,
     handleCaptchaSuccess,
     handleCaptchaError,
-    verifyCaptcha,
+    verifyCaptcha
   };
 };
