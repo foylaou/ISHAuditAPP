@@ -3,3 +3,5 @@
 /workspace.xml
 # 基於編輯器的 HTTP 客戶端請求
 /httpRequests/
+/inspectionProfiles/Project_Default.xml
+/vcs.xml
