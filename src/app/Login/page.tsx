@@ -26,7 +26,7 @@ export default function LoginPage() {
       }
 
       // 處理登入請求
-      const loginResponse = await fetch('/api/login', {
+      const loginResponse = await fetch('/api/Login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
