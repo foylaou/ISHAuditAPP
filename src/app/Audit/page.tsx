@@ -19,7 +19,7 @@ export default function AuditPage() {
   return (
     <AuthGuard requiredPermission="admin">
       {/* 分頁標籤 */}
-      <div role="tablist" className="tabs tabs-lifted tabs-lg">
+      <div role="tablist" className="tabs tabs-lifted tabs-lg top-0">
         <a
           role="tab"
           className={`tab ${activeTab === 'SearchBar' ? 'tab-active' : ''}`}

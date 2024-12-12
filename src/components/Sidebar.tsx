@@ -3,10 +3,9 @@ import Link from 'next/link';
 import React from 'react';
 import { useGlobalStore } from '@/store/useGlobalStore';
 import { useMenuStore } from '@/store/menuStore';
-import ThemeToggle from './ThemeToggle';
 import { MenuItem } from '@/types/menuTypes';
 
-export default function HeaderMenu() {
+export default function Sidebar() {
   const { permissions, isLoggedIn, logout } = useGlobalStore();
   const { menuItems, filterMenuByAuth } = useMenuStore();
 
@@ -27,7 +26,7 @@ export default function HeaderMenu() {
         {item.children ? (
           <details>
             <summary>{item.label}</summary>
-            <ul className="p-2">
+            <ul className="menu menu-compact">
               {renderMenuItems(item.children)}
             </ul>
           </details>
@@ -49,49 +48,23 @@ export default function HeaderMenu() {
   const filteredMenu = filterMenuByAuth(menuItems, getAuthLevel());
   const menuWithLogout = isLoggedIn
     ? [
-        ...filteredMenu.filter((item: { label: string; }) => item.label !== '登出'),
+        ...filteredMenu.filter(item => item.label !== '登出'),
         { label: '登出', link: '#', onClick: handleLogout }
       ]
     : filteredMenu;
 
-  return (
-    <div className="navbar bg-neutral text-neutral-content fixed top-0 z-40">
-      <div className="flex-none lg:hidden">
-        <label htmlFor="my-drawer-3" className="btn btn-square btn-ghost">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            className="inline-block h-6 w-6 stroke-current"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </label>
-      </div>
-      <div className="mx-2 flex-1 px-2">
-        <Link href="/" className="btn btn-ghost text-xl">
-          大型石化督導資料庫
-        </Link>
-      </div>
-      <div className="hidden flex-none lg:block">
-        {isLoggedIn ? (
-          <ul className="menu menu-horizontal px-1">
-            {renderMenuItems(menuWithLogout)}
-          </ul>
-        ) : (
-          <Link href="/Login" className="btn btn-ghost">
-            登入
-          </Link>
-        )}
-      </div>
-      <div className="flex-none">
-        <ThemeToggle />
-      </div>
-    </div>
-  );
+return (
+  <div className="drawer-side pt-16">
+    <label htmlFor="my-drawer-3" className="drawer-overlay p-5"></label>
+    <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+      {isLoggedIn ? (
+        renderMenuItems(menuWithLogout)
+      ) : (
+        <li>
+          <Link href="/Login">登入</Link>
+        </li>
+      )}
+    </ul>
+  </div>
+);
 }

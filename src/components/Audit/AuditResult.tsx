@@ -136,6 +136,8 @@ const GridExample = () => {
       }}
     >
       <AgGridReact
+        rowStyle={{ overflow: 'visible' }}
+        suppressRowTransform={true}
         rowData={rowData}
         columnDefs={colDefs}
         defaultColDef={defaultColDef}

@@ -1,18 +1,13 @@
 //layout
-'use client'
-import '@/styles/globals.css'; // 引入全局 CSS 檔案
+'use client';
+import '@/styles/globals.css';
+import React, { useEffect, useState } from 'react';
+import { useGlobalStore } from '@/store/useGlobalStore';
 import HeaderMenu from '@/components/HeaderMenu';
+import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
-import React, {useEffect, useState} from "react";
-import {useGlobalStore} from "@/store/useGlobalStore";
-
-
-
-
-
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-
   const { theme } = useGlobalStore();
   const [mounted, setMounted] = useState(false);
 
@@ -26,21 +21,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     }
   }, [theme, mounted]);
 
-
-    return (
-        <html lang="zh" data-theme={theme}>
-        <head>
-            <meta charSet="utf-8"/>
-            <meta name="viewport" content="width=device-width, initial-scale=1"/>
-            <title>大型石化督導資料庫</title>
-        </head>
-        <body className="h-screen flex flex-col">
-        <HeaderMenu/>
-        <div className="flex flex-col flex-1">
-            <main className="flex-1 pt-24 bg-base-100">{children}</main>
-        </div>
-        <Footer/>
-        </body>
-        </html>
-    );
+  return (
+      <html lang="zh" data-theme={theme ? 'dark' : 'light'}>
+      <head>
+          <meta charSet="utf-8"/>
+          <meta name="viewport" content="width=device-width, initial-scale=1"/>
+          <title>大型石化督導資料庫</title>
+      </head>
+      <body className="min-h-screen flex flex-col">
+      <div className="drawer flex-1 flex flex-col">
+          <input id="my-drawer-3" type="checkbox" className="drawer-toggle"/>
+          <div className="h-screen flex flex-col">
+              <HeaderMenu/>
+              <main className="flex-1 pt-24 bg-base-100">
+                  {children}
+              </main>
+              <Footer/>
+          </div>
+          <Sidebar/>
+      </div>
+      </body>
+      </html>
+  );
 }
