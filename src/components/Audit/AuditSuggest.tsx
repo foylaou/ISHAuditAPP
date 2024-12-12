@@ -152,7 +152,7 @@ export default function auditSuggest() {
   return (
     <StrictMode>
       <div className="w-full">
-        <h2 className="text-xl font-bold mb-4">稽核結果</h2>
+        <h2 className="text-xl text-base-content mb-4">稽核結果</h2>
         <GridExample />
       </div>
     </StrictMode>

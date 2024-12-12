@@ -1,7 +1,8 @@
-import React, { StrictMode, useState, useEffect } from "react";
-import type { ColDef, ICellRendererParams } from "ag-grid-community";
-import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
+import React, { StrictMode, useState } from "react";
+import {ColDef, colorSchemeDarkBlue, colorSchemeLightWarm, ICellRendererParams, themeQuartz} from "ag-grid-community";
+import { AllCommunityModule, ModuleRegistry  } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
+import { useGlobalStore } from '@/store/useGlobalStore';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -29,33 +30,17 @@ const formatDateTime = (isoString: string) => {
   }).format(date);
 };
 
+const themeLightWarm = themeQuartz.withPart(colorSchemeLightWarm);
+
+const themeDarkBlue = themeQuartz.withPart(colorSchemeDarkBlue);
+
+
+
 const GridExample = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  useEffect(() => {
-    const updateTheme = () => {
-      const htmlElement = document.documentElement;
-      const isDark = htmlElement.getAttribute('data-theme') === 'dark';
-      setIsDarkMode(isDark);
-    };
-
-    updateTheme();
-
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        if (mutation.attributeName === 'data-theme') {
-          updateTheme();
-        }
-      });
-    });
-
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-theme']
-    });
-
-    return () => observer.disconnect();
-  }, []);
+  // 使用全域狀態的布林值主題
+  const { theme } = useGlobalStore();
+  // theme 為 true 時表示暗色模式
+  const isDarkMode = theme;
 
   const [rowData] = useState<IRow[]>([
     {
@@ -93,7 +78,7 @@ const GridExample = () => {
     },
   ]);
 
-   const [colDefs] = useState<ColDef<IRow>[]>([
+  const [colDefs] = useState<ColDef<IRow>[]>([
     { field: "factory_area", headerName: "工業區" },
     { field: "company_name", headerName: "公司" },
     { field: "factory_name", headerName: "工廠" },
@@ -140,9 +125,10 @@ const GridExample = () => {
     resizable: true,
   };
 
+
   return (
     <div
-      className={isDarkMode ? 'ag-theme-quartz-dark' : 'ag-theme-quartz'}
+      className='ag-theme-quartz-dark'        //{isDarkMode ? 'ag-theme-quartz-dark' : 'ag-theme-quartz'}
       style={{
         width: "100%",
         height: "500px",
@@ -156,6 +142,7 @@ const GridExample = () => {
         animateRows={true}
         pagination={true}
         paginationPageSize={10}
+        theme={isDarkMode ? themeDarkBlue : themeLightWarm}
       />
     </div>
   );
@@ -165,7 +152,7 @@ export default function auditResult() {
   return (
     <StrictMode>
       <div className="w-full">
-        <h2 className="text-xl font-bold mb-4">稽核結果</h2>
+        <h2 className="text-xl text-base-content mb-4">稽核結果</h2>
         <GridExample />
       </div>
     </StrictMode>
