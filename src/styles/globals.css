@@ -19,6 +19,8 @@ body {
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
 }
-.ag-header-cell {
-  z-index: 10 !important;
+
+.ag-root {
+
+  top: 20px;
 }

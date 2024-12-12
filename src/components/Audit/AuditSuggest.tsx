@@ -128,16 +128,15 @@ const GridExample = () => {
 
     return (
         <div
-            className='ag-theme-quartz-dark'        //{isDarkMode ? 'ag-theme-quartz-dark' : 'ag-theme-quartz'}
+            className='ag-theme-quartz-dark z-1'        //{isDarkMode ? 'ag-theme-quartz-dark' : 'ag-theme-quartz'}
             style={{
                 width: "100%",
                 height: "500px",
-                marginTop: "20px"
+                marginTop: "20px",
+                zIndex: 1,
             }}
         >
             <AgGridReact
-                rowStyle={{ overflow: 'visible' }}
-                suppressRowTransform={true}
                 rowData={rowData}
                 columnDefs={colDefs}
                 defaultColDef={defaultColDef}
@@ -154,7 +153,7 @@ export default function auditSuggest() {
     return (
         <StrictMode>
             <div className="w-full">
-                <h2 className="z-1 relative text-xl text-base-content mb-4">稽核結果</h2>
+                <h2 className="relative text-xl text-base-content mb-4">稽核結果</h2>
                 <GridExample/>
             </div>
         </StrictMode>

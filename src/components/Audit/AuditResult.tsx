@@ -128,11 +128,11 @@ const GridExample = () => {
 
   return (
     <div
-      className='ag-theme-quartz-dark'        //{isDarkMode ? 'ag-theme-quartz-dark' : 'ag-theme-quartz'}
       style={{
         width: "100%",
         height: "500px",
-        marginTop: "20px"
+        marginTop: "20px",
+        zIndex: 1,
       }}
     >
       <AgGridReact
@@ -145,6 +145,7 @@ const GridExample = () => {
         pagination={true}
         paginationPageSize={10}
         theme={isDarkMode ? themeDarkBlue : themeLightWarm}
+
       />
     </div>
   );
