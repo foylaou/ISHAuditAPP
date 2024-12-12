@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="bg-gray-800 text-white py-6 px-4 text-center">
+    <footer className="bg-gray-800 text-white py-2 px-4 text-center">
       <strong className="block mb-1">
         ※本網所提供之電子檔案部分為 .PDF 格式，如無法閱讀，請自行下載安裝免費軟體「中文版 Adobe PDF Reader」。
       </strong>

@@ -1,190 +1,241 @@
-'use client'
+'use client';
+import Link from 'next/link';
+import React, {useEffect} from 'react';
+import { useGlobalStore } from '@/store/useGlobalStore'; // 調整路徑至你的 store 檔案位置
 
-import { IconChevronDown, IconSearch, IconMenu2, IconX } from '@tabler/icons-react';
-import { Menu, Autocomplete } from '@mantine/core';
-import Logo from "@/components/ui/Logo";
-import Link from "next/link";
-import { useState } from "react";
 
-interface NavigationLink {
-  link: string;
-  label: string;
-  links?: NavigationLink[];
+
+//主題模式元件
+function ThemeToggle() {
+  const { theme, toggleTheme } = useGlobalStore();
+
+  // 當 theme 狀態改變時更新 HTML data-theme
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme ? 'dark' : 'light');
+  }, [theme]);
+
+   return (
+    <label className="flex cursor-pointer gap-2">
+      {/* 明亮模式圖示 */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <circle cx="12" cy="12" r="5" />
+        <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" />
+      </svg>
+
+      {/* 切換主題的 checkbox */}
+      <input
+        type="checkbox"
+        checked={theme}
+        onChange={toggleTheme}
+        className="toggle theme-controller"
+      />
+
+      {/* 黑暗模式圖示 */}
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="20"
+        height="20"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </label>
+  );
 }
 
-const navigationLinks: NavigationLink[] = [
-  { link: '/Home', label: '首頁' },
-  { link: '/Login', label: '登入' },
+
+
+
+// 權限項目介面
+interface MenuItem {
+  label: string;
+  link?: string;
+  children?: MenuItem[];
+  auth?: string;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+}
+
+// 假設選單項目
+const menuItems: MenuItem[] = [
+  { label: '首頁', link: '/' },
   {
-    link: '#1',
     label: '帳號管理',
-    links: [
-      { link: '/SignUp', label: '新增帳號' },
-      { link: '/UserEdit', label: '修改人員帳號' },
+    auth: 'admin',
+    children: [
+      { label: '新增帳號', link: '/signup', auth: 'admin' },
+      { label: '修改帳號', link: '/edit-user', auth: 'admin' },
     ],
   },
+  {
+    label: '系統管理',
+    auth: 'manager',
+    children: [
+      {
+        label: '設定',
+        children: [
+          { label: '系統設定', link: '/settings/system', auth: 'admin' },
+          { label: '權限設定', link: '/settings/permissions', auth: 'manager' },
+        ],
+      },
+      { label: '紀錄', link: '/logs', auth: 'user' },
+    ],
+  },
+  { label: '登出', link: '/logout' },
 ];
 
-const HeaderMenu: React.FC = () => {
-  const [searchValue, setSearchValue] = useState<string>('');
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+// 過濾選單權限
+const filterMenuByAuth = (items: MenuItem[], role: string): MenuItem[] => {
+  return items
+    .filter((item) => !item.auth || item.auth === role)
+    .map((item) => ({
+      ...item,
+      children: item.children ? filterMenuByAuth(item.children, role) : undefined,
+    }));
+};
 
-  const toggleMobileMenu = (): void => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
-  };
-
-  const renderMenuItems = (links: NavigationLink[]): React.ReactNode => {
-    return links.map((item) => (
-      <Menu.Item
-        key={item.link}
-        className="hover:bg-gray-100 px-4 py-2 text-sm"
-      >
-        <Link href={item.link} className="block w-full text-gray-700 hover:text-gray-900">
-          {item.label}
-        </Link>
-      </Menu.Item>
+// DropdownMenu 組件
+const DropdownMenu = ({ items }: { items: MenuItem[] }) => {
+  const renderMenu = (menuItems: MenuItem[]) => {
+    return menuItems.map((item, index) => (
+      <li key={index}>
+        {item.children ? (
+          <details>
+            <summary>{item.label}</summary>
+            <ul className="bg-base-100 rounded-t-none p-2">
+              {renderMenu(item.children)}
+            </ul>
+          </details>
+        ) : (
+          <a
+            href={item.link}
+            onClick={item.onClick}
+          >
+            {item.label}
+          </a>
+        )}
+      </li>
     ));
   };
 
-  const renderNavigationItems = navigationLinks.map((link: NavigationLink) => {
-    if (link.links) {
-      const menuItems = renderMenuItems(link.links);
+  return <ul className="menu menu-horizontal px-1">{renderMenu(items)}</ul>;
+};
 
-      return (
-        <Menu
-          key={link.label}
-          trigger="hover"
-          transitionProps={{ exitDuration: 0 }}
-          withinPortal
-        >
-          <Menu.Target>
-            <button
-              type="button"
-              className="flex items-center px-3 py-2 text-gray-700 hover:text-gray-900"
-            >
-              <span className="mr-1">{link.label}</span>
-              <IconChevronDown size={14} stroke={1.5} />
-            </button>
-          </Menu.Target>
-          <Menu.Dropdown className="bg-white rounded-lg shadow-lg">
-            {menuItems}
-          </Menu.Dropdown>
-        </Menu>
-      );
-    }
 
-    return (
-      <Link
-        key={link.link}
-        href={link.link}
-        className="px-3 py-2 text-gray-700 hover:text-gray-900 transition-colors duration-200"
-      >
-        {link.label}
-      </Link>
-    );
-  });
+// HeaderMenu 組件
+export default function HeaderMenu() {
+  const { permissions, isLoggedIn, logout } = useGlobalStore();
+
+  const getAuthLevel = () => {
+    permissions.sys='admin';
+    if (permissions.sys === 'admin') return 'admin';
+    if (permissions.org === 'manager') return 'manager';
+    return 'user';
+  };
+
+  const filteredMenu = filterMenuByAuth(menuItems, getAuthLevel());
+
+  const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    logout();
+  };
+
+  const menuWithLogout = isLoggedIn
+    ? [...filteredMenu.filter(item => item.label !== '登出'),
+       { label: '登出', link: '#', onClick: handleLogout }]
+    : filteredMenu;
+
+  // Menu rendering function
+  const renderMenuItems = (items: MenuItem[]) => {
+  return items.map((item, index) => (
+    <li key={index}>
+      {item.children ? (
+        <details>
+          <summary>{item.label}</summary>
+          <ul className="p-2">
+            {renderMenuItems(item.children)}
+          </ul>
+        </details>
+      ) : (
+        item.onClick ? (
+          // 如果有 onClick 處理程序（例如登出），使用 <a>
+          <a href={item.link} onClick={item.onClick}>
+            {item.label}
+          </a>
+        ) : (
+          // 否則使用 Next.js Link
+          <Link href={item.link || '/'}>
+            {item.label}
+          </Link>
+        )
+      )}
+    </li>
+  ));
+};
 
   return (
-    <header className="bg-white shadow-sm fixed w-full top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <Logo />
+    <div className="drawer">
+      <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
+      <div className="drawer-content flex flex-col">
+        {/* Navbar */}
+        <div className="navbar bg-neutral text-neutral-content">
+          <div className="flex-none lg:hidden">
+            <label htmlFor="my-drawer-3" aria-label="open sidebar" className="btn btn-square btn-ghost">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                className="inline-block h-6 w-6 stroke-current">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M4 6h16M4 12h16M4 18h16">
+                </path>
+              </svg>
+            </label>
           </div>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-4">
-            {renderNavigationItems}
-          </nav>
-
-          {/* Search Bar */}
-          <div className="hidden md:block flex-1 max-w-[15rem] ml-4">
-            <Autocomplete
-              placeholder="搜尋..."
-              leftSection={<IconSearch size={16} />}
-              data={['React', 'Angular', 'Vue', 'Next.js', 'Riot.js', 'Svelte', 'Blitz.js']}
-              value={searchValue}
-              onChange={setSearchValue}
-              className="w-full"
-            />
+          <div className="mx-2 flex-1 px-2">
+           <Link href='/' className="btn btn-ghost text-xl">大型石化督導資料庫</Link>
           </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            type="button"
-            onClick={toggleMobileMenu}
-            className="md:hidden p-2 rounded-md text-gray-700 hover:text-gray-900 hover:bg-gray-100 focus:outline-none"
-            aria-expanded={isMobileMenuOpen}
-            aria-label="Toggle mobile menu"
-          >
-            {isMobileMenuOpen ? (
-              <IconX size={24} />
+          <div className="hidden flex-none lg:block">
+            {isLoggedIn ? (
+              <ul className="menu menu-horizontal px-1">
+                {renderMenuItems(menuWithLogout)}
+              </ul>
             ) : (
-              <IconMenu2 size={24} />
+              <a href="/Login" className="btn btn-ghost">登入</a>
             )}
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        <div
-          className={`md:hidden transition-all duration-200 ease-in-out ${
-            isMobileMenuOpen 
-              ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 -translate-y-1 pointer-events-none'
-          }`}
-        >
-          <div className="px-2 pt-2 pb-3 space-y-1 bg-white border-t">
-            {/* Mobile Search */}
-            <div className="p-2">
-              <Autocomplete
-                placeholder="搜尋..."
-                leftSection={<IconSearch size={16} />}
-                data={['React', 'Angular', 'Vue', 'Next.js', 'Riot.js', 'Svelte', 'Blitz.js']}
-                value={searchValue}
-                onChange={setSearchValue}
-                className="w-full"
-              />
-            </div>
-
-            {/* Mobile Navigation Links */}
-            {navigationLinks.map((link: NavigationLink) => {
-              if (link.links) {
-                return (
-                  <div key={link.label} className="space-y-1">
-                    <div className="px-3 py-2 text-gray-600 font-medium">
-                      {link.label}
-                    </div>
-                    {link.links.map((subLink) => (
-                      <Link
-                        key={subLink.link}
-                        href={subLink.link}
-                        className="block px-3 py-2 text-base text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md ml-4"
-                        onClick={() => setIsMobileMenuOpen(false)} // 添加這行
-                      >
-                        {subLink.label}
-                      </Link>
-                    ))}
-                  </div>
-                );
-              }
-
-              return (
-                <Link
-                  key={link.link}
-                  href={link.link}
-                  className="block px-3 py-2 text-base text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-md"
-                  onClick={() => setIsMobileMenuOpen(false)} // 添加這行
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
+          </div>
+          <div className="flex-none">
+            <ThemeToggle />
           </div>
         </div>
       </div>
-    </header>
+      <div className="drawer-side">
+        <label htmlFor="my-drawer-3" aria-label="close sidebar" className="drawer-overlay"></label>
+        <ul className="menu p-4 w-80 min-h-full bg-base-200">
+          {isLoggedIn ? (
+            renderMenuItems(menuWithLogout)
+          ) : (
+            <li><a href="/Login">登入</a></li>
+          )}
+        </ul>
+      </div>
+    </div>
   );
-};
-
-export default HeaderMenu;
+}

@@ -11,7 +11,7 @@ export default function Custom404() {
             width={500}
             height={500}
         ></Image>
-      <a href="/public" style={{ color: '#0070f3', textDecoration: 'underline' }}>
+      <a className="btn btn-active btn-secondary"  href="/public">
         回到首頁
       </a>
     </div>
