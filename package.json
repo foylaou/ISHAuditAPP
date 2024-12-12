@@ -29,6 +29,8 @@
     "@tiptap/pm": "^2.10.3",
     "@tiptap/react": "^2.10.3",
     "@tiptap/starter-kit": "^2.10.3",
+    "ag-grid-community": "^33.0.1",
+    "ag-grid-react": "^33.0.1",
     "dayjs": "^1.11.13",
     "embla-carousel-react": "^7.1.0",
     "lucide-react": "^0.468.0",

@@ -73,6 +73,7 @@ interface MenuItem {
 // 假設選單項目
 const menuItems: MenuItem[] = [
   { label: '首頁', link: '/' },
+  { label: '督導查詢' , link: '/Audit' },
   {
     label: '帳號管理',
     auth: 'admin',
