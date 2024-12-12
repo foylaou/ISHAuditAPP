@@ -14,15 +14,13 @@ export default function LoginPage() {
 
     // 模擬登入驗證
     if (username === 'admin' && password === 'admin123') {
-      // 設置管理員權限
       login({
         sys: 'admin',
         org: 'manager',
         audit: 'user'
       });
-      router.push('/'); // 導向首頁
+      router.push('/');
     } else if (username === 'manager' && password === 'manager123') {
-      // 設置經理權限
       login({
         sys: 'none',
         org: 'manager',
@@ -30,7 +28,6 @@ export default function LoginPage() {
       });
       router.push('/');
     } else if (username === 'user' && password === 'user123') {
-      // 設置一般用戶權限
       login({
         sys: 'none',
         org: 'none',
@@ -43,66 +40,80 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9">
-          登入系統
-        </h2>
-      </div>
-
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium leading-6">
-              帳號
-            </label>
-            <div className="mt-2">
+    <div className="min-h-screen hero bg-base-200">
+      <div className="hero-content flex-col">
+        <div className="text-center">
+          <h1 className="text-5xl font-bold text-base-content">登入系統</h1>
+          <p className="py-6 text-base-content">請輸入您的帳號密碼</p>
+        </div>
+        <div className="card w-full max-w-sm shadow-2xl bg-base-100">
+          <form className="card-body" onSubmit={handleSubmit}>
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">帳號</span>
+              </label>
               <input
-                id="username"
-                name="username"
                 type="text"
-                required
+                placeholder="請輸入帳號"
+                className="input input-bordered text-base-content"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="block w-full rounded-md border-0 py-1.5 px-2 shadow-sm ring-1 ring-inset ring-gray-300"
+                required
+                autoComplete="on"
               />
             </div>
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium leading-6">
-              密碼
-            </label>
-            <div className="mt-2">
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">密碼</span>
+              </label>
               <input
-                id="password"
-                name="password"
                 type="password"
-                required
+                placeholder="請輸入密碼"
+                className="input input-bordered text-base-content"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="block w-full rounded-md border-0 py-1.5 px-2 shadow-sm ring-1 ring-inset ring-gray-300"
+                required
+                autoComplete="on"
               />
             </div>
-          </div>
+            <div className="form-control mt-6">
+              <button className="btn btn-primary">登入</button>
+            </div>
+          </form>
+        </div>
 
-          <div>
-            <button
-              type="submit"
-              className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500"
-            >
-              登入
-            </button>
+        <div className="card bg-base-100 shadow-xl mt-4">
+          <div className="card-body">
+            <h2 className="card-title text-base-content">測試帳號</h2>
+            <div className="overflow-x-auto">
+              <table className="table table-zebra">
+                <thead>
+                  <tr className="text-base-content">
+                    <th>權限</th>
+                    <th>帳號</th>
+                    <th>密碼</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="text-base-content">
+                    <td>管理員</td>
+                    <td>admin</td>
+                    <td>admin123</td>
+                  </tr>
+                  <tr className="text-base-content">
+                    <td>經理</td>
+                    <td>manager</td>
+                    <td>manager123</td>
+                  </tr>
+                  <tr className="text-base-content">
+                    <td>使用者</td>
+                    <td>user</td>
+                    <td>user123</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
-        </form>
-
-        <div className="mt-4 text-sm">
-          測試帳號：
-          <ul className="list-disc list-inside mt-2">
-            <li>管理員：admin / admin123</li>
-            <li>經理：manager / manager123</li>
-            <li>用戶：user / user123</li>
-          </ul>
         </div>
       </div>
     </div>
