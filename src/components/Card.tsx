@@ -1,5 +1,6 @@
 import Image from "next/image";
 import "../styles/card.css"
+import {ExampleLoaderComponent} from "@/dev/palette";
 
 
 // 定義卡片的資料格式
@@ -37,6 +38,7 @@ export default function CardComponent(props: CardProps) {
           <h3 className="card-title">{data.title}</h3>
           <p className="card-description">{data.description}</p>
         </div>
+        <ExampleLoaderComponent/>
       </div>
     </div>
   );

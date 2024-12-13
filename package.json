@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@iconify/icons-lucide": "^1.2.135",
     "@mantine/carousel": "^7.14.3",
     "@mantine/charts": "^7.14.3",
     "@mantine/code-highlight": "^7.14.3",
@@ -23,6 +24,8 @@
     "@mantine/spotlight": "^7.14.3",
     "@mantine/tiptap": "^7.14.3",
     "@marsidev/react-turnstile": "^1.1.0",
+    "@react-buddy/ide-toolbox": "^2.4.0",
+    "@react-buddy/ide-toolbox-next": "^2.4.1",
     "@tabler/icons-react": "^3.24.0",
     "@tailwindcss/typography": "^0.5.15",
     "@tiptap/extension-link": "^2.10.3",
