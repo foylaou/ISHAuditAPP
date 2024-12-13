@@ -6,6 +6,7 @@ import { useGlobalStore } from '@/store/useGlobalStore';
 import HeaderMenu from '@/components/HeaderMenu';
 import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
+import {MantineProvider} from "@mantine/core";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   const { theme } = useGlobalStore();
@@ -34,7 +35,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="h-screen flex flex-col">
               <HeaderMenu/>
               <main className="flex-1 pt-24 bg-base-100">
+                   <MantineProvider>
                   {children}
+                       </MantineProvider>
               </main>
               <Footer/>
           </div>
