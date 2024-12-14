@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import {Button, Input} from "@mantine/core";
 import {useGlobalStore} from "@/store/useGlobalStore";
 import {useRouter} from "next/navigation";
+import axios from "axios";
 
 
 
@@ -31,17 +32,12 @@ export const LoginForm = () => {
     setIsLoading(true);
     try {
       console.log("Submitting:", formData);
-      // 模擬提交資料至後端 API
-      const response = await fetch("/api/auth", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-         const result = await response.json();
-      if (response.ok) {
+      const response = await axios.post("/api/auth")
+
+      if (response) {
         console.log("登入成功");
         setIsLoading(false);
-        setUsers(result.username);
+        setUsers(response.data.username);
               login({
         sys: 'admin',
         org: 'manager',

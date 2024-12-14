@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 
 // 定義資料的型別
 interface Car {
@@ -9,6 +9,7 @@ interface Car {
 
 export const Cars = () => {
   const [cars, setCars] = useState<Car[]>([]); // 初始值設為空陣列
+
 
   useEffect(() => {
     // 呼叫 API 載入資料
@@ -22,7 +23,7 @@ export const Cars = () => {
       }
     };
 
-    loadCars();
+    loadCars().then();
   }, []);
 
   // 如果資料尚未載入
@@ -31,6 +32,7 @@ export const Cars = () => {
   }
 
   return (
+
     <div>
       <h1>Car List</h1>
       <ul>
