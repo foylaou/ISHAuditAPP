@@ -55,7 +55,7 @@ export default function TodoList() {
   };
 
   return (
-    <div className="p-32 items-center justify-center">
+    <div className="p-20 items-center justify-center">
       <form onSubmit={addTodo}>
         <textarea
           className="textarea textarea-bordered w-full mb-4"
