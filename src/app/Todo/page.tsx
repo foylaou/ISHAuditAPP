@@ -55,10 +55,10 @@ export default function TodoList() {
   };
 
   return (
-    <div className="p-32 items-center justify-center">
+    <div className="p-32 items-center justify-center text-neutral-content">
       <form onSubmit={addTodo}>
         <textarea
-          className="textarea textarea-bordered w-full mb-4"
+          className="textarea textarea-bordered w-full mb-4 "
           placeholder="輸入待辦事項..."
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
@@ -72,7 +72,7 @@ export default function TodoList() {
 
       <ul className="list-disc pl-4">
         {todolist.map((item) => (
-          <li key={item.id} className="mb-2 flex justify-between items-center">
+          <li key={item.id} className="mb-2 flex justify-between items-center text-neutral">
             <div>
               <div>序列：{item.id}</div>
               <div>待辦事項：{item.text}</div>

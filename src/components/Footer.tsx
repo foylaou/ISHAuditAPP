@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="pl-26 bg-neutral  text-neutral-content ">
+    <footer className="bg-base-200 text-base-content p-4">
         <div className="container">
       <strong className="mb-1">
         ※本網所提供之電子檔案部分為 .PDF 格式，如無法閱讀，請自行下載安裝免費軟體「中文版 Adobe PDF Reader」。
