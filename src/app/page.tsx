@@ -4,7 +4,7 @@ import AuthGuard from "@/components/auth/AuthGuard";
 
 export default function Home() {
   return (
-      <AuthGuard requiredPermission="admin">
+      <AuthGuard requiredPermissions={{ module: 'Audit', level: 'admin' }}>
 
           <div className="mockup-code">
               <pre data-prefix="1"><code>npm i daisyui</code></pre>

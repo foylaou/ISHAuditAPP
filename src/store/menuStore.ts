@@ -35,13 +35,12 @@ export const useMenuStore = create<MenuState>((set, _get) => ({
       auth: 'manager',
       children: [
         {
-          label: '設定',
+          label: '進階設定',
           children: [
             { label: '系統設定', link: '/settings/system', auth: 'admin' },
             { label: '權限設定', link: '/settings/permissions', auth: 'manager' },
           ],
-        },
-        { label: '紀錄', link: '/logs', auth: 'user' },
+        }
       ],
     },
     { label: '登出', link: '/logout' },

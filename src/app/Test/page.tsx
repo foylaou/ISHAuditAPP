@@ -1,7 +1,20 @@
-import {Cars} from "@/app/Test/Cars";
+'use client';
+import {useState} from "react";
 
 
-export default function CarPage(){
-    return<Cars/>
+interface item {
+    title: string;
+    url: string;
 
 }
+export default function page(){
+    const [_item, _setItem] = useState<item[]>([]);
+
+
+
+  return (
+       <>
+
+       </>
+  );
+};

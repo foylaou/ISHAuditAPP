@@ -1,55 +1,44 @@
 'use client';
 
-import React, {useState} from "react";
-import {Button} from "@mantine/core";
-import {useGlobalStore} from "@/store/useGlobalStore";
-import {useRouter} from "next/navigation";
-import axios from "axios";
-import {KeyRound, User} from "lucide-react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { KeyRound, User } from "lucide-react";
+import { useGlobalStore } from "@/store/useGlobalStore";
+import { authService } from "@/services/authService";
 
 interface UserLoginData {
-    email: string;
+    username: string;
     password: string;
 }
 
 export const LoginForm = () => {
-    const [_users, setUsers] = useState<UserLoginData[]>([]);
-    const [formData, setFormData] = useState<UserLoginData>({email: "", password: ""});
+    const [formData, setFormData] = useState<UserLoginData>({username: "", password: ""});
     const [isLoading, setIsLoading] = useState(false);
-    const {login} = useGlobalStore();
+    const [error, setError] = useState<string>("");
+    const { login } = useGlobalStore();
     const router = useRouter();
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const {name, value} = e.target;
-        setFormData({...formData, [name]: value});
+        setFormData(prev => ({...prev, [name]: value}));
     };
-
-
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
+        setError("");
+
         try {
-            console.log("Submitting:", formData);
+            const { roles, userName, message } = await authService.login(formData);
 
-            const response = await axios.post("/api/auth", formData);
+            // 使用返回的 roles 更新全局狀態
+            login(roles);
 
-            if (response) {
-
-                console.log("登入成功");
-                setIsLoading(false);
-                setUsers(response.data.username);
-                login({
-                    sys: 'admin',
-                    org: 'manager',
-                    audit: 'user'
-                });
-                router.push('/');
-            } else {
-                console.error("登入失敗");
-            }
+            console.log(message); // "登入成功"
+            router.push('/');
         } catch (error) {
-            console.error("Error during login:", error);
+            console.error("登入失敗:", error);
+            setError("登入失敗，請檢查帳號密碼是否正確");
         } finally {
             setIsLoading(false);
         }
@@ -64,11 +53,11 @@ export const LoginForm = () => {
                     <div className="form-control">
                       <div className="relative">
                         <input
-                            id="email"
-                            type="email"
-                            placeholder="請輸入信箱"
-                            name="email"
-                            value={formData.email}
+                            id="username"
+                            type="text"
+                            placeholder="請輸入帳號"
+                            name="username"
+                            value={formData.username}
                             onChange={handleInputChange}
                             className="input input-bordered w-full pl-10 text-neutral"
                             required

@@ -1,10 +1,12 @@
+//@store/useGlobalStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';  // 需要引入 persist middleware
 
 interface Permissions {
-  sys: string;
-  org: string;
-  audit: string;
+  Audit:string;
+  KPI: string;
+  Sys: string;
+  Org: string;
 }
 
 interface GlobalState {
@@ -20,7 +22,7 @@ export const useGlobalStore = create<GlobalState>()(
   persist(
     (set) => ({
       isLoggedIn: false,
-      permissions: { sys: 'none', org: 'none', audit: 'none' },
+      permissions: { Audit: 'none', KPI: 'none', Sys: 'none' ,Org:'none'},
       theme: false,  // 預設為 light mode
 
       login: (permissions) =>
@@ -29,7 +31,7 @@ export const useGlobalStore = create<GlobalState>()(
       logout: () =>
         set(() => ({
           isLoggedIn: false,
-          permissions: { sys: 'none', org: 'none', audit: 'none' },
+          permissions: { Audit: 'none', KPI: 'none', Sys: 'none' ,Org:'none' },
         })),
 
       toggleTheme: () =>

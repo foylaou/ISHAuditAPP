@@ -1,12 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
-    async rewrites() {
+  async rewrites() {
     return [
       {
-        source: '/api/:path*',
-        destination: 'http://localhost:5238/:path*',
+        source: '/proxy/:path*',
+        destination: 'http://localhost:5238/:path*',  // 會把 /proxy/login 轉發到 http://localhost:5238/login
         basePath: false,
         locale: false,
       },

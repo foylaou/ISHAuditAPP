@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   }, [theme, mounted]);
 
   return (
-      <html lang="zh" data-theme={theme ? 'industrial_dark' : 'industrial_light'}>
+      <html lang="zh" data-theme={theme ? 'dark' : 'light'}>
       <head>
           <meta charSet="utf-8"/>
           <meta name="viewport" content="width=device-width, initial-scale=1"/>

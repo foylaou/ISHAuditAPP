@@ -17,7 +17,7 @@ export default function AuditPage() {
   };
 
   return (
-    <AuthGuard requiredPermission="admin">
+    <AuthGuard requiredPermissions={{ module: 'Audit', level: 'admin' }}>
       {/* 分頁標籤 */}
       <div role="tablist" className="tabs tabs-lifted tabs-lg top-0">
         <a
