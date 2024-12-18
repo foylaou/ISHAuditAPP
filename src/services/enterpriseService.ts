@@ -7,7 +7,7 @@ const CACHE_TIMESTAMP_KEY = 'enterprises_timestamp';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5238'
+  baseURL: '/proxy'  // 基礎路徑
 });
 
 export const enterpriseService = {
