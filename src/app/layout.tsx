@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <main className="flex-1 pt-24 bg-base-100">
                    <MantineProvider>
                   {children}
-                       </MantineProvider>
+                   </MantineProvider>
               </main>
               <Footer/>
           </div>

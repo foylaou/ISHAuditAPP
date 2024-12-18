@@ -18,10 +18,11 @@ export default function TodoList() {
   //	•	JSON.stringify()：將物件/陣列轉換成 字串格式，方便存儲。
   // 	•	JSON.parse()：將存儲的 JSON 字串轉換回 物件/陣列，方便程式使用。
   useEffect(() => {
+      if (typeof window !== "undefined") {
     const savedTodos = localStorage.getItem("todolist");
     if (savedTodos) {
       setTodolist(JSON.parse(savedTodos));
-    }
+    }  }
   }, []);
 
   // 每當 todolist 更新時，將資料存入 localStorage

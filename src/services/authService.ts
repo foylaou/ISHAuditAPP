@@ -22,9 +22,11 @@ const api = axios.create({
 
 // 請求攔截器
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  if (typeof window !== "undefined" && window.localStorage) {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
   }
   return config;
 });
@@ -72,24 +74,35 @@ export const authService = {
   },
 
   logout() {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userRoles');
-    localStorage.removeItem('userName');
+    if (typeof window !== "undefined" && window.localStorage) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('userRoles');
+      localStorage.removeItem('userName');
+    }
     window.location.href = '/Login';
   },
 
   getToken() {
-    return localStorage.getItem('token');
+    if (typeof window !== "undefined" && window.localStorage) {
+      return localStorage.getItem('token');
+    }
   },
 
   getUserRoles(): UserRoles | null {
-    const roles = localStorage.getItem('userRoles');
-    return roles ? JSON.parse(roles) : null;
+    if (typeof window !== 'undefined' && window.localStorage) {
+      const roles = localStorage.getItem('userRoles');
+      return roles ? JSON.parse(roles) : null;
+    }
+    return null; // 伺服器端預設返回 null
   },
 
-  getUserName(): string | null {
-    return localStorage.getItem('userName');
-  },
+getUserName(): string | null {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const userName = localStorage.getItem('userName');
+    return userName ? userName : null; // 若找不到則返回 null
+  }
+  return null; // 伺服器端環境返回 null
+},
 
   isAuthenticated() {
     const token = this.getToken();

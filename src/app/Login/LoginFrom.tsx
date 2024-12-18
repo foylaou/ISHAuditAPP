@@ -14,7 +14,7 @@ interface UserLoginData {
 export const LoginForm = () => {
     const [formData, setFormData] = useState<UserLoginData>({username: "", password: ""});
     const [isLoading, setIsLoading] = useState(false);
-    const [error, setError] = useState<string>("");
+    const [_error, setError] = useState<string>("");
     const { login } = useGlobalStore();
     const router = useRouter();
 
@@ -35,7 +35,7 @@ export const LoginForm = () => {
             login(roles);
 
             console.log(message); // "登入成功"
-            router.push('/');
+            router.push('/',);
         } catch (error) {
             console.error("登入失敗:", error);
             setError("登入失敗，請檢查帳號密碼是否正確");
