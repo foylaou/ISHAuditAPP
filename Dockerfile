@@ -14,7 +14,7 @@ RUN yarn install --frozen-lockfile
 COPY . .
 
 # 環境變數 (範例)
-ENV NEXT_PUBLIC_API_URL=https://api.example.com
+ENV NEXT_PUBLIC_API_URL=http://localhost:5238
 ENV NEXT_PUBLIC_APP_NAME=MyNextApp
 
 # 編譯 Next.js 應用程式
