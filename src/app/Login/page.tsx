@@ -1,4 +1,4 @@
-import LoginForm from "@/app/Login/LoginFrom";
+import LoginForm from "@/components/Login/LoginFrom";
 
 
 

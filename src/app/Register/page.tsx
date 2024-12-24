@@ -1,4 +1,4 @@
-import SignupPage from "@/app/Register/RegisterForm";
+import SignupPage from "@/components/Register/RegisterForm";
 
 
 export default function page(){

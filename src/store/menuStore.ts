@@ -58,24 +58,10 @@ export const useMenuStore = create<MenuState>((set, _get) => ({
       label: '帳號管理',
       auth: 'admin',
       children: [
-        { label: '新增帳號', link: '/signup', auth: 'admin' },
+        { label: '新增帳號', link: '/Register', auth: 'admin' },
         { label: '修改帳號', link: '/edit-user', auth: 'admin' },
       ],
     },
-    {
-      label: '系統管理',
-      auth: 'manager',
-      children: [
-        {
-          label: '進階設定',
-          children: [
-            { label: '系統設定', link: '/settings/system', auth: 'admin' },
-            { label: '權限設定', link: '/settings/permissions', auth: 'manager' },
-          ],
-        }
-      ],
-    },
-    { label: 'KPI管理', link: '/kpi', auth: 'kpi' },
     { label: '登出', link: '/logout' },
   ],
   setMenuItems: (items: MenuItem[]) => set({ menuItems: items }),

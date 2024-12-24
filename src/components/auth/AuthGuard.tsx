@@ -4,20 +4,23 @@ import { useRouter } from 'next/navigation';
 import { useGlobalStore } from '@/store/useGlobalStore';
 import { authService } from '@/services/authService';
 
+// 定義權限類型
+type ModuleType = 'Audit' | 'KPI' | 'Sys' | 'Org';
+type PermissionLevel = 'Admin' | 'Power' | 'Edit' | 'None';
+
 interface AuthGuardProps {
   children: React.ReactNode;
-  // 要求的權限模塊和級別
   requiredPermissions?: {
-    module: 'Audit' | 'KPI' | 'Sys' | 'Org';
-    level: 'admin' | 'manager' | 'user';
+    module: ModuleType;
+    level: PermissionLevel;
   };
 }
 
 export default function AuthGuard({
   children,
-  requiredPermissions = { module: 'Sys', level: 'user' } // 默認檢查系統用戶權限
+  requiredPermissions = { module: 'Sys', level: 'None' }
 }: AuthGuardProps) {
-  const { isLoggedIn } = useGlobalStore();
+  const { isLoggedIn, permissions } = useGlobalStore();
   const router = useRouter();
 
   useEffect(() => {
@@ -28,28 +31,31 @@ export default function AuthGuard({
         return false;
       }
 
-      // 獲取用戶角色
-      const userRoles = authService.getUserRoles();
-      if (!userRoles) {
+      // 獲取用戶權限
+      const userPermissions = authService.getUserRoles();
+      if (!userPermissions) {
         router.push('/Login');
         return false;
       }
 
-      // 檢查特定模塊的權限
-      const modulePermission = userRoles[requiredPermissions.module];
+      // 檢查模組權限
+      const modulePermission = userPermissions[requiredPermissions.module];
 
-      // 權限等級檢查
+      // 判斷權限等級
       const hasRequiredPermission = () => {
-        switch (requiredPermissions.level) {
-          case 'admin':
-            return modulePermission === 'admin';
-          case 'manager':
-            return modulePermission === 'admin' || modulePermission === 'manager';
-          case 'user':
-            return modulePermission === 'admin' || modulePermission === 'manager' || modulePermission === 'user';
-          default:
-            return false;
-        }
+        // 確保模組權限存在
+        if (!modulePermission) return false;
+
+        // 取得實際的權限等級
+        const actualLevel = modulePermission.replace(requiredPermissions.module, '');
+
+        // 權限等級對照表（由高至低）
+        const permissionLevels = ['Admin', 'Power', 'Edit', 'None'];
+        const requiredLevelIndex = permissionLevels.indexOf(requiredPermissions.level);
+        const actualLevelIndex = permissionLevels.indexOf(actualLevel);
+
+        // 實際權限等級需要大於等於要求的等級
+        return actualLevelIndex !== -1 && actualLevelIndex <= requiredLevelIndex;
       };
 
       if (!hasRequiredPermission()) {
@@ -61,30 +67,27 @@ export default function AuthGuard({
     };
 
     checkAuth();
-  }, [isLoggedIn, router, requiredPermissions]);
+  }, [isLoggedIn, router, requiredPermissions, permissions]);
 
-  // 如果正在檢查權限，返回 null
+  // 如果未登入或正在檢查權限，返回 null
   if (!isLoggedIn || !authService.isAuthenticated()) {
     return null;
   }
 
+  // 權限檢查通過，渲染子組件
   return <>{children}</>;
 }
 
-// 使用示例：
-/*
-// 需要審計管理員權限
-<AuthGuard requiredPermissions={{ module: 'Audit', level: 'admin' }}>
-  <AdminDashboard />
+/* 使用示例：
+<AuthGuard requiredPermissions={{ module: 'Audit', level: 'Admin' }}>
+  <AuditDashboard />
 </AuthGuard>
 
-// 需要 KPI 管理者權限
-<AuthGuard requiredPermissions={{ module: 'KPI', level: 'manager' }}>
+<AuthGuard requiredPermissions={{ module: 'KPI', level: 'Power' }}>
   <KPIManagement />
 </AuthGuard>
 
-// 需要組織用戶權限
-<AuthGuard requiredPermissions={{ module: 'Org', level: 'user' }}>
-  <UserDashboard />
+<AuthGuard requiredPermissions={{ module: 'Org', level: 'Edit' }}>
+  <OrganizationEditor />
 </AuthGuard>
 */

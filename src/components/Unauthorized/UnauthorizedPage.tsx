@@ -37,7 +37,7 @@ const UnauthorizedPage = () => {
 
             {/* Button Section */}
             <div className="card-actions justify-center mt-4">
-              <Link href="/" className="btn btn-primary">
+              <Link href="/public" className="btn btn-primary">
                 <Home className="w-5 h-5 mr-2" />
                 返回首頁
               </Link>

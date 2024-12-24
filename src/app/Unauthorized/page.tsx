@@ -1,4 +1,4 @@
-import UnauthorizedPage from "@/app/Unauthorized/UnauthorizedPage";
+import UnauthorizedPage from "@/components/Unauthorized/UnauthorizedPage";
 
 
 export default function page(){

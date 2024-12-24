@@ -1,37 +1,61 @@
-# 使用 Node.js 作為基底鏡像
+# 基礎階段
 FROM node:18-alpine AS base
 
-# 設定工作目錄
+# 依賴階段
+FROM base AS deps
 WORKDIR /app
 
-# 複製 yarn.lock 和 package.json
+# 安裝依賴所需的額外套件
+RUN apk add --no-cache libc6-compat
+
+# 複製依賴文件
 COPY package.json yarn.lock ./
 
-# 安裝依賴套件
-RUN yarn install --frozen-lockfile
+# 安裝依賴（移除 --frozen-lockfile 標誌）
+RUN yarn install
 
-# 複製專案的所有檔案
+# 構建階段
+FROM base AS builder
+WORKDIR /app
+
+# 複製依賴
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# 環境變數 (範例)
-ENV NEXT_PUBLIC_API_URL=http://localhost:5238
-ENV NEXT_PUBLIC_APP_NAME=MyNextApp
+# 構建應用
+ARG NEXT_PUBLIC_API_URL=http://web.local:8080
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
-# 編譯 Next.js 應用程式
 RUN yarn build
-# 正式執行階段，使用較小的鏡像
-FROM node:18-alpine AS runtime
-# 設定工作目錄
+
+# 運行階段
+FROM base AS runner
 WORKDIR /app
-# 複製編譯後的檔案
-COPY --from=base /app/.next ./.next
-COPY --from=base /app/node_modules ./node_modules
-COPY --from=base /app/yarn.lock ./
-COPY --from=base /app/package.json ./
-COPY --from=base /app/public ./public
-# 使用環境變數執行 Next.js
+
 ENV NODE_ENV=production
-# 開啟執行埠
+
+# 建立非 root 用戶
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# 複製必要文件
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./
+
+# 複製環境變數處理腳本
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# 切換到非 root 用戶
+USER nextjs
+
+# 設置容器配置
 EXPOSE 3000
-# 啟動應用程式
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# 設置入口點和啟動命令
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 CMD ["yarn", "start"]

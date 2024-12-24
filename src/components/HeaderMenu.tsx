@@ -41,7 +41,7 @@ export default function HeaderMenu() {
     e.preventDefault();
     logout();
     authService.logout();
-    router.push('/login');
+    router.push('/Login');
   };
 
   const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
@@ -141,7 +141,7 @@ export default function HeaderMenu() {
             renderMenuItems(menuWithLogout, true)
           ) : (
             <li>
-              <Link href="/login" className="btn btn-primary">
+              <Link href="/Login" className="btn btn-primary">
                 登入
               </Link>
             </li>
@@ -149,5 +149,5 @@ export default function HeaderMenu() {
         </ul>
       </div>
     </div>
-  );
+  )
 }
