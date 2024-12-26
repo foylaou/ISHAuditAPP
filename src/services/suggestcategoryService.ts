@@ -149,7 +149,7 @@ export const suggestcategoryService = {
   /**
    * 清除本地存儲中的緩存數據
    */
-  clearCache(): void {
+  async clearCache(): Promise<void> {
     if (typeof window === 'undefined') return;
 
     localStorage.removeItem(CACHE_KEY);

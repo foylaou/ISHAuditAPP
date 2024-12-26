@@ -2,13 +2,18 @@ import React, {useEffect, useState} from "react";
 import {enterpriseService} from "@/services/enterpriseService";
 import type {EnterPrise} from "@/types/Selector/enterPrise";
 import {AuditQueryForm} from "@/types/auditType";
+import {useEnterprises} from "@/hooks/selector/useEnterprises";
+import {useSuggestcategory} from "@/hooks/selector/useSuggestcategory";
+import {useCitiesname} from "@/hooks/selector/useCitiesname";
 
 
 export default function SearchBar() {
-      const [enterprises, setEnterprises] = useState<EnterPrise[]>([]);
-      const [loading, setLoading] = useState(true);
+      const { refresh: refreshEnterprises, loading: enterprisesLoading } = useEnterprises();
+      const { refresh: refreshCategories, loading: categoriesLoading } = useSuggestcategory();
+      const { refresh: refreshCities, loading: citiesLoading } = useCitiesname();
+        // 合併所有loading狀態
+      const loading = enterprisesLoading || categoriesLoading || citiesLoading;
       const [formData, setFormData] = useState<AuditQueryForm>({
-
     citiesId:'',
     townshipsId:'',
     industrialAreasId:'',
@@ -19,347 +24,74 @@ export default function SearchBar() {
     enterpriseId: '',
     companyId: '',
     factoryId: '',
-
-
   });
-
-
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await enterpriseService.getAllEnterprises();
-        setEnterprises(data);
-      } catch (error) {
-        console.error('Error:', error);
-      } finally {
-        setLoading(false);
-      }
+    // 刷新所有數據
+  const handleRefresh = async () => {
+    try {
+      await Promise.all([
+        refreshEnterprises(),
+        refreshCategories(),
+        refreshCities()
+      ]);
+    } catch (error) {
+      console.error('刷新數據失敗:', error);
+      alert('刷新數據失敗，請稍後再試');
     }
-    fetchData();
-  }, []);
+  };
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData(prev => {
+      const newData = { ...prev, [name]: value };
 
-  const companies = formData.enterpriseId
-    ? enterpriseService.getCompaniesByEnterpriseId(enterprises, formData.enterpriseId)
-    : [];
+      // 處理各個選擇器的級聯重置
+      switch (name) {
+        // 企業選擇器的重置邏輯
+        case 'enterpriseId':
+          newData.companyId = '';
+          newData.factoryId = '';
+          break;
+        case 'companyId':
+          newData.factoryId = '';
+          break;
 
-  const factories = formData.companyId
-    ? enterpriseService.getFactoriesByCompanyId(enterprises, formData.companyId)
-    : [];
+        // 城市選擇器的重置邏輯
+        case 'cityInfoId':
+          newData.townshipsId = '';
+          newData.industrialAreasId = '';
+          break;
+        case 'townshipsId':
+          newData.industrialAreasId = '';
+          break;
 
 
+      }
+
+      return newData;
+    });
+  };
 
 
   return (
-      <div className="bg-base-100 rounded-lg shadow-lg w-full max-w-2xl mx-auto">
-        {/* 頭部區域 */}
-          <div className="p-6 border-b">
-              <div className="p-6 text-base-content">
-                  {/* 地區 */}
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">所在縣市</span>
-                      </label>
-                      <select
-                          name="citiesId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-                          required
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">所在地區</span>
-                      </label>
-                      <select
-                          name="townshipsId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-                          required
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">所屬工業區</span>
-                      </label>
-                      <select
-                          name="industrialAreasId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-                          required
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-                  {/* 督導類形 */}
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">督導種類</span>
-                      </label>
-                      <select
-                          name="enterpriseId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-                          required
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">督導原因</span>
-                      </label>
-                      <select
-                          name="enterpriseId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-                          required
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-
-
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">災害類型</span>
-                      </label>
-                      <select
-                          name="enterpriseId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-                          required
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">督導年份</span>
-                      </label>
-                      <select
-                          name="enterpriseId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-                          required
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-                  {/* 企業、公司、工廠 */}
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">公司名稱</span>
-                      </label>
-                      <select
-                          name="enterpriseId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">工廠名稱</span>
-                      </label>
-                      <select
-                          name="enterpriseId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-                  {/* 建議種類 */}
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">建議種類</span>
-                      </label>
-                      <select
-                          name="enterpriseId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">建議類型</span>
-                      </label>
-                      <select
-                          name="enterpriseId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">建議項目</span>
-                      </label>
-                      <select
-                          name="enterpriseId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-
-                  {/* 是否 */}
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">是否停工</span>
-                      </label>
-                      <select
-                          name="enterpriseId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">是否裁罰</span>
-                      </label>
-                      <select
-                          name="enterpriseId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-
-                  <div className="form-control w-full">
-                      <label className="label">
-                          <span className="label-text">完成改善</span>
-                      </label>
-                      <select
-                          name="enterpriseId"
-                          value={}
-                          onChange={}
-                          className="select select-bordered w-full"
-
-                      >
-                          <option value="">--請選擇--</option>
-                          {items.map(item => (
-                              <option key={item.id} value={item.id}>
-                                  {item.name}
-                              </option>
-                          ))}
-                      </select>
-                  </div>
-
-
-              </div>
+       <div className="p-4 space-y-6">
+        <div className="justify-between items-center">
+          <h1 className="text-4xl font-bold text-center">數據選擇器</h1>
+          <div className="flex">
+            <button
+                onClick={handleRefresh}
+                className="btn btn-outline btn-sm"
+                disabled={loading}
+            >
+              {loading ? (
+                  <>
+                    <span className="loading loading-spinner loading-sm"></span>
+                    更新中...
+                  </>
+              ) : '更新所有資料'}
+            </button>
           </div>
-      </div>
+        </div>
+       </div>
   );
 }

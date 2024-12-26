@@ -43,3 +43,9 @@ export interface IndustrialAreas {
   //   longitude: number;
   // };
 }
+
+export interface CityInfoForm{
+  cityInfoId: string;
+  townshipsId: string;
+  industrialareasId: string;
+}

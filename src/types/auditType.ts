@@ -1,15 +1,15 @@
 // types/auditType.ts
 export interface AuditQueryForm {
-  username: string;
-  password: string;
-  name: string;
-  enterpriseId: string;
-  companyId: string;
-  factoryId: string;
-  auditRole: string;
-  kpiRole: string;
-  sysRole: string;
-  orgRole: string;
+    citiesId:string,
+    townshipsId:string,
+    industrialAreasId:string,
+    AuditTypeId:string,
+    AuditCauseId:string,
+    AuditItemsId:string,
+    AuditDate:string,
+    enterpriseId: string,
+    companyId: string,
+    factoryId: string,
 }
 
 export interface AuditQueryRequest {

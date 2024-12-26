@@ -1,15 +1,17 @@
+//components/Register/RegisterForm.tsx
 'use client';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { enterpriseService } from '@/services/enterpriseService';
-import type { EnterPrise } from '@/types/Selector/enterPrise';
-
 import { RegisterForm } from "@/types/registerType";
-
+import { useEnterprises } from '@/hooks/selector/useEnterprises';
 import {registerServices} from "@/services/registerServices";
+import {EnterpriseSelector} from "@/components/Selector/EnterpriseSelector";
+
+
+
 
 export default function SignupPage() {
-  const [enterprises, setEnterprises] = useState<EnterPrise[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { enterprises, loading, refresh } = useEnterprises();
   const [formData, setFormData] = useState<RegisterForm>({
     username: '',
     password: '',
@@ -23,19 +25,7 @@ export default function SignupPage() {
     orgRole: 'None'
   });
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await enterpriseService.getAllEnterprises();
-        setEnterprises(data);
-      } catch (error) {
-        console.error('Error:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
+
 
   const companies = formData.enterpriseId
     ? enterpriseService.getCompaniesByEnterpriseId(enterprises, formData.enterpriseId)
@@ -116,16 +106,9 @@ const handleSubmit = async (e: React.FormEvent) => {
     });
   };
 
-  const handleRefresh = async () => {
-    setLoading(true);
-    try {
-      const data = await enterpriseService.forceRefresh();
-      setEnterprises(data);
-    } catch (error) {
-      console.error('Error refreshing data:', error);
-    } finally {
-      setLoading(false);
-    }
+  // 使用 Hook 提供的 refresh 函數
+  const handleRefresh = () => {
+    refresh();
   };
 
   if (loading) {
@@ -195,70 +178,12 @@ const handleSubmit = async (e: React.FormEvent) => {
             </div>
 
             {/* EnterPrise Selection */}
-            <div className="divider"></div>
-            <div className="space-y-4">
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">企業</span>
-                </label>
-                <select
-                  name="enterpriseId"
-                  value={formData.enterpriseId}
-                  onChange={handleInputChange}
-                  className="select select-bordered w-full"
-                  required
-                >
-                  <option value="">選擇企業</option>
-                  {enterprises.map(enterprise => (
-                    <option key={enterprise.id} value={enterprise.id}>
-                      {enterprise.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
 
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">公司</span>
-                </label>
-                <select
-                  name="companyId"
-                  value={formData.companyId}
-                  onChange={handleInputChange}
-                  className="select select-bordered w-full"
-                  disabled={!formData.enterpriseId}
-                  required
-                >
-                  <option value="">選擇公司</option>
-                  {companies.map(company => (
-                    <option key={company.id} value={company.id}>
-                      {company.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+            <EnterpriseSelector
+                formData={formData}
+                onChange={handleInputChange}
+            />
 
-              <div className="form-control w-full">
-                <label className="label">
-                  <span className="label-text">工廠</span>
-                </label>
-                <select
-                  name="factoryId"
-                  value={formData.factoryId}
-                  onChange={handleInputChange}
-                  className="select select-bordered w-full"
-                  disabled={!formData.companyId}
-                  required
-                >
-                  <option value="">選擇工廠</option>
-                  {factories.map(factory => (
-                    <option key={factory.id} value={factory.id}>
-                      {factory.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
 
             {/* Permissions */}
           <div className="divider"></div>

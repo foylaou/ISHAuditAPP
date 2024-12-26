@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 // 從環境變數取得 API 基本 URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:5238";
+const API_URL = process.env.NEXT_PUBLIC_API_URL|| "https://api.isafe.org.tw/";
 
 const nextConfig: NextConfig = {
   async rewrites() {

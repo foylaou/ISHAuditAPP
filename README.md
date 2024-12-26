@@ -14,5 +14,11 @@ pnpm dev
 bun dev
 ```
 
+# rebuild
+```bash
+yarn cache clean
+rm -rf node_modules
+yarn install
+```
 ## 測試網址
 [按我前往](https://ish-audit-app.vercel.app)

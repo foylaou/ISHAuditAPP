@@ -49,3 +49,9 @@ export interface Factory {
   // employeeCount?: number;  // 員工數量
   // productionLines?: string[]; // 生產線
 }
+export interface EnterPriseForm {
+  enterpriseId: string;
+  companyId: string;
+  factoryId: string;
+
+  }
