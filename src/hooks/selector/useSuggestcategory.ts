@@ -12,10 +12,11 @@ export const useSuggestcategory = () => {
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
-    await suggestcategoryService.clearCache()
     setLoading(true);
     try {
       const data = await suggestcategoryService.getAllSuggestCategor();
+
+
       setSuggestcategory(data);
     } catch (error) {
       console.error('Error:', error);

@@ -9,8 +9,7 @@ const CACHE_DURATION = 24 * 60 * 60 * 1000;    // 緩存時長（24小時）
 
 // 創建axios實例
 const api = axios.create({
-  baseURL: '/proxy',
-  timeout: 5000  // 添加請求超時設置
+  baseURL: '/proxy', //  timeout: 10000  // 添加請求超時設置
 });
 
 /**
@@ -149,7 +148,7 @@ export const suggestcategoryService = {
   /**
    * 清除本地存儲中的緩存數據
    */
-  async clearCache(): Promise<void> {
+  clearCache(): void {
     if (typeof window === 'undefined') return;
 
     localStorage.removeItem(CACHE_KEY);

@@ -23,7 +23,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # 構建應用
-ARG NEXT_PUBLIC_API_URL=http://web.local:8080
+ARG NEXT_PUBLIC_API_URL=https://api.isafe.org.tw
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
 RUN yarn build

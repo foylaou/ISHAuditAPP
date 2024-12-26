@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@ag-grid-community/locale": "^33.0.3",
     "@iconify/icons-lucide": "^1.2.135",
     "@mantine/carousel": "^7.14.3",
     "@mantine/charts": "^7.14.3",
@@ -37,6 +38,7 @@
     "@types/webappsec-credential-management": "^0.6.9",
     "add": "^2.0.6",
     "ag-grid-community": "^33.0.1",
+    "ag-grid-enterprise": "^33.0.3",
     "ag-grid-react": "^33.0.1",
     "axios": "^1.7.9",
     "card": "^2.5.4",

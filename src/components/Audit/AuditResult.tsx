@@ -1,9 +1,16 @@
-import React, { StrictMode, useState } from "react";
-import {ColDef, colorSchemeDarkBlue, colorSchemeLightWarm, ICellRendererParams, themeQuartz} from "ag-grid-community";
+import React, {StrictMode, useMemo, useState} from "react";
+import {
+  ColDef,
+  colorSchemeDarkBlue,
+  colorSchemeLightWarm,
+  ICellRendererParams,
+  StatusPanelDef,
+  themeQuartz
+} from "ag-grid-community";
 import { AllCommunityModule, ModuleRegistry  } from "ag-grid-community";
 import { AgGridReact } from "ag-grid-react";
 import { useGlobalStore } from '@/store/useGlobalStore';
-
+import { AG_GRID_LOCALE_TW } from '@ag-grid-community/locale';
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 interface IRow {
@@ -38,9 +45,9 @@ const themeDarkBlue = themeQuartz.withPart(colorSchemeDarkBlue);
 
 const GridExample = () => {
   // 使用全域狀態的布林值主題
-  const { theme } = useGlobalStore();
+
   // theme 為 true 時表示暗色模式
-  const isDarkMode = theme;
+  const isDarkMode = useGlobalStore().theme;
 
   const [rowData] = useState<IRow[]>([
     {
@@ -124,7 +131,19 @@ const GridExample = () => {
     filter: true,
     resizable: true,
   };
-
+  const statusBar = useMemo<{
+    statusPanels: StatusPanelDef[];
+  }>(() => {
+    return {
+      statusPanels: [
+        { statusPanel: "agTotalAndFilteredRowCountComponent" },
+        { statusPanel: "agTotalRowCountComponent" },
+        { statusPanel: "agFilteredRowCountComponent" },
+        { statusPanel: "agSelectedRowCountComponent" },
+        { statusPanel: "agAggregationComponent" },
+      ],
+    };
+  }, []);
 
   return (
     <div
@@ -136,6 +155,7 @@ const GridExample = () => {
       }}
     >
       <AgGridReact
+          localeText={AG_GRID_LOCALE_TW}
         rowStyle={{ overflow: 'visible' }}
         suppressRowTransform={true}
         rowData={rowData}
@@ -143,6 +163,8 @@ const GridExample = () => {
         defaultColDef={defaultColDef}
         animateRows={true}
         pagination={true}
+          sideBar={true}
+          statusBar={statusBar}
         paginationPageSize={10}
         theme={isDarkMode ? themeDarkBlue : themeLightWarm}
 
