@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 1654 237" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g transform="matrix(1,0,0,1,-25.9848,38.7953)">
+        <g transform="matrix(4.16667,0,0,4.16667,306.949,150.291)">
+            <g transform="matrix(18,0,0,18,164.16,0)">
+            </g>
+            <text x="0px" y="0px" style="font-family:'NotoSansTC-Regular', 'Noto Sans TC', sans-serif;font-size:18px;fill:rgb(190,190,190);">大<tspan x="18.27px 36.54px 54.81px 73.08px 91.35px 109.62px 127.89px 146.16px " y="0px 0px 0px 0px 0px 0px 0px 0px ">型石化督導資料庫</tspan></text>
+        </g>
+        <g transform="matrix(4.16667,0,0,4.16667,306.949,55.3258)">
+            <text x="0px" y="0px" style="font-family:'NotoSansTC-Regular', 'Noto Sans TC', sans-serif;font-size:15px;fill:rgb(243,243,243);">經<tspan x="15.188px 30.375px 45.563px 60.75px 75.938px 91.125px 106.313px " y="0px 0px 0px 0px 0px 0px 0px ">濟部產業發展署</tspan></text>
+        </g>
+        <g id="Path" transform="matrix(4.16667,0,0,4.16667,31.9492,21.9925)">
+            <path d="M18.56,28C26.535,28 33,21.731 33,14C33,6.268 26.534,0 18.56,0L6.187,0L6.187,3.998L18.56,3.998C24.255,3.998 28.872,8.475 28.872,13.995C28.872,19.516 24.255,23.992 18.56,23.992L4.124,23.992L4.124,5.998L0,5.998L0,27.991L18.56,28Z" style="fill:rgb(14,87,151);fill-rule:nonzero;"/>
+        </g>
+        <g id="Path1" serif:id="Path" transform="matrix(4.16667,0,0,4.16667,31.9492,21.9925)">
+            <path d="M38,0L49.79,28L54,28L42.21,0L38,0Z" style="fill:rgb(40,181,173);fill-rule:nonzero;"/>
+        </g>
+        <g transform="matrix(1,0,0,1,135.462,-4.40195)">
+            <g transform="matrix(0.937394,0,0,1,89.9462,-5.83341)">
+                <path d="M1545.41,89.55C1545.41,124.16 1515.44,152.259 1478.52,152.259L1037.72,152.259C1000.8,152.259 970.823,124.16 970.823,89.55C970.823,54.94 1000.8,26.841 1037.72,26.841L1478.52,26.841C1515.44,26.841 1545.41,54.94 1545.41,89.55Z" style="fill:rgb(64,98,187);"/>
+            </g>
+            <g transform="matrix(1.54133,0,0,1.54133,-571.265,-316.336)">
+                <g transform="matrix(50,0,0,50,1319.69,278.65)">
+                </g>
+                <text x="1069.69px" y="278.65px" style="font-family:'NotoSansTC-Regular', 'Noto Sans TC', sans-serif;font-size:50px;fill:white;">暨資訊平台</text>
+            </g>
+        </g>
+    </g>
+</svg>
