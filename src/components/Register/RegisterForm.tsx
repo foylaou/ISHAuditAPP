@@ -6,6 +6,7 @@ import { RegisterForm } from "@/types/registerType";
 import { useEnterprises } from '@/hooks/selector/useEnterprises';
 import {registerServices} from "@/services/registerServices";
 import {EnterpriseSelector} from "@/components/Selector/EnterpriseSelector";
+import {toast} from "react-toastify";
 
 
 
@@ -40,55 +41,64 @@ export default function SignupPage() {
     message: string;
   }
 
-  const validateForm = (): boolean => {
-    const errors: ValidationError[] = [];
+const validateForm = (): boolean => {
+  const errors: ValidationError[] = [];
 
-    if (!formData.username) errors.push({ field: 'username', message: '請填寫使用者名稱' });
-    if (!formData.password) errors.push({ field: 'password', message: '請填寫密碼' });
-    if (!formData.name) errors.push({ field: 'name', message: '請填寫名字' });
-    if (!formData.enterpriseId) errors.push({ field: 'enterpriseId', message: '請選擇企業' });
-    if (!formData.companyId) errors.push({ field: 'companyId', message: '請選擇公司' });
-    if (!formData.factoryId) errors.push({ field: 'factoryId', message: '請選擇工廠' });
+  if (!formData.username) errors.push({ field: 'username', message: '請填寫使用者名稱' });
+  if (!formData.password) errors.push({ field: 'password', message: '請填寫密碼' });
+  if (!formData.name) errors.push({ field: 'name', message: '請填寫名字' });
+  if (!formData.enterpriseId) errors.push({ field: 'enterpriseId', message: '請選擇企業' });
+  if (!formData.companyId) errors.push({ field: 'companyId', message: '請選擇公司' });
+  if (!formData.factoryId) errors.push({ field: 'factoryId', message: '請選擇工廠' });
 
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
-    if (formData.password && !passwordRegex.test(formData.password)) {
-      errors.push({ field: 'password', message: '密碼必須包含至少8個字符，包括大小寫字母和數字' });
-    }
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+  if (formData.password && !passwordRegex.test(formData.password)) {
+    errors.push({ field: 'password', message: '密碼必須包含至少8個字符，包括大小寫字母和數字' });
+  }
 
-    if (errors.length > 0) {
-      alert(errors.map(error => error.message).join('\n'));
-      return false;
-    }
+  if (errors.length > 0) {
+    errors.forEach(error => {
+      toast.error(error.message); // 顯示每條錯誤
+    });
+    return false;
+  }
 
-    return true;
-  };
+  return true;
+};
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
 
   if (!validateForm()) {
-    return;
+    return; // 如果表單驗證失敗，直接返回
   }
 
   try {
+    // 調用後端 API 進行註冊
     const { message } = await registerServices.register(formData);
-    alert('註冊成功！');
-    window.location.href = '/login';
-  } catch (error) {
+     if (message === '註冊成功') {
+      toast.success(message);
+      window.location.href = '/login'; // 跳轉到登錄頁面
+     }else {
+       toast.error(message || '操作未完成，請檢查輸入資料');
+     }
+     }catch (error) {
+        // 定義接口錯誤類型
     interface ApiError {
-      response?: {
-        data?: {
-          message?: string;
-        };
-      };
+      error?: string; // API 返回的錯誤消息
     }
-
+        // 獲取錯誤信息，並設置默認錯誤提示
     const apiError = error as ApiError;
-    const errorMessage = apiError.response?.data?.message || '註冊失敗，請檢查輸入資料';
-    alert(errorMessage);
-    console.error('註冊失敗:', error);
+    const errorMessage =
+      apiError.error || '註冊失敗，請檢查輸入資料';
+
+    // 顯示錯誤提示
+    toast.error(errorMessage);
   }
-};
+  };
+
+
+
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -118,7 +128,7 @@ const handleSubmit = async (e: React.FormEvent) => {
   return (
 
     <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="card bg-base-100 shadow-xl w-full max-w-2xl">
+      <div className="card bg-base-200 shadow-xl w-full max-w-2xl">
         <div className="card-body">
           <div className="flex justify-between items-center">
             <h2 className="card-title text-2xl font-bold text-base-content">建立人員帳號</h2>
@@ -143,7 +153,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   name="username"
                   value={formData.username}
                   onChange={handleInputChange}
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full bg-base-200"
                   required
                 />
               </div>
@@ -157,7 +167,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full bg-base-200"
                   required
                 />
               </div>
@@ -171,7 +181,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="input input-bordered w-full"
+                  className="input input-bordered w-full bg-base-200"
                   required
                 />
               </div>

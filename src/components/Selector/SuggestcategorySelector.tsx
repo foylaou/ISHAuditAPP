@@ -38,7 +38,7 @@ export function SuggestcategorySelector({ formData, onChange }: SuggestcategoryS
             name="suggestcategoryId"
             value={formData.suggestcategoryId}
             onChange={onChange}
-            className="select select-bordered w-full"
+            className="select select-bordered w-full bg-base-100 text-base-content"
             required
           >
             <option value="">--請選擇--</option>
@@ -58,7 +58,7 @@ export function SuggestcategorySelector({ formData, onChange }: SuggestcategoryS
             name="suggesttypeId"
             value={formData.suggesttypeId}
             onChange={onChange}
-            className="select select-bordered w-full"
+            className="select select-bordered w-full bg-base-100 text-base-content"
             disabled={!formData.suggestcategoryId}
             required
           >
@@ -79,7 +79,7 @@ export function SuggestcategorySelector({ formData, onChange }: SuggestcategoryS
             name="suggestitemId"
             value={formData.suggestitemId}
             onChange={onChange}
-            className="select select-bordered w-full"
+            className="select select-bordered w-full bg-base-100 text-base-content"
             disabled={!formData.suggesttypeId}
             required
           >

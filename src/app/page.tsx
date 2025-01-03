@@ -126,17 +126,17 @@ useEffect(() => {
   }
 
   return (
-      <div className="bg-base-100 rounded-lg shadow-lg w-full max-w-2xl mx-auto">
+      <div className="bg-base-200 rounded-lg shadow-lg w-full max-w-2xl mx-auto">
         {/* 頭部區域 */}
-        <div className="p-6 border-b">
 
+        <div className="p-6 border-b  ">
           <div className="p-6 border-b text-base-content">
             <div className="flex items-center space-x-4">
               <div className="p-2 bg-blue-100 rounded-full">
                 <User className="w-6 h-6 text-blue-600"/>
               </div>
               <div>
-                <h2 className="text-2xl font-semibold text-base-content">歡迎回來</h2>
+                <h1 className="text-2xl font-semibold text-base-content">歡迎回來</h1>
                 <p className="text-gray-500">{userName}</p>
                 <div className="flex items-center mt-2 text-sm text-gray-500">
                   <Clock className="w-4 h-4 mr-2"/>

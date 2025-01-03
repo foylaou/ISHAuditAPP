@@ -1,7 +1,10 @@
 // types/menuTypes.ts
+export type ModuleType = 'Audit' | 'KPI' | 'Sys' | 'Org';
+export type PermissionLevel = 'Admin' | 'Power' | 'Edit' | 'None';
+
 export interface ModulePermission {
-  module: 'Audit' | 'KPI' | 'Sys' | 'Org';
-  level: 'admin' | 'manager' | 'user';
+  module: ModuleType;
+  level: PermissionLevel;
 }
 
 export interface MenuItem {

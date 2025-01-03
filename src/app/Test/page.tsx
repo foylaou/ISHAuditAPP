@@ -32,6 +32,9 @@ export default function Page() {
     suggesttypeId: "",
     suggestitemId: "",
   });
+    const handleSaveAction = (signature: string) => {
+    console.log('簽名數據：', signature); // 簽名數據處理邏輯
+  };
   // 獲取所有選擇器的數據和loading狀態
   const { refresh: refreshEnterprises, loading: enterprisesLoading } = useEnterprises();
   const { refresh: refreshCategories, loading: categoriesLoading } = useSuggestcategory();
@@ -158,7 +161,7 @@ export default function Page() {
           </div>
         </div>
         <div className="p-4">
-          <SignaturePad onSave={handleSaveSignature}/>
+          <SignaturePad onSaveAction={handleSaveSignature}/>
 
 
         </div>

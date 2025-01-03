@@ -19,28 +19,56 @@ export default {
     plugins: [daisyui], // 確保 DaisyUI 插件正確引入
     daisyui: {
         themes: [
-            "light",
-            "dark",
-        ],
+            {
+       ISHALight: {
+        "primary": "#4062BB",
+        "primary-content": "#F3F3F1",
+        "secondary": "#28B5AD",
+        "secondary-content": "#EBF2FA",
+        "accent": "#EA5404",
+        "accent-content": "#FFFFFF",
+        "neutral": "#FFFFFF",
+        "neutral-content": "#242C3A",
+        "base-100": "#F3F6FA",
+        "base-200": "#FCFCFC",
+        "base-300": "#87b5fc",
+        "base-content": "#292929",
+        "info": "#C5E7E8",
+        "info-content": "#234241",
+        "success": "#7DB9DE",
+        "success-content": "#00140e",
+        "warning": "#FFC408",
+        "warning-content": "#00140e",
+        "error": "#952E27",
+        "error-content": "#FFFFFF",
+        },
+        ISHADark: {
+            "primary": "#4062BB",           // 更深沉的藍色
+            "primary-content": "#F3F3F1",   // 保持亮色文字
+            "secondary": "#1A7A75",         // 更深的青綠色
+            "secondary-content": "#EBF2FA", // 保持亮色文字
+            "accent": "#B34003",           // 更深的橘色
+            "accent-content": "#FFFFFF",    // 保持白色文字
+            "neutral": "#FFFFFF",          // 深灰近黑色
+            "neutral-content": "#242C3A",   // 反轉為白色文字
+            "base-100": "#22262A",         // 主要深色背景
+            "base-200": "#2A2A2A",         // 稍微淺一點的深色
+            "base-300": "#8a8a8a",         // 最淺的深色
+            'base-400':'#242C3A',
+            "base-content": "#ffffff",     // 主要文字顏色改為淺色
+            "info": "#2B4748",             // 深色信息色
+            "info-content": "#C5E7E8",     // 反轉原來的顏色
+            "success": "#1B4D6B",          // 深色成功色
+            "success-content": "#7DB9DE",   // 反轉原來的顏色
+            "warning": "#8C6B00",          // 深色警告色
+            "warning-content": "#FFC408",   // 反轉原來的顏色
+            "error": "#6B2119",            // 深色錯誤色
+            "error-content": "#FFFFFF",     // 保持白色文字
+        },
+      },
 
-    },
+        ]
+    }
 } satisfies Config;
 
-//        mytheme: {
-//           "primary": "#a991f7",
-//           "secondary": "#f6d860",
-//           "accent": "#37cdbe",
-//           "neutral": "#3d4451",
-//           "base-100": "#ffffff",
-//
-//           "--rounded-box": "1rem", // border radius rounded-box utility class, used in card and other large boxes
-//           "--rounded-btn": "0.5rem", // border radius rounded-btn utility class, used in buttons and similar element
-//           "--rounded-badge": "1.9rem", // border radius rounded-badge utility class, used in badges and similar
-//           "--animation-btn": "0.25s", // duration of animation when you click on button
-//           "--animation-input": "0.2s", // duration of animation for inputs like checkbox, toggle, radio, etc
-//           "--btn-focus-scale": "0.95", // scale transform of button when you focus on it
-//           "--border-btn": "1px", // border width of buttons
-//           "--tab-border": "1px", // border width of tabs
-//           "--tab-radius": "0.5rem", // border radius of tabs
-//         },
-//       },
+

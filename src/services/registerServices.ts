@@ -39,7 +39,24 @@ export const registerServices = {
       });
       return response.data;
     } catch (error) {
-      throw error;
+      if (axios.isAxiosError(error)) {
+        if (error.response?.status === 400) {
+          throw error;
+        }
+        // 處理 404 錯誤
+        if (error.response?.status === 404) {
+          throw new Error('資源未找到，請檢查 API 路徑或請求參數');
+        }
+
+        // 處理其他錯誤
+        const errorMessage =
+          error.response?.data?.message ||
+          `HTTP 錯誤，狀態碼: ${error.response?.status}`;
+        throw new Error(errorMessage);
+      } else {
+        // 非 Axios 錯誤
+        throw new Error('未知錯誤，請稍後再試');
+      }
     }
-  }
+  },
 };

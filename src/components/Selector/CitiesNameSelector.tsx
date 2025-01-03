@@ -38,7 +38,7 @@ export function CitiesNameSelector({ formData, onChange }: CitiesNameSelectorPro
             name="cityInfoId"
             value={formData.cityInfoId}
             onChange={onChange}
-            className="select select-bordered w-full"
+            className="select select-bordered w-full bg-base-100 text-base-content"
             required
           >
             <option value="">--請選擇--</option>
@@ -58,7 +58,7 @@ export function CitiesNameSelector({ formData, onChange }: CitiesNameSelectorPro
             name="townshipsId"
             value={formData.townshipsId}
             onChange={onChange}
-            className="select select-bordered w-full"
+            className="select select-bordered w-full bg-base-100 text-base-content"
             disabled={!formData.cityInfoId}
             required
           >
@@ -79,7 +79,7 @@ export function CitiesNameSelector({ formData, onChange }: CitiesNameSelectorPro
             name="industrialareasId"
             value={formData.industrialareasId}
             onChange={onChange}
-            className="select select-bordered w-full"
+            className="select select-bordered w-full bg-base-100 text-base-content"
             disabled={!formData.cityInfoId}
             required
           >

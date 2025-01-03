@@ -6,37 +6,46 @@ import { useGlobalStore } from '@/store/useGlobalStore';
 import { useMenuStore } from '@/store/menuStore';
 import ThemeToggle from './ThemeToggle';
 import { authService } from '@/services/authService';
-import type { MenuItem, ModulePermission } from '@/types/menuTypes';
+import type {MenuItem, ModulePermission} from '@/types/menuTypes';
+import Image from "next/image";
+import logo from '@/../public/logo.svg';
+import logodark from '@/../public/logo-dark.svg';
+
 
 export default function HeaderMenu() {
+  const { theme } = useGlobalStore();
+  const Login = '/Login';
   const router = useRouter();
   const { isLoggedIn, logout } = useGlobalStore();
   const { menuItems } = useMenuStore();
 
-  const checkPermission = (required: ModulePermission): boolean => {
-    const userRoles = authService.getUserRoles();
-    if (!userRoles) return false;
-    const modulePermission = userRoles[required.module];
+const checkPermission = (required: ModulePermission): boolean => {
+  const userRoles = authService.getUserRoles();
+  if (!userRoles) return false;
 
-    switch (required.level) {
-      case 'admin':
-        return modulePermission === 'admin';
-      case 'manager':
-        return ['admin', 'manager'].includes(modulePermission);
-      case 'user':
-        return ['admin', 'manager', 'user'].includes(modulePermission);
-      default:
-        return false;
-    }
-  };
+  const modulePermission = userRoles[required.module];
+  if (!modulePermission) return false;
 
-  const hasMenuPermission = (item: MenuItem): boolean => {
-    if (!item.permission) return true;
-    return Array.isArray(item.permission)
-      ? item.permission.some(perm => checkPermission(perm))
-      : checkPermission(item.permission);
-  };
-
+  // 簡化比較邏輯
+  switch (required.level) {
+    case 'Admin':
+      return modulePermission === 'Admin';
+    case 'Power':
+      return ['Admin', 'Power'].includes(modulePermission);
+    case 'Edit':
+      return ['Admin', 'Power', 'Edit'].includes(modulePermission);
+    case 'None':
+      return true;
+    default:
+      return false;
+  }
+};
+    const hasMenuPermission = (item: MenuItem): boolean => {
+      if (!item.permission) return true;
+      return Array.isArray(item.permission)
+        ? item.permission.some(perm => checkPermission(perm))
+        : checkPermission(item.permission);
+    };
   const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     logout();
@@ -44,38 +53,47 @@ export default function HeaderMenu() {
     router.push('/Login');
   };
 
-  const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
-    return items.map((item, index) => {
-      if (!hasMenuPermission(item)) return null;
+const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
+  return items.map((item, index) => {
+    if (!hasMenuPermission(item)) return null;
 
-      if (item.children) {
-        return (
-          <li key={index}>
-            <details>
-              <summary>{item.label}</summary>
-              <ul>
-                {renderMenuItems(item.children, isMobile)}
-              </ul>
-            </details>
-          </li>
-        );
-      }
-
+    if (item.children) {
       return (
         <li key={index}>
-          {item.onClick ? (
-            <a href={item.link} onClick={item.onClick}>
+          <details className={isMobile ? 'collapse collapse-arrow' : ''}>
+            <summary className={isMobile ? 'collapse-title' : ''}>
               {item.label}
-            </a>
-          ) : (
-            <Link href={item.link || '/'}>
-              {item.label}
-            </Link>
-          )}
+            </summary>
+            <ul className={isMobile ? 'collapse-content pl-4' : 'bg-base-200'}>
+              {renderMenuItems(item.children, isMobile)}
+            </ul>
+          </details>
         </li>
       );
-    }).filter(Boolean);
-  };
+    }
+
+    return (
+      <li key={index}>
+        {item.onClick ? (
+          <a
+            href={item.link}
+            onClick={item.onClick}
+            className={isMobile ? 'block py-2' : ''}
+          >
+            {item.label}
+          </a>
+        ) : (
+          <Link
+            href={item.link || '/'}
+            className={isMobile ? 'block py-2' : ''}
+          >
+            {item.label}
+          </Link>
+        )}
+      </li>
+    );
+  }).filter(Boolean);
+};
 
   const filteredMenu = menuItems.filter(hasMenuPermission);
   const menuWithLogout = isLoggedIn
@@ -90,7 +108,7 @@ export default function HeaderMenu() {
       <input id="my-drawer-3" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content flex flex-col">
         {/* Navbar */}
-        <div className="navbar bg-neutral text-neutral-content fixed top-0 z-40 shadow-lg">
+        <div className="navbar bg-base-200 text-base-content fixed top-0 z-40 shadow-xl">
           <div className="flex-none lg:hidden">
             <label htmlFor="my-drawer-3" className="btn btn-ghost btn-square">
               <svg
@@ -109,19 +127,40 @@ export default function HeaderMenu() {
             </label>
           </div>
 
-          <div className="flex-1 px-2">
-            <Link href="/" className="btn btn-ghost text-xl normal-case">
-              大型石化督導資料庫
-            </Link>
+          <div className="flex-1 px-4">
+          {theme ? (
+              <Image
+                  src={logodark}
+                  alt="Logo"
+                  width={400}
+                  className="btn shadow"
+                  height={150}
+                  onClick={() => router.push('/')} // 正確的函數處理方式
+                  style={{ cursor: 'pointer' }} // 添加樣式表明可點擊
+              />
+          ) : (
+              <Image
+                  src={logo}
+                  alt="Logo"
+                  width={400}
+                  className="btn shadow"
+                  height={150}
+                  onClick={() => router.push('/')} // 正確的函數處理方式
+                  style={{ cursor: 'pointer' }} // 添加樣式表明可點擊
+              />
+          )}
+
+
+
           </div>
 
           <div className="hidden flex-none lg:block">
             {isLoggedIn ? (
               <ul className="menu lg:menu-horizontal px-6 rounded-box ">
-                {renderMenuItems(menuWithLogout)}
+                {renderMenuItems(menuWithLogout,false)}
               </ul>
             ) : (
-              <Link href="/Login" className="btn btn-primary btn-sm">
+              <Link  href={Login} className="btn btn-primary btn-sm">
                 登入
               </Link>
             )}
@@ -138,10 +177,12 @@ export default function HeaderMenu() {
         <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
         <ul className="menu w-80 min-h-full bg-base-200 p-4">
           {isLoggedIn ? (
-            renderMenuItems(menuWithLogout, true)
+            <div className="flex flex-col gap-2">
+              {renderMenuItems(menuWithLogout, true)}
+            </div>
           ) : (
             <li>
-              <Link href="/Login" className="btn btn-primary">
+              <Link href={Login} className="btn btn-primary">
                 登入
               </Link>
             </li>

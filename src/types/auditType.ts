@@ -1,8 +1,8 @@
 // types/auditType.ts
 export interface AuditQueryForm {
-    citiesId:string,
-    townshipsId:string,
-    industrialAreasId:string,
+    cityInfoId: "",
+    townshipsId: "",
+    industrialareasId: "",
     AuditTypeId:string,
     AuditCauseId:string,
     AuditItemsId:string,
@@ -10,6 +10,10 @@ export interface AuditQueryForm {
     enterpriseId: string,
     companyId: string,
     factoryId: string,
+    suggestcategoryId: "",
+    suggesttypeId: "",
+    suggestitemId: "",
+
 }
 
 export interface AuditQueryRequest {

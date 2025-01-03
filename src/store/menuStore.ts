@@ -51,19 +51,25 @@ const filterMenuByAuthImpl = (items: MenuItem[]): MenuItem[] => {
 };
 
 export const useMenuStore = create<MenuState>((set, _get) => ({
-  menuItems: [
-    { label: '首頁', link: '/' },
-    { label: '督導查詢', link: '/Audit', auth: 'audit' },
-    {
-      label: '帳號管理',
-      auth: 'admin',
-      children: [
-        { label: '新增帳號', link: '/Register', auth: 'admin' },
-        { label: '修改帳號', link: '/edit-user', auth: 'admin' },
-      ],
-    },
-    { label: '登出', link: '/logout' },
-  ],
+menuItems : [
+  { label: '首頁', link: '/' },
+  {
+    label: '督導查詢',
+    link: '/Audit',
+    permission: { module: 'Audit', level: 'Edit' }
+  },
+  {
+    label: '系統管理',
+    permission: { module: 'Sys', level: 'Admin' },
+    children: [
+      {
+        label: '新增帳號',
+        link: '/Register',
+        permission: { module: 'Sys', level: 'Admin' }
+      }
+    ]
+  }
+],
   setMenuItems: (items: MenuItem[]) => set({ menuItems: items }),
   filterMenuByAuth: filterMenuByAuthImpl,
 }));

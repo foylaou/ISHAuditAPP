@@ -51,11 +51,11 @@ export const LoginPage: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-sm space-y-6">
 
-        <div className="card bg-base-100 shadow-xl">
+        <div className="card bg-base-200 shadow-xl">
           <div className="card-body">
-            <h2 className="card-title text-2xl font-bold justify-center text-base-content">
+            <h1 className="card-title text-2xl font-bold justify-center text-base-content">
               系統登入
-            </h2>
+            </h1>
 
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
               <div className="form-control w-full">
@@ -67,7 +67,7 @@ export const LoginPage: React.FC = () => {
                     name="username"
                     value={formData.username}
                     onChange={handleInputChange}
-                    className="input input-bordered w-full pl-10"
+                    className="input input-bordered w-full pl-10 text-sm font-bold text-base-content"
                     required
                     disabled={isLoading}
                   />
@@ -86,7 +86,7 @@ export const LoginPage: React.FC = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleInputChange}
-                    className="input input-bordered w-full pl-10"
+                    className="input input-bordered w-full pl-10 text-sm font-bold text-base-content"
                     required
                     disabled={isLoading}
                   />
@@ -100,6 +100,7 @@ export const LoginPage: React.FC = () => {
                 <button
                   type="submit"
                   className="btn btn-primary w-full"
+                  aria-label='ㄉㄥ ㄖㄨˋ'
                   disabled={isLoading}
                 >
                   {isLoading && (

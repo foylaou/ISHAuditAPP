@@ -1,5 +1,5 @@
 // components/EnterpriseSelector.tsx
-import { RegisterForm } from "@/types/registerType";
+
 import { useEnterprises } from '@/hooks/selector/useEnterprises';
 import { enterpriseService } from "@/services/enterpriseService";
 import React from "react";
@@ -11,7 +11,7 @@ interface EnterpriseSelectorProps {
 }
 
 export function EnterpriseSelector({ formData, onChange }: EnterpriseSelectorProps) {
-  const { enterprises, loading, refresh } = useEnterprises();
+  const { enterprises, loading } = useEnterprises();
 
   const companies = formData.enterpriseId
     ? enterpriseService.getCompaniesByEnterpriseId(enterprises, formData.enterpriseId)
@@ -38,7 +38,7 @@ export function EnterpriseSelector({ formData, onChange }: EnterpriseSelectorPro
             name="enterpriseId"
             value={formData.enterpriseId}
             onChange={onChange}
-            className="select select-bordered w-full"
+            className="select select-bordered w-full bg-base-100 text-base-content"
             required
           >
             <option value="">--請選擇--</option>
@@ -58,7 +58,7 @@ export function EnterpriseSelector({ formData, onChange }: EnterpriseSelectorPro
             name="companyId"
             value={formData.companyId}
             onChange={onChange}
-            className="select select-bordered w-full"
+            className="select select-bordered w-full bg-base-100 text-base-content"
             disabled={!formData.enterpriseId}
             required
           >
@@ -79,7 +79,7 @@ export function EnterpriseSelector({ formData, onChange }: EnterpriseSelectorPro
             name="factoryId"
             value={formData.factoryId}
             onChange={onChange}
-            className="select select-bordered w-full"
+            className="select select-bordered w-full bg-base-100 text-base-content"
             disabled={!formData.companyId}
             required
           >

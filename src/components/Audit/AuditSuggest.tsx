@@ -131,7 +131,7 @@ const GridExample = () => {
             className='ag-theme-quartz-dark z-1'        //{isDarkMode ? 'ag-theme-quartz-dark' : 'ag-theme-quartz'}
             style={{
                 width: "100%",
-                height: "500px",
+                height: "700px",
                 marginTop: "20px",
                 zIndex: 1,
             }}

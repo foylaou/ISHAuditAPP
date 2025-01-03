@@ -149,7 +149,7 @@ const GridExample = () => {
     <div
       style={{
         width: "100%",
-        height: "500px",
+        height: "700px",
         marginTop: "20px",
         zIndex: 1,
       }}

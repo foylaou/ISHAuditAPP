@@ -4,10 +4,10 @@ import React, { useRef } from 'react';
 import SignatureCanvas from 'react-signature-canvas';
 
 interface SignaturePadProps {
-  onSave: (signature: string) => void;
+  onSaveAction: (signature: string) => void;
 }
 
-export const SignaturePad: React.FC<SignaturePadProps> = ({ onSave }) => {
+export const SignaturePad: React.FC<SignaturePadProps> = ({ onSaveAction }) => {
   const signatureRef = useRef<SignatureCanvas>(null);
 
   const handleClear = () => {
@@ -20,7 +20,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ onSave }) => {
     if (signatureRef.current) {
       // 獲取簽名的 base64 圖片數據
       const signatureData = signatureRef.current.toDataURL();
-      onSave(signatureData);
+      onSaveAction(signatureData);
     }
   };
 
@@ -30,6 +30,7 @@ export const SignaturePad: React.FC<SignaturePadProps> = ({ onSave }) => {
         <h2 className="card-title">簽名區</h2>
         <div className="border border-gray-300 rounded-lg">
           <SignatureCanvas
+
             ref={signatureRef}
             canvasProps={{
               className: 'w-full h-64',
