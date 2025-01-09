@@ -15,9 +15,9 @@ interface TestForm {
   cityInfoId: string;
   townshipsId: string;
   industrialareasId: string;
-  suggestcategoryId: string;
-  suggesttypeId: string;
-  suggestitemId: string;
+  suggestCategoryId: string;     // 建議分類
+  suggestTypeId: string;         // 建議類型
+  suggestItemId: string;         // 建議項目
 }
 
 export default function Page() {
@@ -28,9 +28,9 @@ export default function Page() {
     cityInfoId: "",
     townshipsId: "",
     industrialareasId: "",
-    suggestcategoryId: "",
-    suggesttypeId: "",
-    suggestitemId: "",
+    suggestCategoryId: "",
+    suggestTypeId: "",
+    suggestItemId: "",
   });
     const handleSaveAction = (signature: string) => {
     console.log('簽名數據：', signature); // 簽名數據處理邏輯
@@ -92,11 +92,11 @@ export default function Page() {
 
         // 建議類別選擇器的重置邏輯
         case 'suggestcategoryId':
-          newData.suggesttypeId = '';
-          newData.suggestitemId = '';
+          newData.suggestTypeId = '';
+          newData.suggestTypeId = '';
           break;
         case 'suggesttypeId':
-          newData.suggestitemId = '';
+          newData.suggestItemId = '';
           break;
       }
 

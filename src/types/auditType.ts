@@ -1,31 +1,18 @@
 // types/auditType.ts
 export interface AuditQueryForm {
-    cityInfoId: "",
-    townshipsId: "",
-    industrialareasId: "",
-    AuditTypeId:string,
-    AuditCauseId:string,
-    AuditItemsId:string,
-    AuditDate:string,
-    enterpriseId: string,
-    companyId: string,
-    factoryId: string,
-    suggestcategoryId: "",
-    suggesttypeId: "",
-    suggestitemId: "",
-
+    cityInfoId: string;             // 城市
+    townshipsId: string;           // 鄉鎮（區）
+    industrialareasId: string;     // 工業區
+    auditTypeId: string;           // 督導類別
+    auditCauseId: string;          // 督導原因
+    auditItemsId: string;          // 督導項目
+    auditDate: string;             // 督導日期
+    enterpriseId: string;          // 企業
+    companyId: string;             // 公司
+    factoryId: string;             // 工廠
+    suggestCategoryId: string;     // 建議分類
+    suggestTypeId: string;         // 建議類型
+    suggestItemId: string;         // 建議項目
 }
 
-export interface AuditQueryRequest {
-  Username: string;
-  Password: string;
-  Nickname: string;
-  Audit: string;
-  KPI: string;
-  Sys: string;
-  Org: string;
-  EnterpriseId: number;
-  CompanyId: number;
-  FactoryId: number;
-}
 

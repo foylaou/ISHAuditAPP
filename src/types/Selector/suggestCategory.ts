@@ -62,7 +62,7 @@ export interface SuggestItem {
 }
 
 export interface SuggestCategoryForm{
-  suggestcategoryId: string;
-  suggesttypeId: string;
-  suggestitemId: string;
+  suggestCategoryId: string;
+  suggestTypeId: string;
+  suggestItemId: string;
 }

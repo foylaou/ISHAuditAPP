@@ -4,6 +4,15 @@ import type { NextConfig } from "next";
 const API_URL = process.env.NEXT_PUBLIC_API_URL||"http://ubuntu:5000";
 
 const nextConfig: NextConfig = {
+    async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/Home', // 目標路由
+        permanent: false, // 使用臨時重定向 (302)
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

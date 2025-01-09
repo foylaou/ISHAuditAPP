@@ -16,23 +16,24 @@ export default function SearchBar() {
       const { refresh: refreshCities, loading: citiesLoading } = useCitiesname();
       const [isPenalty, setIsPenalty] = useState('--請選擇--');
       const [isWorkStopped, setIsWorkStopped] = useState('--請選擇--');
+      const [isParticipate, setIsParticipate] = useState('--請選擇--');
+      const [isImproveStatus, setIsImproveStatus] = useState('--請選擇--');
         // 合併所有loading狀態
       const loading = enterprisesLoading || categoriesLoading || citiesLoading;
       const [formData, setFormData] = useState<AuditQueryForm>({
     cityInfoId: "",
     townshipsId: "",
     industrialareasId: "",
-    AuditTypeId:'',
-    AuditCauseId:'',
-    AuditItemsId:'',
-    AuditDate:'',
-    enterpriseId: '',
-    companyId: '',
-    factoryId: '',
-    suggestcategoryId: "",
-    suggesttypeId: "",
-    suggestitemId: "",
-
+    auditTypeId: "",
+    auditCauseId: "",
+    auditItemsId: "",
+    auditDate: "",
+    enterpriseId: "",
+    companyId: "",
+    factoryId: "",
+    suggestCategoryId: "",
+    suggestTypeId: "",
+    suggestItemId: ""
   });
 
 
@@ -89,11 +90,11 @@ export default function SearchBar() {
 
                 // 建議類別選擇器的重置邏輯
                 case "suggestcategoryId":
-                    newData.suggesttypeId = "";
-                    newData.suggestitemId = "";
+                    newData.suggestTypeId = "";
+                    newData.suggestItemId = "";
                     break;
                 case "suggesttypeId":
-                    newData.suggestitemId = "";
+                    newData.suggestItemId = "";
                     break;
             }
 
@@ -103,10 +104,11 @@ export default function SearchBar() {
 
 
   return (
-      <div className="p-4  relative  pb-2">
-          {/* 功能按鈕區域 */}
-          <div className="justify-between items-center">
-              <div className="flex gap-2">
+      <>
+
+          <div className="container mx-auto p-4 space-y-6">
+              {/* 功能按鈕區域 */}
+              <div className="w-full">
                   <button
                       onClick={handleRefresh}
                       className="btn btn-outline btn-sm"
@@ -120,121 +122,137 @@ export default function SearchBar() {
                       ) : '更新所有資料'}
                   </button>
               </div>
-          </div>
 
-          {/* 卡片選單區域 */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {loading ? (
-                  // 載入中的骨架屏
-                  <>
-                      <div className="card bg-base-100 shadow-xl">
-                          <div className="card-body">
-                              <div className="skeleton h-4 w-28 mb-4"></div>
-                              <div className="skeleton h-32 w-full"></div>
-                              <div className="skeleton h-4 w-full"></div>
-                              <div className="skeleton h-4 w-3/4"></div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {loading ? (
+                      // 載入中的骨架屏 - 只顯示三個卡片
+                      Array(3).fill(null).map((_, index) => (
+                          <div key={index} className="card bg-base-100 shadow-xl">
+                              <div className="card-body">
+                                  <div className="skeleton h-4 w-28 mb-4"></div>
+                                  <div className="skeleton h-32 w-full"></div>
+                                  <div className="skeleton h-4 w-full"></div>
+                                  <div className="skeleton h-4 w-3/4"></div>
+                              </div>
                           </div>
-                      </div>
-                      <div className="card bg-base-100 shadow-xl">
-                          <div className="card-body">
-                              <div className="skeleton h-4 w-28 mb-4"></div>
-                              <div className="skeleton h-32 w-full"></div>
-                              <div className="skeleton h-4 w-full"></div>
-                              <div className="skeleton h-4 w-3/4"></div>
+                      ))
+                  ) : (
+                      <>
+                          {/* 前三個選擇器卡片 */}
+                          <div className="card bg-base-200 shadow-xl">
+                              <div className="card-body">
+                                  <h2 className="card-title text-base-content">企業選擇</h2>
+                                  <EnterpriseSelector
+                                      formData={formData}
+                                      onChange={handleInputChange}
+                                  />
+                              </div>
                           </div>
-                      </div>
-                      <div className="card bg-base-100 shadow-xl">
-                          <div className="card-body">
-                              <div className="skeleton h-4 w-28 mb-4"></div>
-                              <div className="skeleton h-32 w-full"></div>
-                              <div className="skeleton h-4 w-full"></div>
-                              <div className="skeleton h-4 w-3/4"></div>
+
+                          <div className="card bg-base-200 shadow-xl">
+                              <div className="card-body">
+                                  <h2 className="card-title text-base-content">建議類別選擇</h2>
+                                  <SuggestcategorySelector
+                                      formData={formData}
+                                      onChange={handleInputChange}
+                                  />
+                              </div>
                           </div>
-                      </div>
-                      <div className="card bg-base-100 shadow-xl">
-                          <div className="card-body">
-                              <div className="skeleton h-4 w-28 mb-4"></div>
-                              <div className="skeleton h-32 w-full"></div>
-                              <div className="skeleton h-4 w-full"></div>
-                              <div className="skeleton h-4 w-3/4"></div>
+
+                          <div className="card bg-base-200 shadow-xl">
+                              <div className="card-body">
+                                  <h2 className="card-title text-base-content">城市選擇</h2>
+                                  <CitiesNameSelector
+                                      formData={formData}
+                                      onChange={handleInputChange}
+                                  />
+                              </div>
                           </div>
-                      </div>
-                  </>
-              ) : (
-                  // 實際的卡片內容
-                  <>
+                      </>
+                  )}
+              </div>
+
+              {/* 第四張卡片 - 督導細節 */}
+              {!loading && (
+                  <div className="w-full">
                       <div className="card bg-base-200 shadow-xl">
-                          <div className="card-body">
-                              <h2 className="card-title text-base-content">企業選擇</h2>
-                              <EnterpriseSelector
-                                  formData={formData}
-                                  onChange={handleInputChange}
-                              />
+                          <div className="card-body space-y-4">
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                  <div className="space-y-2">
+                                      <span className="text-base-content font-medium">督導年份</span>
+                                      <DataRangePicker/>
+                                  </div>
+                                  <div className="space-y-2">
+                                      <span className="text-base-content font-medium">災害類型</span>
+                                      <DisasterTypeSelect/>
+                                  </div>
+                              </div>
+
+                              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                                  <div className="space-y-2">
+                                      <span className="text-base-content font-medium">是否裁罰？</span>
+                                      <select
+                                          className="select select-bordered w-full text-base-content"
+                                          value={isPenalty}
+                                          onChange={(e) => setIsPenalty(e.target.value)}
+                                      >
+                                          <option disabled value="--請選擇--">--請選擇--</option>
+                                          <option value="是">是</option>
+                                          <option value="否">否</option>
+                                      </select>
+                                  </div>
+
+                                  <div className="space-y-2">
+                                      <span className="text-base-content font-medium">是否停工？</span>
+                                      <select
+                                          className="select select-bordered w-full text-base-content"
+                                          value={isWorkStopped}
+                                          onChange={(e) => setIsWorkStopped(e.target.value)}
+                                      >
+                                          <option disabled value="--請選擇--">--請選擇--</option>
+                                          <option value="Y">是</option>
+                                          <option value="N">否</option>
+                                      </select>
+                                  </div>
+
+                                  <div className="space-y-2">
+                                      <span className="text-base-content font-medium">是否參採建議？</span>
+                                      <select
+                                          className="select select-bordered w-full text-base-content"
+                                          value={isParticipate}
+                                          onChange={(e) => setIsParticipate(e.target.value)}
+                                      >
+                                          <option disabled value="--請選擇--">--請選擇--</option>
+                                          <option value="Y">是</option>
+                                          <option value="N">否</option>
+                                      </select>
+                                  </div>
+
+                                  <div className="space-y-2">
+                                      <span className="text-base-content font-medium">是否完成改善？</span>
+                                      <select
+                                          className="select select-bordered w-full text-base-content"
+                                          value={isImproveStatus}
+                                          onChange={(e) => setIsImproveStatus(e.target.value)}
+                                      >
+                                          <option disabled value="--請選擇--">--請選擇--</option>
+                                          <option value="Y">是</option>
+                                          <option value="N">否</option>
+                                      </select>
+                                  </div>
+                              </div>
                           </div>
                       </div>
-
-                      <div className="card bg-base-200 shadow-xl">
-                          <div className="card-body">
-                              <h2 className="card-title text-base-content">建議類別選擇</h2>
-                              <SuggestcategorySelector
-                                  formData={formData}
-                                  onChange={handleInputChange}
-                              />
-                          </div>
-                      </div>
-
-                      <div className="card bg-base-200 shadow-xl">
-                          <div className="card-body">
-                              <h2 className="card-title text-base-content">城市選擇</h2>
-                              <CitiesNameSelector
-                                  formData={formData}
-                                  onChange={handleInputChange}
-                              />
-                          </div>
-                      </div>
-
-                      <div className="card bg-base-200 shadow-xl">
-                          <div className="card-body text-base-content">
-                              <span>督導年份</span>
-                              <DataRangePicker/>
-                              <h2 className="card-title">督導細節</h2>
-                              <span>災害類型</span>
-                              <DisasterTypeSelect/>
-                              <span>是否裁罰？</span>
-                              <select
-                                  className="select select-bordered text-base-content"
-                                  value={isPenalty}
-                                  onChange={(e) => setIsPenalty(e.target.value)}
-                              >
-                                  <option disabled value="--請選擇--">--請選擇--</option>
-                                  <option value="是">是</option>
-                                  <option value="否">否</option>
-                              </select>
-
-                              <span>是否停工？</span>
-                              <select
-                                  className="select select-bordered text-base-content "
-                                  value={isWorkStopped}
-                                  onChange={(e) => setIsWorkStopped(e.target.value)}
-                              >
-                                  <option disabled value="--請選擇--">--請選擇--</option>
-                                  <option value="是">是</option>
-                                  <option value="否">否</option>
-                              </select>
-
-                          </div>
-                      </div>
-                  </>
+                  </div>
               )}
 
-          </div>
-          <div className="fixed bottom-0 left-0 right-0 p-4 bg-base-100 border-t md:static md:border-0 md:p-0 md:mt-4">
-              <div className="max-w-screen-xl mx-auto flex justify-end">
-                  <button className="btn btn-primary rounded-full w-full md:w-auto">
+              {/* 搜尋按鈕 */}
+              <div className="w-full flex justify-end mt-6">
+                  <button className="btn rounded-full btn-primary btn-lg md:w-32 w-full">
                       搜尋
                   </button>
               </div>
           </div>
-      </div>
-  );
-}
+          </>
+          );
+          }

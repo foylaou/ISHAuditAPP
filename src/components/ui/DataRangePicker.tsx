@@ -2,8 +2,7 @@ import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import {DateRange, Range, RangeKeyDict} from 'react-date-range';
 import { useState, useRef, useEffect } from 'react';
-import { faCalendar } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Calendar } from 'lucide-react';
 import zhTW from 'date-fns/locale/zh-TW'; // 改用 date-fns 的繁體中文語言包
 import {format, startOfYear} from 'date-fns'; // 正確導入 format
 
@@ -42,6 +41,17 @@ const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
     };
   }, []);
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault(); // 防止空格鍵滾動頁面
+      setOpenCalendar(!openCalendar);
+    }
+    // 可以添加 ESC 鍵關閉功能
+    if (event.key === 'Escape' && openCalendar) {
+      setOpenCalendar(false);
+    }
+  };
+
   // 格式化日期顯示
   const formatDateRange = () => {
     const { startDate, endDate } = dateRange[0];
@@ -63,36 +73,42 @@ const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
     onChange?.(newRange.startDate, newRange.endDate);
   };
 return (
-  <div className="relative">
-    <div className="flex items-center gap-2 cursor-pointer hover:bg-base-200 p-2 rounded-lg"
-         onClick={() => setOpenCalendar(!openCalendar)}>
-      <FontAwesomeIcon icon={faCalendar} className="text-gray-500" />
-      <span className="text-sm">{formatDateRange()}</span>
-    </div>
+    <div className="relative">
+      <div
+          tabIndex={0}  // 添加這行
+          role="button"  // 為了更好的可訪問性
+          aria-label="選擇日期範圍"  // 為了更好的可訪問性
+          onKeyDown={handleKeyDown}  // 添加鍵盤事件處理
+          className="input input-bordered flex items-center gap-2 cursor-pointer hover:bg-base-200 w-full"
+          onClick={() => setOpenCalendar(!openCalendar)}
+      >
+        <Calendar className="h-4 w-4 text-base-content opacity-70"/>
+        <span className="flex-1 text-base-content">{formatDateRange()}</span>
+      </div>
 
-    {openCalendar && (
-      <div ref={calendarRef}
-           className="absolute z-50 mt-1 bg-base-100 shadow-xl rounded-lg overflow-hidden
+      {openCalendar && (
+          <div ref={calendarRef}
+               className="absolute z-50 mt-1 bg-base-100 shadow-xl rounded-lg overflow-hidden
                      sm:right-0
                      md:right-auto
                      max-w-[calc(100vw-2rem)]
                      md:max-w-none">
-        <DateRange
-          onChange={handleSelect}
-          moveRangeOnFirstSelection={false}
-          ranges={dateRange}
-          months={window.innerWidth >= 768 ? 1 : 1} // 手機顯示1個月，桌面顯示2個月
-          direction={window.innerWidth >= 768 ? "horizontal" : "vertical"} // 手機垂直排列，桌面水平排列
-          locale={zhTW}
-          weekStartsOn={1}
-          rangeColors={['#7294ca']}
-          minDate={startOfYear(new Date(2016, 0, 1))}
-          maxDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
-          className="sm:scale-90 md:scale-100" // 在小螢幕上稍微縮小
-        />
-      </div>
-    )}
-  </div>
+            <DateRange
+                onChange={handleSelect}
+                moveRangeOnFirstSelection={false}
+                ranges={dateRange}
+                months={window.innerWidth >= 768 ? 1 : 1} // 手機顯示1個月，桌面顯示2個月
+                direction={window.innerWidth >= 768 ? "horizontal" : "vertical"} // 手機垂直排列，桌面水平排列
+                locale={zhTW}
+                weekStartsOn={1}
+                rangeColors={['#7294ca']}
+                minDate={startOfYear(new Date(2016, 0, 1))}
+                maxDate={new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)}
+                className="sm:scale-90 md:scale-100" // 在小螢幕上稍微縮小
+            />
+          </div>
+      )}
+    </div>
 );
 };
 

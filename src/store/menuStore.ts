@@ -52,7 +52,7 @@ const filterMenuByAuthImpl = (items: MenuItem[]): MenuItem[] => {
 
 export const useMenuStore = create<MenuState>((set, _get) => ({
 menuItems : [
-  { label: '首頁', link: '/' },
+  { label: '首頁', link: '/Home' },
   {
     label: '督導查詢',
     link: '/Audit',

@@ -135,7 +135,7 @@ const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
                   width={400}
                   className="btn shadow"
                   height={150}
-                  onClick={() => router.push('/')} // 正確的函數處理方式
+                  onClick={() => router.push('/Home')} // 正確的函數處理方式
                   style={{ cursor: 'pointer' }} // 添加樣式表明可點擊
               />
           ) : (

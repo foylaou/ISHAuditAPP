@@ -11,14 +11,14 @@ interface SuggestcategorySelectorProps {
 }
 
 export function SuggestcategorySelector({ formData, onChange }: SuggestcategorySelectorProps) {
-  const { suggestcategory, loading, refresh } = useSuggestcategory();
+  const { suggestcategory, loading } = useSuggestcategory();
 
-  const suggesttypes = formData.suggestcategoryId
-    ? suggestcategoryService.getSuggestTypesBySuggestCategorId(suggestcategory, formData.suggestcategoryId)
+  const suggesttypes = formData.suggestCategoryId
+    ? suggestcategoryService.getSuggestTypesBySuggestCategorId(suggestcategory, formData.suggestCategoryId)
     : [];
 
-  const suggestitems = formData.suggestcategoryId
-    ? suggestcategoryService.getSuggestItemsBySuggestTypeId(suggestcategory, formData.suggestcategoryId)
+  const suggestitems = formData.suggestCategoryId
+    ? suggestcategoryService.getSuggestItemsBySuggestTypeId(suggestcategory, formData.suggestCategoryId)
     : [];
 
   if (loading) {
@@ -35,9 +35,10 @@ export function SuggestcategorySelector({ formData, onChange }: SuggestcategoryS
             <span className="label-text">建議種類</span>
           </label>
           <select
-            name="suggestcategoryId"
-            value={formData.suggestcategoryId}
+            name="suggestCategoryId"
+            value={formData.suggestCategoryId}
             onChange={onChange}
+
             className="select select-bordered w-full bg-base-100 text-base-content"
             required
           >
@@ -55,11 +56,11 @@ export function SuggestcategorySelector({ formData, onChange }: SuggestcategoryS
             <span className="label-text">建議類型</span>
           </label>
           <select
-            name="suggesttypeId"
-            value={formData.suggesttypeId}
+            name="suggestTypeId"
+            value={formData.suggestTypeId}
             onChange={onChange}
             className="select select-bordered w-full bg-base-100 text-base-content"
-            disabled={!formData.suggestcategoryId}
+            disabled={!formData.suggestCategoryId}
             required
           >
             <option value="">--請選擇--</option>
@@ -76,11 +77,11 @@ export function SuggestcategorySelector({ formData, onChange }: SuggestcategoryS
             <span className="label-text">建議項目</span>
           </label>
           <select
-            name="suggestitemId"
-            value={formData.suggestitemId}
+            name="suggestItemId"
+            value={formData.suggestItemId}
             onChange={onChange}
             className="select select-bordered w-full bg-base-100 text-base-content"
-            disabled={!formData.suggesttypeId}
+            disabled={!formData.suggestTypeId}
             required
           >
             <option value="">--請選擇--</option>
