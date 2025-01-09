@@ -48,7 +48,7 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="flex items-center justify-center pt-32">
       <div className="w-full max-w-sm space-y-6">
 
         <div className="card bg-base-200 shadow-xl">

@@ -126,7 +126,7 @@ useEffect(() => {
   }
 
   return (
-      <div className="bg-base-200 rounded-lg shadow-lg w-full max-w-2xl mx-auto">
+      <div className="bg-base-200 rounded-lg shadow-lg w-full max-w-2xl mx-auto ">
         {/* 頭部區域 */}
 
         <div className="p-6 border-b  ">

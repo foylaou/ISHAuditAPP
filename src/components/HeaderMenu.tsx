@@ -160,7 +160,7 @@ const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
                 {renderMenuItems(menuWithLogout,false)}
               </ul>
             ) : (
-              <Link  href={Login} className="btn btn-primary btn-sm">
+              <Link  href={Login} className="btn btn-primary btn-sm mr-5">
                 登入
               </Link>
             )}
@@ -182,7 +182,7 @@ const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
             </div>
           ) : (
             <li>
-              <Link href={Login} className="btn btn-primary">
+              <Link href={Login} className="btn btn-primary ">
                 登入
               </Link>
             </li>

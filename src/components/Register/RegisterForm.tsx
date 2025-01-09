@@ -127,7 +127,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
   return (
 
-    <div className="min-h-screen flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center pt-4">
       <div className="card bg-base-200 shadow-xl w-full max-w-2xl">
         <div className="card-body">
           <div className="flex justify-between items-center">
@@ -153,7 +153,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   name="username"
                   value={formData.username}
                   onChange={handleInputChange}
-                  className="input input-bordered w-full bg-base-200"
+                  className="input input-bordered w-full text-base-content"
                   required
                 />
               </div>
@@ -167,7 +167,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   name="password"
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="input input-bordered w-full bg-base-200"
+                  className="input input-bordered w-full text-base-content"
                   required
                 />
               </div>
@@ -181,7 +181,7 @@ const handleSubmit = async (e: React.FormEvent) => {
                   name="name"
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="input input-bordered w-full bg-base-200"
+                  className="input input-bordered w-full text-base-content"
                   required
                 />
               </div>

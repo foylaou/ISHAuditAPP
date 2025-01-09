@@ -155,7 +155,7 @@ const GridExample = () => {
       }}
     >
       <AgGridReact
-          localeText={AG_GRID_LOCALE_TW}
+        localeText={AG_GRID_LOCALE_TW}
         rowStyle={{ overflow: 'visible' }}
         suppressRowTransform={true}
         rowData={rowData}
@@ -163,8 +163,8 @@ const GridExample = () => {
         defaultColDef={defaultColDef}
         animateRows={true}
         pagination={true}
-          sideBar={true}
-          statusBar={statusBar}
+        sideBar={true}
+        statusBar={statusBar}
         paginationPageSize={10}
         theme={isDarkMode ? themeDarkBlue : themeLightWarm}
 

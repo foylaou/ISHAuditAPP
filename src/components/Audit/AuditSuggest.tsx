@@ -3,6 +3,7 @@ import {ColDef, colorSchemeDarkBlue, colorSchemeLightWarm, ICellRendererParams, 
 import {AllCommunityModule, ModuleRegistry} from "ag-grid-community";
 import {AgGridReact} from "ag-grid-react";
 import {useGlobalStore} from '@/store/useGlobalStore';
+import { AG_GRID_LOCALE_TW } from '@ag-grid-community/locale';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -137,6 +138,7 @@ const GridExample = () => {
             }}
         >
             <AgGridReact
+                localeText={AG_GRID_LOCALE_TW}
                 rowData={rowData}
                 columnDefs={colDefs}
                 defaultColDef={defaultColDef}

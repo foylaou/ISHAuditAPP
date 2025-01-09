@@ -13,6 +13,7 @@ export default {
             colors: {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
+                footerbg :"#242C3A",  //coustom color
             },
         },
     },
@@ -31,7 +32,7 @@ export default {
         "neutral-content": "#242C3A",
         "base-100": "#F3F6FA",
         "base-200": "#FCFCFC",
-        "base-300": "#87b5fc",
+        "base-300": "#cad7f7",
         "base-content": "#292929",
         "info": "#C5E7E8",
         "info-content": "#234241",
@@ -49,12 +50,11 @@ export default {
             "secondary-content": "#EBF2FA", // 保持亮色文字
             "accent": "#B34003",           // 更深的橘色
             "accent-content": "#FFFFFF",    // 保持白色文字
-            "neutral": "#FFFFFF",          // 深灰近黑色
-            "neutral-content": "#242C3A",   // 反轉為白色文字
+            "neutral": "#242C3A",         // 深灰近黑色
+            "neutral-content": "#FFFFFF",   // 反轉為白色文字
             "base-100": "#22262A",         // 主要深色背景
             "base-200": "#2A2A2A",         // 稍微淺一點的深色
             "base-300": "#8a8a8a",         // 最淺的深色
-            'base-400':'#242C3A',
             "base-content": "#ffffff",     // 主要文字顏色改為淺色
             "info": "#2B4748",             // 深色信息色
             "info-content": "#C5E7E8",     // 反轉原來的顏色
