@@ -44,7 +44,7 @@ export default function DisasterTypeSelect() {
                   value=""
               >
                   <option value="" disabled>
-                      請選擇
+                      --請選擇--
                   </option>
                   {Object.values(DISASTER_TYPES).map(type => (
                       <option

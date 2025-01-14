@@ -144,7 +144,7 @@ const GridExample = () => {
                 defaultColDef={defaultColDef}
                 animateRows={true}
                 pagination={true}
-                paginationPageSize={10}
+                paginationPageSize={20}
                 theme={isDarkMode ? themeDarkBlue : themeLightWarm}
             />
         </div>

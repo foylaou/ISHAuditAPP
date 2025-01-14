@@ -1,25 +1,82 @@
 import type { NextConfig } from "next";
 
-// 從環境變數取得 API 基本 URL
-const API_URL = process.env.NEXT_PUBLIC_API_URL||"http://ubuntu:5000";
+const API_URL =  "http://ishabackend.local:8080";
+const isDev = process.env.NODE_ENV === "development";
+const Mydomain = process.env.NEXT_PUBLIC_DOMAIN || "http://localhost:3000";
 
 const nextConfig: NextConfig = {
-    async redirects() {
+  output: 'standalone',
+
+  async headers() {
+    const scriptSrc = isDev
+      ? "'self' 'unsafe-inline' 'unsafe-eval'"
+      : "'self' 'unsafe-inline' 'unsafe-eval'"; // 在生產環境也允許內聯腳本
+
+    const csp = `
+      default-src 'self';
+      script-src ${scriptSrc};
+      style-src 'self' 'unsafe-inline' ${Mydomain};
+      img-src 'self' data: blob: ${Mydomain};
+      font-src 'self' ${Mydomain};
+      connect-src 'self' ${API_URL} ${isDev ? 'ws: wss:' : ''};
+      frame-src 'self';
+      object-src 'none';
+      base-uri 'self';
+      form-action 'self';
+      upgrade-insecure-requests;
+    `.replace(/\s{2,}/g, " ").trim();
+
     return [
       {
-        source: '/',
-        destination: '/Home', // 目標路由
-        permanent: false, // 使用臨時重定向 (302)
+        source: "/(.*)",
+        headers: [
+          {
+            key: "Content-Security-Policy",
+            value: csp,
+          },
+          {
+            key: "X-Content-Type-Options",
+            value: "nosniff",
+          },
+          {
+            key: "X-Frame-Options",
+            value: "DENY",
+          },
+          {
+            key: "X-XSS-Protection",
+            value: "1; mode=block",
+          },
+          {
+            key: "Strict-Transport-Security",
+            value: "max-age=31536000; includeSubDomains",
+          },
+          {
+            key: "Referrer-Policy",
+            value: "strict-origin-when-cross-origin",
+          },
+        ],
       },
     ];
   },
+
+  // 其他配置維持不變
+  async redirects() {
+    return [
+      {
+        source: '/',
+        destination: '/Home',
+        permanent: false,
+      },
+    ];
+  },
+
   async rewrites() {
     return [
       {
-        source: "/proxy/:path*",  // 匹配 /proxy/ 後的所有路徑
-        destination: `${API_URL}/:path*`,  // 將路徑轉發到 API_URL
-        basePath: false,  // 停用 basePath 處理
-        locale: false,    // 停用 locale 處理
+        source: "/proxy/:path*",
+        destination: `${API_URL}/:path*`,
+        basePath: false,
+        locale: false,
       },
     ];
   },

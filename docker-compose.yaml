@@ -1,0 +1,51 @@
+services:
+  ishauditapi:
+    image: s225002731650/ishabackend:latest
+    hostname: ishabackend.local
+    secrets:
+      - captcha_key
+      - db_connection_string
+      - jwt_key
+    environment:
+      # 運行時的環境變數（如果需要）
+      ASPNETCORE_ENVIRONMENT: Production
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  ishappudit:
+    image: s225002731650/ishafrontend:latest
+    hostname: ishafrontend.local
+    environment:
+      # 運行時的環境變數
+      NODE_ENV: production
+      PORT: ${FRONTENDPORT}
+      HOSTNAME: ${FRONTENDHOST}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+      NEXT_PUBLIC_DOMAIN: ${NEXT_PUBLIC_DOMAIN}
+
+    depends_on:
+      - ishauditapi # 確保後端服務在前端服務啟動前運行
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/proxy/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared_tunnel
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TOKEN}
+    restart: unless-stopped
+
+secrets:
+  captcha_key:
+    file: /home/foy/cshap/secrets/captcha_key.txt
+  db_connection_string:
+    file: /home/foy/cshap/secrets/db_connection_string.txt
+  jwt_key:
+    file: /home/foy/cshap/secrets/jwt_key.txt

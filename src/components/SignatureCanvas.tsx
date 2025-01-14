@@ -7,7 +7,7 @@ interface SignaturePadProps {
   onSaveAction: (signature: string) => void;
 }
 
-export const SignaturePad: React.FC<SignaturePadProps> = ({ onSaveAction  }) => {
+export const SignaturePad = ({ onSaveAction }: SignaturePadProps) => {
   const signatureRef = useRef<SignatureCanvas>(null);
 
   const handleClear = () => {

@@ -9,7 +9,8 @@ import { authService } from "@/services/authService";
 import type { LoginForm } from "@/types/authType";
 
 
-export const LoginPage: React.FC = () => {
+
+export default function LoginForm()  {
   const [formData, setFormData] = useState<LoginForm>({ username: "", password: "" });
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [_error, setError] = useState<string>("");
@@ -35,7 +36,7 @@ export const LoginPage: React.FC = () => {
     setError("");
 
     try {
-      const { roles, userName, message } = await authService.login(formData);
+      const { roles, message } = await authService.login(formData);
       login(roles);
       console.log(message);
       router.push('/');
@@ -46,6 +47,7 @@ export const LoginPage: React.FC = () => {
       setIsLoading(false);
     }
   };
+
 
   return (
     <div className="flex items-center justify-center pt-32">
@@ -61,18 +63,18 @@ export const LoginPage: React.FC = () => {
               <div className="form-control w-full">
                 <div className="relative">
                   <input
-                    id="username"
-                    type="text"
-                    placeholder="請輸入帳號"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleInputChange}
-                    className="input input-bordered w-full pl-10 text-sm font-bold text-base-content"
-                    required
-                    disabled={isLoading}
+                      id="username"
+                      type="text"
+                      placeholder="請輸入帳號"
+                      name="username"
+                      value={formData.username}
+                      onChange={handleInputChange}
+                      className="input input-bordered w-full pl-10 text-sm font-bold text-base-content"
+                      required
+                      disabled={isLoading}
                   />
                   <User
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 w-5 h-5"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 w-5 h-5"
                   />
                 </div>
               </div>
@@ -80,35 +82,37 @@ export const LoginPage: React.FC = () => {
               <div className="form-control w-full">
                 <div className="relative">
                   <input
-                    id="password"
-                    type="password"
-                    placeholder="請輸入密碼"
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className="input input-bordered w-full pl-10 text-sm font-bold text-base-content"
-                    required
-                    disabled={isLoading}
+                      id="password"
+                      type="password"
+                      placeholder="請輸入密碼"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      className="input input-bordered w-full pl-10 text-sm font-bold text-base-content"
+                      required
+                      disabled={isLoading}
                   />
                   <KeyRound
-                    className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 w-5 h-5"
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-base-content/50 w-5 h-5"
                   />
                 </div>
               </div>
 
               <div className="form-control w-full mt-6">
                 <button
-                  type="submit"
-                  className="btn btn-primary w-full"
-                  aria-label='ㄉㄥ ㄖㄨˋ'
-                  disabled={isLoading}
+                    type="submit"
+                    className="btn btn-primary w-full"
+                    aria-label="登入"
+                    disabled={isLoading}
                 >
                   {isLoading && (
-                    <span className="loading loading-spinner loading-sm"/>
+                      <span className="loading loading-spinner loading-sm"/>
                   )}
                   {isLoading ? "登入中..." : "登入"}
                 </button>
               </div>
+
+
             </form>
 
             <div className="divider text-base-content">大型石化督導資料庫</div>
@@ -117,6 +121,4 @@ export const LoginPage: React.FC = () => {
       </div>
     </div>
   );
-};
-
-export default LoginPage;
+}

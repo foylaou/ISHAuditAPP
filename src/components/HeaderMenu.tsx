@@ -137,6 +137,7 @@ const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
                   height={150}
                   onClick={() => router.push('/Home')} // 正確的函數處理方式
                   style={{ cursor: 'pointer' }} // 添加樣式表明可點擊
+                  priority // 添加 priority
               />
           ) : (
               <Image

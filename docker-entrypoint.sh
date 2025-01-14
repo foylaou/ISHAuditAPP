@@ -1,11 +1,14 @@
 #!/bin/sh
 set -e
 
-# 處理運行時的 API URL 更新
-if [ -n "$RUNTIME_API_URL" ]; then
-    echo "Updating API URL to: $RUNTIME_API_URL"
-    export NEXT_PUBLIC_API_URL=$RUNTIME_API_URL
-fi
+# 等待其他服務就緒的檢查（如果需要）
+# ./wait-for-it.sh $DATABASE_HOST:$DATABASE_PORT
 
-# 執行後續命令
+# 設置默認環境變數
+: ${NEXT_PUBLIC_API_URL:="http://ishabackend.local:8080"}
+: ${NEXT_PUBLIC_DOMAIN:="https://test.isafe.org.tw"}
+
+# 執行原始命令
 exec "$@"
+
+

@@ -165,7 +165,7 @@ const GridExample = () => {
         pagination={true}
         sideBar={true}
         statusBar={statusBar}
-        paginationPageSize={10}
+        paginationPageSize={20}
         theme={isDarkMode ? themeDarkBlue : themeLightWarm}
 
       />

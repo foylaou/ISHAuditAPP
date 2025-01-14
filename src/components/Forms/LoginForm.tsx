@@ -2,9 +2,26 @@
 import React, {useState} from 'react';
 import {motion, AnimatePresence} from 'framer-motion';
 import {IconMail, IconMessage, IconDeviceMobile, IconLoader} from '@tabler/icons-react';
-
 import TurnstileWidget from "@/components/ui/CaptchaWidget";
 import {useCaptcha} from "@/hooks/useCaptcha";
+
+
+
+const handleLogin = () => {
+  console.log('執行登入操作');
+};
+
+const handleEmailAuth = () => {
+  console.log('執行郵件驗證操作');
+};
+
+const handleSmsAuth = () => {
+  console.log('執行短信驗證操作');
+};
+
+const handleDeviceAuth = () => {
+  console.log('執行設備驗證操作');
+};
 
 // LoginForm.tsx
 interface LoginFormProps {
@@ -13,13 +30,13 @@ interface LoginFormProps {
     onSmsAuth: () => void;
     onDeviceAuth: () => void;
 }
+interface Props {
+  LoginFormProps: LoginFormProps;
+}
 
-const LoginForm: React.FC<LoginFormProps> = ({
-                                                 onLogin,
-                                                 onEmailAuth,
-                                                 onSmsAuth,
-                                                 onDeviceAuth
-                                             }) => {
+
+export const LoginForm = ({ LoginFormProps }: Props) => {
+  const { onLogin, onEmailAuth, onSmsAuth, onDeviceAuth } = LoginFormProps;
     const {
         isCaptchaVerified,
         handleCaptchaSuccess,
