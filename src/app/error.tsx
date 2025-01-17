@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect } from "react";
-import Image from "next/image";
 import Link from "next/link";
 import { HomeIcon } from "lucide-react";
+import FloatingImage from "@/components/Image/FloatingImage";
 
 export default function Error({ error, reset }: { error: Error; reset: () => void }) {
   useEffect(() => {
@@ -26,12 +26,9 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
         </div>
 
         <div className="relative w-full h-64 sm:h-96">
-          <Image
+                  <FloatingImage
             src="/500error.svg"
             alt="500 伺服器錯誤"
-            fill
-            className="object-contain"
-            priority
           />
         </div>
 

@@ -1,7 +1,8 @@
 import React from 'react';
-import Image from "next/image";
+
 import Link from "next/link";
 import { HomeIcon } from "lucide-react";
+import FloatingImage from "@/components/Image/FloatingImage";
 
 const Custom404 = () => {
   return (
@@ -16,12 +17,9 @@ const Custom404 = () => {
         </div>
 
         <div className="relative w-full h-64 sm:h-96">
-          <Image
-            src="/404.svg"
+        <FloatingImage
+            src="/404R3.svg"
             alt="404 - 找不到頁面"
-            fill
-            className="object-contain"
-            priority
           />
         </div>
 
