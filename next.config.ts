@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
-const API_URL =  "http://ishabackend.local:8080";
+
+const API_URL = process.env.API || "http://ishabackend.local:8080";
 const isDev = process.env.NODE_ENV === "development";
 const Mydomain = process.env.NEXT_PUBLIC_DOMAIN || "http://localhost:3000";
 

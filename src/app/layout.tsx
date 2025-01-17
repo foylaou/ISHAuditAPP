@@ -10,6 +10,7 @@ import {MantineProvider} from "@mantine/core";
 import { ModuleRegistry } from "ag-grid-community";
 import { AllEnterpriseModule, LicenseManager } from "ag-grid-enterprise";
 import {ToastContainer} from "react-toastify";
+import {SystemStatusProvider} from "@/contexts/SystemStatusContext";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   ModuleRegistry.registerModules([AllEnterpriseModule]);
@@ -37,8 +38,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="min-h-screen flex flex-col">
       <div className="drawer flex-1 flex flex-col">
+          <SystemStatusProvider>
           <input id="my-drawer-3" type="checkbox" className="drawer-toggle"/>
           <div className="h-screen flex flex-col">
+
               <HeaderMenu/>
               <main className="flex-1 pt-24 bg-base-100">
                    <MantineProvider>
@@ -53,6 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Footer/>
           </div>
           <Sidebar/>
+          </SystemStatusProvider>
       </div>
       </body>
       </html>
