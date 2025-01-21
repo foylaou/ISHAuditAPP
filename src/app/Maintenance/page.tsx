@@ -2,9 +2,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { HomeIcon, Clock, AlertCircle, Database, Server } from "lucide-react";
+
+import {  Clock, AlertCircle, Database, Server } from "lucide-react";
 import { getStatusMessage, getSystemStatus } from "@/services/Test/healthService";
 import { SystemStatus } from "@/types/System/systemType";
 import FloatingImage from "@/components/Image/FloatingImage";
@@ -98,7 +97,7 @@ export default function MaintenancePage() {
 
   if (!status) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center text-base-content">
         <div className="text-gray-600">載入中...</div>
       </div>
     );
@@ -107,17 +106,17 @@ export default function MaintenancePage() {
   const statusInfo = getStatusMessage(status);
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-base-200 flex flex-col items-center justify-center p-4 text-base-content">
       <div className="max-w-2xl w-full text-center space-y-8 animate-fade-in-up">
         <div className="space-y-4">
           <div className="flex items-center justify-center space-x-2">
-            {statusInfo.severity === 'error' && <AlertCircle className="w-12 h-12 text-red-600"/>}
+            {statusInfo.severity === 'error' && <AlertCircle className="w-12 h-12 text-accent"/>}
             {statusInfo.severity === 'warning' && <AlertCircle className="w-12 h-12 text-yellow-600"/>}
             {statusInfo.severity === 'info' && <Clock className="w-12 h-12 text-blue-600"/>}
-            <h1 className="text-4xl font-bold text-gray-900">{statusInfo.title}</h1>
+            <h1 className="text-4xl font-bold text-base-content">{statusInfo.title}</h1>
           </div>
 
-          <p className="text-gray-600">{statusInfo.description}</p>
+          <p className="text-base-content">{statusInfo.description}</p>
 
           {status.isInMaintenance && timeLeft && (
               <div className="inline-block px-4 py-2 bg-blue-50 rounded-lg">
@@ -184,10 +183,10 @@ export default function MaintenancePage() {
           {/*  <HomeIcon className="w-5 h-5" />*/}
           {/*  回到首頁*/}
           {/*</Link>*/}
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-base-content">
             如有緊急事項，請聯繫我們的客服人員
           </p>
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-base-content">
             最後檢查時間：{new Date(status.checkTime).toLocaleString()}
           </p>
           {isError && (
