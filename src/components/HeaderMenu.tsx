@@ -112,63 +112,62 @@ const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
           <div className="flex-none lg:hidden">
             <label htmlFor="my-drawer-3" className="btn btn-ghost btn-square">
               <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                className="h-5 w-5 stroke-current"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  className="h-5 w-5 stroke-current"
               >
                 <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M4 6h16M4 12h8m-8 6h16"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M4 6h16M4 12h8m-8 6h16"
                 />
               </svg>
             </label>
           </div>
 
           <div className="flex-1 px-4">
-          {theme ? (
-              <Image
-                  src={logodark}
-                  alt="Logo"
-                  width={400}
-                  className="btn shadow"
-                  height={150}
-                  onClick={() => router.push('/Home')} // 正確的函數處理方式
-                  style={{ cursor: 'pointer' }} // 添加樣式表明可點擊
-                  priority // 添加 priority
-              />
-          ) : (
-              <Image
-                  src={logo}
-                  alt="Logo"
-                  width={400}
-                  className="btn shadow"
-                  height={150}
-                  onClick={() => router.push('/')} // 正確的函數處理方式
-                  style={{ cursor: 'pointer' }} // 添加樣式表明可點擊
-              />
-          )}
-
+            {theme ? (
+                <Image
+                    src={logodark}
+                    alt="Logo"
+                    width={400}
+                    className="btn shadow"
+                    height={150}
+                    onClick={() => router.push('/Home')} // 正確的函數處理方式
+                    style={{cursor: 'pointer'}} // 添加樣式表明可點擊
+                    priority // 添加 priority
+                />
+            ) : (
+                <Image
+                    src={logo}
+                    alt="Logo"
+                    width={400}
+                    className="btn shadow"
+                    height={150}
+                    onClick={() => router.push('/')} // 正確的函數處理方式
+                    style={{cursor: 'pointer'}} // 添加樣式表明可點擊
+                />
+            )}
 
 
           </div>
 
           <div className="hidden flex-none lg:block">
             {isLoggedIn ? (
-              <ul className="menu lg:menu-horizontal px-6 rounded-box ">
-                {renderMenuItems(menuWithLogout,false)}
-              </ul>
+                <ul className="menu lg:menu-horizontal px-6 rounded-box ">
+                  {renderMenuItems(menuWithLogout, false)}
+                </ul>
             ) : (
-              <Link  href={Login} className="btn btn-primary btn-sm mr-5">
-                登入
-              </Link>
+                <Link href={Login} className="btn btn-primary btn-sm mr-5">
+                  登入
+                </Link>
             )}
           </div>
 
-          <div className="flex-none">
-            <ThemeToggle />
+          <div className="flex-none sm:block hidden">
+            <ThemeToggle/>
           </div>
         </div>
       </div>

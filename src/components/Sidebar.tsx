@@ -4,6 +4,7 @@ import React from 'react';
 import { useGlobalStore } from '@/store/useGlobalStore';
 import { useMenuStore } from '@/store/menuStore';
 import { authService } from '@/services/authService';
+import ThemeToggle from "@/components/ThemeToggle";
 
 interface MenuItem {
   label: string;
@@ -68,20 +69,23 @@ export default function Sidebar() {
   return (
     <div className="drawer-side pt-16">
       <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
-      <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
-        {isLoggedIn ? (
-          renderMenuItems(menuWithLogout)
-        ) : (
-          <li>
-            <Link
-              href="/Login"
-              className="hover:bg-base-300 rounded-lg"
-            >
-              登入
-            </Link>
-          </li>
-        )}
-      </ul>
+        <ul className="menu p-4 w-80 min-h-full bg-base-200 text-base-content">
+            {isLoggedIn ? (
+                renderMenuItems(menuWithLogout)
+            ) : (
+                <li>
+                    <Link
+                        href="/Login"
+                        className="hover:bg-base-300 rounded-lg"
+                    >
+                        登入
+                    </Link>
+                </li>
+            )}
+            <li className="mt-4 sm:hidden">
+                <ThemeToggle/>
+            </li>
+        </ul>
     </div>
   );
 }
