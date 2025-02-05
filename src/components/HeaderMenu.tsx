@@ -110,7 +110,7 @@ const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
         {/* Navbar */}
         <div className="navbar bg-base-200 text-base-content fixed top-0 z-40 shadow-xl">
           <div className="flex-none lg:hidden">
-            <label htmlFor="my-drawer-3" className="btn btn-ghost btn-square">
+            <label htmlFor="my-drawer-3" className="btn btn-ghost btn-square  ">
               <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -128,30 +128,16 @@ const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
           </div>
 
           <div className="flex-1 px-4">
-            {theme ? (
-                <Image
-                    src={logodark}
-                    alt="Logo"
-                    width={400}
-                    className="btn shadow"
-                    height={150}
-                    onClick={() => router.push('/Home')} // 正確的函數處理方式
-                    style={{cursor: 'pointer'}} // 添加樣式表明可點擊
-                    priority // 添加 priority
-                />
-            ) : (
-                <Image
-                    src={logo}
-                    alt="Logo"
-                    width={400}
-                    className="btn shadow"
-                    height={150}
-                    onClick={() => router.push('/')} // 正確的函數處理方式
-                    style={{cursor: 'pointer'}} // 添加樣式表明可點擊
-                />
-            )}
-
-
+            <Image
+                src={theme ? logodark : logo} // 根據主題切換圖片
+                alt={theme ? "Dark mode logo" : "Light mode logo"} // 提供清楚的描述
+                width={400} // 僅亮色主題設定寬度
+                height={150} // 僅亮色主題設定高度
+                className="btn shadow" // 統一樣式
+                onClick={()=>router.push('/Home')} // 點擊後導航
+                style={{cursor: 'pointer'}} // 添加點擊樣式
+                priority // 提高加載優先級
+            />
           </div>
 
           <div className="hidden flex-none lg:block">
@@ -177,14 +163,14 @@ const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
         <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
         <ul className="menu w-80 min-h-full bg-base-200 p-4">
           {isLoggedIn ? (
-            <div className="flex flex-col gap-2">
-              {renderMenuItems(menuWithLogout, true)}
-            </div>
+              <div className="flex flex-col gap-2">
+                {renderMenuItems(menuWithLogout, true)}
+              </div>
           ) : (
-            <li>
-              <Link href={Login} className="btn btn-primary ">
-                登入
-              </Link>
+              <li>
+                <Link href={Login} className="btn btn-primary ">
+                  登入
+                </Link>
             </li>
           )}
         </ul>

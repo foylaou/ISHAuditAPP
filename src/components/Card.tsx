@@ -1,10 +1,10 @@
+//src/components/Card.tsx
 import Image from "next/image";
 import "../styles/card.css"
-import {ExampleLoaderComponent} from "@/dev/palette";
 
 
 // 定義卡片的資料格式
-interface Card {
+export interface Card {
   id: string;
   title: string;
   description: string;
@@ -13,7 +13,7 @@ interface Card {
 }
 
 // 定義 Card 組件的 Props 類型
-interface CardProps {
+export interface CardProps {
   data: Card; // 接收一個 Card 物件
 }
 
@@ -38,7 +38,7 @@ export default function CardComponent(props: CardProps) {
           <h3 className="card-title">{data.title}</h3>
           <p className="card-description">{data.description}</p>
         </div>
-        <ExampleLoaderComponent/>
+
       </div>
     </div>
   );

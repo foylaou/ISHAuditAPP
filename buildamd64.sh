@@ -5,7 +5,7 @@ set -e
 
 # 配置參數
 IMAGE_NAME="s225002731650/ishafrontend"
-TAG="latest"
+TAG="1"
 PLATFORM="linux/amd64"
 NEXT_PUBLIC_API_URL="https://test-api.isafe.org.tw"
 NEXT_PUBLIC_DOMAIN="https://test.isafe.org.tw"
