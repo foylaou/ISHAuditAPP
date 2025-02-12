@@ -27,10 +27,11 @@ export default function FloatingImage({ src, alt }: FloatingImageProps) {
         <Image
           src={src}
           alt={alt}
-
+          placeholder="blur"
+          blurDataURL={'loading.gif'}
           fill
           className="object-contain"
-          priority
+
         />
       </motion.div>
     </div>

@@ -68,7 +68,19 @@ menuItems : [
         permission: { module: 'Sys', level: 'Admin' }
       }
     ]
+  },
+  {
+    label: "測試專區",
+    permission: { module: 'Org', level: 'Admin' },
+    children: [
+      {
+        label: "RAG",
+        link: '/Test',
+        permission: { module: '', level: 'None' }
+      }
+    ]
   }
+
 ],
   setMenuItems: (items: MenuItem[]) => set({ menuItems: items }),
   filterMenuByAuth: filterMenuByAuthImpl,

@@ -26,7 +26,7 @@ export const useSuggestcategory = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData().then(_data => {setLoading(false);console.log("督導類型完成載入");});
   }, []);
 
   const refresh = async () => {

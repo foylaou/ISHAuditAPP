@@ -25,7 +25,7 @@ export const useEnterprises = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData().then(_data => {setLoading(false);console.log("企業完成載入");});
   }, []);
 
   const refresh = async () => {

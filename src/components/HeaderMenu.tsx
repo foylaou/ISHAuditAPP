@@ -128,16 +128,20 @@ const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
           </div>
 
           <div className="flex-1 px-4">
+          <Link rel="preload" href="/" as={'Home'} >
             <Image
-                src={theme ? logodark : logo} // 根據主題切換圖片
-                alt={theme ? "Dark mode logo" : "Light mode logo"} // 提供清楚的描述
-                width={400} // 僅亮色主題設定寬度
-                height={150} // 僅亮色主題設定高度
-                className="btn shadow" // 統一樣式
-                onClick={()=>router.push('/Home')} // 點擊後導航
-                style={{cursor: 'pointer'}} // 添加點擊樣式
-                priority // 提高加載優先級
+              key={theme ? 'dark-logo' : 'light-logo'} // 強制切換時重新渲染
+              src={theme ? logodark : logo}
+              alt={theme ? "Dark mode logo" : "Light mode logo"}
+              width={400}
+              height={150}
+              quality={75}
+              placeholder="blur"
+              blurDataURL={'loading.gif'}
+              className="btn shadow"
+              style={{ cursor: 'pointer' }}
             />
+          </Link>
           </div>
 
           <div className="hidden flex-none lg:block">

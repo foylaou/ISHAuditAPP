@@ -4,6 +4,7 @@ import type { NextConfig } from "next";
 const API_URL = process.env.API || "http://ishabackend.local:8080";
 const isDev = process.env.NODE_ENV === "development";
 const Mydomain = process.env.NEXT_PUBLIC_DOMAIN || "http://localhost:3000";
+const RAG_API = process.env.RAG_API || "http://127.0.0.1:8000";
 
 const nextConfig: NextConfig = {
   output: 'standalone',
@@ -19,7 +20,7 @@ const nextConfig: NextConfig = {
       style-src 'self' 'unsafe-inline' ${Mydomain};
       img-src 'self' data: blob: ${Mydomain};
       font-src 'self' ${Mydomain};
-      connect-src 'self' ${API_URL} ${isDev ? 'ws: wss:' : ''};
+     connect-src 'self' ${API_URL} ${RAG_API} ${isDev ? 'ws: wss:' : ''};
       frame-src 'self';
       object-src 'none';
       base-uri 'self';
@@ -79,6 +80,17 @@ const nextConfig: NextConfig = {
         basePath: false,
         locale: false,
       },
+      {
+        source: "/app/:path*",
+        destination: `${RAG_API}/:path*`,
+        basePath: false,
+        locale: false,
+      },
+              // 添加靜態文件的代理
+      {
+        source: "/static/:path*",
+        destination: `${RAG_API}/static/:path*`,
+      }
     ];
   },
 };

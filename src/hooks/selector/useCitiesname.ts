@@ -22,7 +22,7 @@ export const useCitiesname = () => {
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData().then(_data => {setLoading(false);console.log("城市完成載入");});
   }, []);
 
   const refresh = async () => {

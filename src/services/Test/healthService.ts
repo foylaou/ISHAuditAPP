@@ -75,12 +75,12 @@ export async function getSystemStatus(): Promise<SystemStatus> {
     };
 
     // 記錄系統檢查
-    console.log('System Status Check:', {
-      timestamp: status.checkTime,
-      apiStatus: status.isApiAvailable ? 'Available' : 'Unavailable',
-      dbStatus: status.isDatabaseAvailable ? 'Available' : 'Unavailable',
-      maintenance: status.isInMaintenance ? 'Yes' : 'No'
-    });
+    // console.log('System Status Check:', {
+    //   timestamp: status.checkTime,
+    //   apiStatus: status.isApiAvailable ? 'Available' : 'Unavailable',
+    //   dbStatus: status.isDatabaseAvailable ? 'Available' : 'Unavailable',
+    //   maintenance: status.isInMaintenance ? 'Yes' : 'No'
+    // });
 
     return status;
 
