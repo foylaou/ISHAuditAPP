@@ -1,9 +1,15 @@
 // components/File/FileUpload.tsx
 import React from 'react';
-import { Upload, X, AlertCircle, CheckCircle, Loader2 } from 'lucide-react';
+import { Upload, X, AlertCircle, CheckCircle, Loader2,
+  FileIcon,
+  Image,
+  FileText,
+  Film,
+  Music  } from 'lucide-react';
 import { useFileUpload } from "@/hooks/useFileUpload";
 import axios from "axios";
 import {toast} from "react-toastify";
+
 
 interface DefaultResponse {
   success: boolean;
@@ -49,6 +55,31 @@ export function FileUpload<TResponse = DefaultResponse>({
     maxSize,
     acceptedFileTypes
   });
+// 建立檔案類型分組
+const groupFileTypes = (types: string[]) => {
+  const groups = {
+    image: {
+      icon: <Image className="w-3 h-3" />,
+      extensions: [] as string[]
+    },
+    document: {
+      icon: <FileText className="w-3 h-3" />,
+      extensions: [] as string[]
+    }
+  };
+
+  types.forEach(type => {
+    const extension = type.split('/')[1].toUpperCase();
+
+    if (type.includes('image')) {
+      groups.image.extensions.push(extension);
+    } else if (['pdf', 'msword', 'vnd.openxmlformats-officedocument'].some(t => type.includes(t))) {
+      groups.document.extensions.push(extension);
+    }
+  });
+
+  return groups;
+};
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes';
@@ -102,9 +133,23 @@ const filedel = async (fileid: string, type: string) => {
               <span className="font-semibold">點擊上傳</span> 或拖放檔案至此
             </p>
             <p className="text-xs text-gray-500">
-              {loading ? '上傳中...' : `最多 ${maxFiles} 個檔案`}
-              {maxSize && ` • 單檔上限 ${formatFileSize(maxSize)}`}
-              {acceptedFileTypes.length > 0 && ` • ${acceptedFileTypes.join(', ')}`}
+              {loading ? '上傳中...' : `＊最多 ${maxFiles} 個檔案`}
+
+              {maxSize && `，單檔上限 ${formatFileSize(maxSize)}。`}
+              {acceptedFileTypes.length > 0 && (
+                <div className="space-y-1"> {/* 修改這裡，使用 div 和 space-y-1 */}
+                  {Object.entries(groupFileTypes(acceptedFileTypes)).map(([key, group]) => {
+                    if (group.extensions.length === 0) return null;
+                    return (
+                      <div key={key} className="flex items-center gap-1"> {/* 修改這裡，使用 div */}
+                        <span>•</span>
+                        {group.icon}
+                        <span>{group.extensions.join(', ')}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </p>
           </div>
           <input

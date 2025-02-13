@@ -64,6 +64,12 @@ export default function FileUploadComponent() {
     <div className="w-full max-w-4xl mx-auto p-6 space-y-6">
       <div className="space-y-4">
         <FileUpload<UploadedFile>
+          // maxFiles = 10,
+          // maxSize = 10485760,
+          // acceptedFileTypes = [],
+            maxFiles={1}
+            maxSize={10485760}
+            acceptedFileTypes={["image/png", "image/jpeg", "image/webp","application/pdf"]}
           onUpload={async (file) => {
             const formData = new FormData();
             formData.append('file', file);
