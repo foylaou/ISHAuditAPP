@@ -1,16 +1,16 @@
 'use client';
 import { useState, Fragment } from 'react';
 import SearchBar from '@/components/Audit/SearchBar';
-import AuditResult from '@/components/Audit/AuditResult';
-import AuditSuggest from '@/components/Audit/AuditSuggest';
 import AuthGuard from '@/components/auth/AuthGuard';
+import BasicResult from "@/components/Audit/AuditResult";
+import SuggestResult from "@/components/Audit/AuditSuggest";
 
 type TabType = 'SearchBar' | 'AuditResult' | 'AuditSuggest';
 
 const TAB_CONFIG = {
   SearchBar: { label: '資料查詢', component: SearchBar },
-  AuditResult: { label: '督導資訊', component: AuditResult },
-  AuditSuggest: { label: '執行規劃', component: AuditSuggest },
+  AuditResult: { label: '督導資訊', component: BasicResult },
+  AuditSuggest: { label: '執行規劃', component: SuggestResult },
 } as const;
 
 export default function AuditPage() {

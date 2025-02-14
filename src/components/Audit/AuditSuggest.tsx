@@ -1,121 +1,40 @@
 import React, {StrictMode, useState} from "react";
-import {ColDef, colorSchemeDarkBlue, colorSchemeLightWarm, ICellRendererParams, themeQuartz} from "ag-grid-community";
+import {ColDef, colorSchemeDarkBlue, colorSchemeLightWarm, themeQuartz} from "ag-grid-community";
 import {AllCommunityModule, ModuleRegistry} from "ag-grid-community";
 import {AgGridReact} from "ag-grid-react";
 import {useGlobalStore} from '@/store/useGlobalStore';
 import { AG_GRID_LOCALE_TW } from '@ag-grid-community/locale';
+import {useAuditStore} from "@/store/useAuditStore";
+import {AuditSuggestResult} from "@/types/AuditQuery/auditQuery";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
-
-interface IRow {
-    factory_area: string;
-    company_name: string;
-    factory_name: string;
-    supervisionType: string;
-    disasterType: string;
-    incidentTime: string;
-    supervisionTime: string;
-    stopWork: boolean;
-    penalty: boolean;
-}
-
-const formatDateTime = (isoString: string) => {
-    const date = new Date(isoString);
-    return new Intl.DateTimeFormat('zh-TW', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: false
-    }).format(date);
-};
-
 const themeLightWarm = themeQuartz.withPart(colorSchemeLightWarm);
-
 const themeDarkBlue = themeQuartz.withPart(colorSchemeDarkBlue);
 
 
-const GridExample = () => {
+const SuggestGrid = () => {
     // 使用全域狀態的布林值主題
     const {theme} = useGlobalStore();
+    // rowData
+    const SuggestData = useAuditStore(state => state.auditData?.suggests);
     // theme 為 true 時表示暗色模式
     const isDarkMode = theme;
-
-    const [rowData] = useState<IRow[]>([
-        {
-            factory_area: "南部科學園區",
-            company_name: "台灣石化公司",
-            factory_name: "A廠",
-            supervisionType: "安全督導",
-            disasterType: "火災",
-            incidentTime: "2024-12-10T14:30:00Z",
-            supervisionTime: "2024-12-11T09:00:00Z",
-            stopWork: true,
-            penalty: false,
-        },
-        {
-            factory_area: "中部工業區",
-            company_name: "中油公司",
-            factory_name: "B廠",
-            supervisionType: "例行督導",
-            disasterType: "無",
-            incidentTime: "2024-11-01T09:00:00Z",
-            supervisionTime: "2024-11-02T10:00:00Z",
-            stopWork: false,
-            penalty: true,
-        },
-        {
-            factory_area: "北部工業區",
-            company_name: "電子科技公司",
-            factory_name: "C廠",
-            supervisionType: "災害檢查",
-            disasterType: "氣爆",
-            incidentTime: "2024-10-20T15:45:00Z",
-            supervisionTime: "2024-10-21T08:00:00Z",
-            stopWork: true,
-            penalty: true,
-        },
-    ]);
-
-    const [colDefs] = useState<ColDef<IRow>[]>([
-        {field: "factory_area", headerName: "工業區"},
-        {field: "company_name", headerName: "公司"},
-        {field: "factory_name", headerName: "工廠"},
-        {field: "supervisionType", headerName: "督導種類"},
-        {field: "disasterType", headerName: "災害類型"},
-        {
-            field: "incidentTime",
-            headerName: "事故時間",
-            cellRenderer: (params: ICellRendererParams<IRow, string>) =>
-                params.value ? formatDateTime(params.value) : '',
-        },
-        {
-            field: "supervisionTime",
-            headerName: "督導時間",
-            cellRenderer: (params: ICellRendererParams<IRow, string>) =>
-                params.value ? formatDateTime(params.value) : '',
-        },
-        {
-            field: "stopWork",
-            headerName: "停工？",
-            cellRenderer: (params: ICellRendererParams<IRow, boolean>) =>
-                params.value ? (
-                    <span className="text-error">是</span>
-                ) : (
-                    <span className="text-success">否</span>
-                ),
-        },
-        {
-            field: "penalty",
-            headerName: "裁罰？",
-            cellRenderer: (params: ICellRendererParams<IRow, boolean>) =>
-                params.value ? (
-                    <span className="text-error">是</span>
-                ) : (
-                    <span className="text-success">否</span>
-                ),
-        },
+    const [colDefs] = useState<ColDef<AuditSuggestResult>[]>([
+        {field: "factory", headerName: "工廠"},
+        {field: "auditType", headerName: "督導種類"},
+        {field: "suggestItem", headerName: "建議種類"},
+        {field:"suggestType",headerName:"建議類型"},
+        {field:"suggestCategory",headerName:"建議項目"},
+        {field:"suggest",headerName:"委員建議"},
+        {field:"participate",headerName:"是否參採"},
+        {field:"action",headerName:"執行方式"},
+        {field:"shortTerm",headerName:"短期計劃"},
+        {field:"midTerm",headerName:"中期計劃"},
+        {field:"longTerm",headerName:"長期計劃"},
+        {field:"handlingSituation",headerName:"辦理情形"},
+        {field:"improveStatus",headerName:"是否完成改善"},
+        {field:"responsibleUnit",headerName:"負責單位"},
+        {field:"budget",headerName:"預算"},
     ]);
 
     const defaultColDef: ColDef = {
@@ -139,11 +58,12 @@ const GridExample = () => {
         >
             <AgGridReact
                 localeText={AG_GRID_LOCALE_TW}
-                rowData={rowData}
+                rowData={SuggestData}
                 columnDefs={colDefs}
                 defaultColDef={defaultColDef}
                 animateRows={true}
                 pagination={true}
+                sideBar={true}
                 paginationPageSize={20}
                 theme={isDarkMode ? themeDarkBlue : themeLightWarm}
             />
@@ -151,12 +71,12 @@ const GridExample = () => {
     );
 };
 
-export default function auditSuggest() {
+export default function SuggestResult() {
     return (
         <StrictMode>
             <div className="w-full">
                 <h2 className="relative text-xl text-base-content mb-4">稽核結果</h2>
-                <GridExample/>
+                <SuggestGrid/>
             </div>
         </StrictMode>
     );

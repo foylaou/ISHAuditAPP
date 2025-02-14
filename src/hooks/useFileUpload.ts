@@ -6,6 +6,20 @@ import {UploadedFile} from "@/components/Test/RAG";
 type DragEventType = DragEvent<HTMLDivElement>;
 type FileInputChangeEvent = ChangeEvent<HTMLInputElement>;
 
+
+/**
+ * 文件信息接口
+ *
+ * @interface FileInfo
+ * @template T 上傳回應的類型。
+ * @member {string} id 文件唯一識別 ID。
+ * @member {File} file 文件對象。
+ * @member {number} progress 上傳進度 (0-100)。
+ * @member {'pending' | 'uploading' | 'success' | 'error'} status 上傳狀態。
+ * @member {string} [error] 錯誤信息（若有錯誤）。
+ * @member {string} [filepath] 上傳成功後的文件路徑。
+ * @member {T} [response] 上傳回應結果。
+ */
 interface FileInfo<T = DefaultResponse> {
   id: string;
   file: File;
@@ -16,6 +30,19 @@ interface FileInfo<T = DefaultResponse> {
   response?: T; // 添加 response 欄位存儲上傳響應
 }
 
+/**
+ * Hook 使用的參數接口
+ *
+ * @interface UseFileUploadProps
+ * @template TResponse 上傳回應的類型。
+ * @member {Function} [onUpload] 上傳函式，應該接受一個 File 對象並返回一個 Promise。
+ * @member {Function} [onSuccess] 上傳成功的回調函式。
+ * @member {Function} [onError] 上傳失敗的回調函式。
+ * @member {number} [maxFiles] 允許上傳的最大文件數量。
+ * @member {number} [maxSize] 允許上傳的最大文件大小（以字節為單位）。
+ * @member {string[]} [acceptedFileTypes] 允許的文件類型。
+ * @member {Function} [onFileRemoved] 文件刪除成功的回調函式。
+ */
 interface UseFileUploadProps<TResponse> {
   onUpload?: (file: File) => Promise<TResponse>;
   onSuccess?: (response: TResponse, fileId: string) => void;
@@ -23,10 +50,23 @@ interface UseFileUploadProps<TResponse> {
   maxFiles?: number;
   maxSize?: number; // in bytes
   acceptedFileTypes?: string[];
-  onFileRemoved?: (fileId: string) => void; // 添加刪除成功回調
+  onFileRemoved?: (fileId: string) => void;
 }
 
-// 修改 useFileUpload hook 的返回類型
+/**
+ * Hook 返回的對象接口
+ *
+ * @interface UseFileUploadReturn
+ * @template T 默認響應類型。
+ * @member {boolean} loading 是否正在加載。
+ * @member {Error | null} error 當前錯誤信息。
+ * @member {boolean} isDragging 是否正在拖動文件。
+ * @member {FileInfo<T>[]} files 當前管理的文件列表。
+ * @member {object} handleDragEvents 包含處理拖動事件的方法。
+ * @member {Function} handleFileChange 處理文件選擇變更的方法。
+ * @member {Function} removeFile 移除文件的方法。
+ * @member {Function} clearFiles 清空所有文件的方法。
+ */
 interface UseFileUploadReturn<T = DefaultResponse> {
   loading: boolean;
   error: Error | null;
@@ -48,6 +88,13 @@ interface DefaultResponse {
   message: string;
 }
 
+/**
+ * 文件上傳 Hook 使用 React 狀態和回調來管理文件的拖放和上傳過程。
+ *
+ * @template TResponse 上傳回應的類型。
+ * @param {UseFileUploadProps<TResponse>} params - Hook 的參數。
+ * @returns {UseFileUploadReturn<TResponse>} 包含檔案管理方法和狀態的物件。
+ */
 export function useFileUpload<TResponse = DefaultResponse>({
   onUpload,
   onSuccess,
