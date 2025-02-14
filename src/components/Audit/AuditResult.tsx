@@ -16,19 +16,6 @@ import {AuditBasicResult} from "@/types/AuditQuery/auditQuery";
 import {formatDate} from "@/utils/Timetool";
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-interface IRow {
-  factory_area: string;
-  company_name: string;
-  factory_name: string;
-  supervisionType: string;
-  disasterType: string;
-  incidentTime: string;
-  supervisionTime: string;
-  stopWork: boolean;
-  penalty: boolean;
-}
-
-
 const themeLightWarm = themeQuartz.withPart(colorSchemeLightWarm);
 
 const themeDarkBlue = themeQuartz.withPart(colorSchemeDarkBlue);
@@ -53,19 +40,19 @@ const BasicGrid = () => {
     {
       field: "incidentDatetime",
       headerName: "事故時間",
-      cellRenderer: (params: ICellRendererParams<IRow, string>) =>
+      cellRenderer: (params: ICellRendererParams<AuditBasicResult>) =>
         params.value ? formatDate(params.value) : '',
     },
     {
       field: "auditStartDate",
       headerName: "督導時間",
-      cellRenderer: (params: ICellRendererParams<IRow, string>) =>
+      cellRenderer: (params: ICellRendererParams<AuditBasicResult>) =>
         params.value ? formatDate(params.value) : '',
     },
     {
       field: "sd",
       headerName: "停工？",
-      cellRenderer: (params: ICellRendererParams<IRow, string>) =>
+      cellRenderer: (params: ICellRendererParams<AuditBasicResult>) =>
 
         params.value ==='Y' ? (
           <span className="text-accent">是</span>
@@ -76,7 +63,7 @@ const BasicGrid = () => {
     {
       field: "penalty",
       headerName: "裁罰？",
-      cellRenderer: (params: ICellRendererParams<IRow, string>) =>
+      cellRenderer: (params: ICellRendererParams<AuditBasicResult>) =>
         params.value ==="Y" ? (
           <span className="text-accent">是</span>
         ) : (
