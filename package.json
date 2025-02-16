@@ -43,9 +43,9 @@
     "@types/js-cookie": "^3.0.6",
     "@types/webappsec-credential-management": "^0.6.9",
     "add": "^2.0.6",
-    "ag-grid-community": "^33.0.1",
-    "ag-grid-enterprise": "^33.0.3",
-    "ag-grid-react": "^33.0.1",
+    "ag-grid-community": "^33.1.0",
+    "ag-grid-enterprise": "^33.1.0",
+    "ag-grid-react": "^33.1.0",
     "antd": "^5.22.7",
     "axios": "^1.7.9",
     "card": "^2.5.4",
@@ -93,6 +93,6 @@
     "typescript": "^5.7.3"
   },
   "resolutions": {
-  "postcss": "^8.4.21"
-}
+    "postcss": "^8.4.21"
+  }
 }
