@@ -1,20 +1,16 @@
 //@store/useGlobalStore.ts
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';  // 需要引入 persist middleware
+import { persist } from 'zustand/middleware';
+import {UserRoles} from "@/types/authType";  // 需要引入 persist middleware
 
-interface Permissions {
-  Audit:string;
-  KPI: string;
-  Sys: string;
-  Org: string;
-}
+
 
 interface GlobalState {
   isLoggedIn: boolean;
   setIsLoggedIn: (status: boolean) => void;
-  permissions: Permissions;
+  permissions: UserRoles;
   theme: boolean;
-  login: (permissions: Permissions) => void;
+  login: (permissions: UserRoles) => void;
   logout: () => void;
   toggleTheme: () => void;
 }

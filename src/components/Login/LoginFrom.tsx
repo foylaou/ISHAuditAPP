@@ -7,6 +7,7 @@ import { KeyRound, User } from "lucide-react";
 import { useGlobalStore } from "@/store/useGlobalStore";
 import { authService } from "@/services/authService";
 import type { LoginForm } from "@/types/authType";
+import {userInfoStore} from "@/store/useUserinfoStore";
 
 
 
@@ -16,6 +17,7 @@ export default function LoginForm()  {
   const [_error, setError] = useState<string>("");
   const { login } = useGlobalStore();
   const router = useRouter();
+  const {setUsername,setRoles} = userInfoStore()
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     const { name, value } = e.target;
@@ -36,7 +38,9 @@ export default function LoginForm()  {
     setError("");
 
     try {
-      const { roles, message } = await authService.login(formData);
+      const { roles, message ,userName } = await authService.login(formData);
+      setUsername(userName);
+      setRoles(roles);
       login(roles);
       console.log(message);
       router.push('/');

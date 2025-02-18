@@ -1,29 +1,34 @@
 // utils/buffer.ts
+/**
+ * Buffer 工具函式
+ * 提供 ArrayBuffer 與 Base64URL 字串之間的轉換方法。
+ */
 export const bufferUtils = {
-  // ArrayBuffer 轉 base64url string
+  /**
+   * 將 ArrayBuffer 轉換為 Base64URL 字串
+   *
+   * @param {ArrayBuffer} buffer 要轉換的 ArrayBuffer
+   * @returns {string} Base64URL 格式的字串
+   */
   bufferToBase64URLString(buffer: ArrayBuffer): string {
-    // 先轉換成 Uint8Array
     const bytes = new Uint8Array(buffer);
-    // 轉換成字符數組
     const chars: string[] = Array.from(bytes).map(byte => String.fromCharCode(byte));
-    // 合併成單個字符串並轉換為 base64
     const base64 = btoa(chars.join(''));
-    // 轉換為 base64url 格式
     return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
   },
 
-  // base64url string 轉 ArrayBuffer
+  /**
+   * 將 Base64URL 字串轉換為 ArrayBuffer
+   *
+   * @param {string} base64URLString Base64URL 格式的字串
+   * @returns {ArrayBuffer} 轉換後的 ArrayBuffer
+   */
   base64URLStringToBuffer(base64URLString: string): ArrayBuffer {
-    // 將 base64url 轉回標準 base64
     const base64 = base64URLString.replace(/-/g, '+').replace(/_/g, '/');
-    // 添加必要的填充
     const paddedBase64 = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
-    // 解碼 base64
     const binary = atob(paddedBase64);
-    // 創建 ArrayBuffer 和 視圖
     const buffer = new ArrayBuffer(binary.length);
     const bytes = new Uint8Array(buffer);
-    // 填充數據
     for (let i = 0; i < binary.length; i++) {
       bytes[i] = binary.charCodeAt(i);
     }
@@ -31,9 +36,17 @@ export const bufferUtils = {
   }
 };
 
-// 新增類型處理工具
+/**
+ * ArrayBuffer 處理工具
+ * 提供從 WebAuthn 響應物件中提取資料的方法。
+ */
 export const arrayBufferUtils = {
-  // 從 AuthenticatorAttestationResponse 中提取數據
+  /**
+   * 從 AuthenticatorAttestationResponse 提取數據
+   *
+   * @param {AuthenticatorAttestationResponse} attestationResponse WebAuthn 註冊回應
+   * @returns {{ attestationObject: Uint8Array, clientDataJSON: Uint8Array }} 提取的數據
+   */
   getAttestationResponse(attestationResponse: AuthenticatorAttestationResponse) {
     return {
       attestationObject: new Uint8Array(attestationResponse.attestationObject),
@@ -41,7 +54,12 @@ export const arrayBufferUtils = {
     };
   },
 
-  // 從 AuthenticatorAssertionResponse 中提取數據
+  /**
+   * 從 AuthenticatorAssertionResponse 提取數據
+   *
+   * @param {AuthenticatorAssertionResponse} assertionResponse WebAuthn 身分驗證回應
+   * @returns {{ authenticatorData: Uint8Array, clientDataJSON: Uint8Array, signature: Uint8Array, userHandle: Uint8Array | null }} 提取的數據
+   */
   getAssertionResponse(assertionResponse: AuthenticatorAssertionResponse) {
     return {
       authenticatorData: new Uint8Array(assertionResponse.authenticatorData),

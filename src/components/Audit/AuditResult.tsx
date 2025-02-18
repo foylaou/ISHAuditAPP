@@ -13,12 +13,14 @@ import { useGlobalStore } from '@/store/useGlobalStore';
 import { AG_GRID_LOCALE_TW } from '@ag-grid-community/locale';
 import {useAuditStore} from "@/store/useAuditStore";
 import {AuditBasicResult} from "@/types/AuditQuery/auditQuery";
-import {formatDate} from "@/utils/Timetool";
+import {ROCformatDateTools} from "@/utils/Timetool";
+
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const themeLightWarm = themeQuartz.withPart(colorSchemeLightWarm);
 
 const themeDarkBlue = themeQuartz.withPart(colorSchemeDarkBlue);
+
 
 
 
@@ -41,13 +43,13 @@ const BasicGrid = () => {
       field: "incidentDatetime",
       headerName: "事故時間",
       cellRenderer: (params: ICellRendererParams<AuditBasicResult>) =>
-        params.value ? formatDate(params.value) : '',
+        params.value ? ROCformatDateTools.formatDate(params.value) : '',
     },
     {
       field: "auditStartDate",
       headerName: "督導時間",
       cellRenderer: (params: ICellRendererParams<AuditBasicResult>) =>
-        params.value ? formatDate(params.value) : '',
+        params.value ? ROCformatDateTools.formatDate(params.value) : '',
     },
     {
       field: "sd",

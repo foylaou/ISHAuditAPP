@@ -1,23 +1,29 @@
 'use client';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import { useGlobalStore } from '@/store/useGlobalStore';
 import { useMenuStore } from '@/store/menuStore';
-import ThemeToggle from './ThemeToggle';
 import { authService } from '@/services/authService';
 import type {MenuItem, ModulePermission} from '@/types/menuTypes';
 import Image from "next/image";
 import logo from '@/../public/logo.svg';
 import logodark from '@/../public/logo-dark.svg';
+import AvatarMenu from "@/components/Avatar/AvatarMenu";
+import ThemeToggle from "@/components/ThemeToggle";
 
 
 export default function HeaderMenu() {
   const { theme } = useGlobalStore();
-  const Login = '/Login';
-  const router = useRouter();
-  const { isLoggedIn, logout } = useGlobalStore();
-  const { menuItems } = useMenuStore();
+  const { isLoggedIn } = useGlobalStore();
+  const { menuItems, fetchMenuItems } = useMenuStore();
+  const [openMenuIndex, setOpenMenuIndex] = useState<string | null>(null);
+
+
+    useEffect(() => {
+      if (isLoggedIn) {
+        fetchMenuItems();
+      }
+    }, [fetchMenuItems, isLoggedIn]);
 
 const checkPermission = (required: ModulePermission): boolean => {
   const userRoles = authService.getUserRoles();
@@ -46,26 +52,41 @@ const checkPermission = (required: ModulePermission): boolean => {
         ? item.permission.some(perm => checkPermission(perm))
         : checkPermission(item.permission);
     };
-  const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    logout();
-    authService.logout();
-    router.push('/Login');
-  };
 
-const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
+  // const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
+  //   e.preventDefault();
+  //   logout();
+  //   authService.logout();
+  //   router.push('/Login');
+  // };
+
+const renderMenuItems = (items: MenuItem[], isMobile: boolean = false, parentIndex: string = '') => {
   return items.map((item, index) => {
     if (!hasMenuPermission(item)) return null;
 
+    const currentIndex = parentIndex ? `${parentIndex}-${index}` : `${index}`;
+
     if (item.children) {
+      const isOpen = openMenuIndex === currentIndex;
+
       return (
-        <li key={index}>
-          <details className={isMobile ? 'collapse collapse-arrow' : ''}>
-            <summary className={isMobile ? 'collapse-title' : ''}>
+        <li key={currentIndex}>
+          <details
+            className={isMobile ? 'collapse collapse-arrow' : ''}
+            open={isOpen}
+          >
+            <summary
+              className={isMobile ? 'collapse-title' : ''}
+              onClick={(e) => {
+                e.preventDefault();
+                // 切換目前選單的開關狀態
+                setOpenMenuIndex(isOpen ? null : currentIndex);
+              }}
+            >
               {item.label}
             </summary>
             <ul className={isMobile ? 'collapse-content pl-4' : 'bg-base-200'}>
-              {renderMenuItems(item.children, isMobile)}
+              {renderMenuItems(item.children, isMobile, currentIndex)}
             </ul>
           </details>
         </li>
@@ -73,7 +94,7 @@ const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
     }
 
     return (
-      <li key={index}>
+      <li key={currentIndex}>
         {item.onClick ? (
           <a
             href={item.link}
@@ -95,11 +116,12 @@ const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
   }).filter(Boolean);
 };
 
+
   const filteredMenu = menuItems.filter(hasMenuPermission);
   const menuWithLogout = isLoggedIn
     ? [
         ...filteredMenu.filter(item => item.label !== '登出'),
-        { label: '登出', link: '#', onClick: handleLogout }
+        // { label: '登出', link: '#', onClick: handleLogout }
       ]
     : filteredMenu;
 
@@ -150,35 +172,36 @@ const renderMenuItems = (items: MenuItem[], isMobile: boolean = false) => {
                   {renderMenuItems(menuWithLogout, false)}
                 </ul>
             ) : (
-                <Link href={Login} className="btn btn-primary btn-sm mr-5">
-                  登入
-                </Link>
+                <>
+                </>
+                // <Link href={Login} className="btn btn-primary btn-sm mr-5">
+                //   登入
+                // </Link>
             )}
           </div>
-
-          <div className="flex-none sm:block hidden">
+          <div className="">
             <ThemeToggle/>
           </div>
-        </div>
-      </div>
-
-      {/* Drawer side */}
-      <div className="drawer-side z-50">
-        <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
-        <ul className="menu w-80 min-h-full bg-base-200 p-4">
           {isLoggedIn ? (
-              <div className="flex flex-col gap-2">
-                {renderMenuItems(menuWithLogout, true)}
-              </div>
-          ) : (
-              <li>
-                <Link href={Login} className="btn btn-primary ">
-                  登入
-                </Link>
-            </li>
+              <>
+                        <div className="mx-4 flex-none sm:block hidden">
+            <AvatarMenu
+              name="foy"
+              state={openMenuIndex}
+              setState={setOpenMenuIndex}
+
+              ></AvatarMenu>
+            </div>
+            </>
+          ):(
+              <>
+              </>
           )}
-        </ul>
-      </div>
+
+
+
+          </div>
+        </div>
     </div>
   )
 }

@@ -1,19 +1,11 @@
-// First, let's define the MenuItem type
-interface MenuItem {
-  label: string;
-  link?: string;
-  auth?: string;
-  children?: MenuItem[];
-}
-
+//store/menuStore.ts
 import { create } from 'zustand';
 import { authService } from '@/services/authService';
+import {AvatarMenuItem, AvatarMenuState, MenuItems, MenuState} from "@/types/Menu/MainMenu";
+import axios from "axios";
 
-interface MenuState {
-  menuItems: MenuItem[];
-  setMenuItems: (items: MenuItem[]) => void;
-  filterMenuByAuth: (items: MenuItem[]) => MenuItem[];
-}
+
+
 
 // Helper function to check if user has required permission
 const hasPermission = (requiredAuth: string | undefined): boolean => {
@@ -36,7 +28,7 @@ const hasPermission = (requiredAuth: string | undefined): boolean => {
   return userRoles[requiredRole] === '1';
 };
 
-const filterMenuByAuthImpl = (items: MenuItem[]): MenuItem[] => {
+const filterMenuByAuthImpl = (items: MenuItems[]): MenuItems[] => {
   return items
     .filter((item) => hasPermission(item.auth))
     .map((item) => ({
@@ -50,38 +42,39 @@ const filterMenuByAuthImpl = (items: MenuItem[]): MenuItem[] => {
     });
 };
 
-export const useMenuStore = create<MenuState>((set, _get) => ({
-menuItems : [
-  { label: '首頁', link: '/Home' },
-  {
-    label: '督導查詢',
-    link: '/Audit',
-    permission: { module: 'Audit', level: 'Edit' }
-  },
-  {
-    label: '系統管理',
-    permission: { module: 'Sys', level: 'Admin' },
-    children: [
-      {
-        label: '新增帳號',
-        link: '/Register',
-        permission: { module: 'Sys', level: 'Admin' }
-      }
-    ]
-  },
-  {
-    label: "測試專區",
-    permission: { module: 'Org', level: 'Admin' },
-    children: [
-      {
-        label: "RAG",
-        link: '/Test',
-        permission: { module: '', level: 'None' }
-      }
-    ]
-  }
 
-],
-  setMenuItems: (items: MenuItem[]) => set({ menuItems: items }),
+export const useMenuStore = create<MenuState>((set) => ({
+  menuItems: [], // 初始為空數組
+
+  // 設置選單項目的方法
+  setMenuItems: (items: MenuItems[]) => set({ menuItems: items }),
+
+  // 過濾選單的方法
   filterMenuByAuth: filterMenuByAuthImpl,
+
+  // 初始化方法，從 API 獲取選單
+  fetchMenuItems: async () => {
+    try {
+      const response = await axios.get('/proxy/System/menuitems');
+      set({ menuItems: response.data });
+    } catch (error) {
+      console.error('取得首頁選單發生錯誤:', error);
+      // 可選: 設置錯誤狀態
+      // set({ error: 'Failed to load menu' });
+    }
+  }
+}));
+
+export const useAvatarStore = create<AvatarMenuState>((set) => ({
+  AvatarMenuItems: [],
+  setMenuItems: (items: AvatarMenuItem[]) => set({ AvatarMenuItems: items }),
+  filterMenuByAuth: filterMenuByAuthImpl,
+  fetchMenuItems: async () => {
+    try {
+      const response = await axios.get('/proxy/System/avataritems');
+      set({ AvatarMenuItems: response.data });
+    } catch (error) {
+      console.error('取得個人資料選單頁面錯誤:', error);
+    }
+  }
 }));
