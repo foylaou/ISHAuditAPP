@@ -22,7 +22,7 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
     console.log(`RAG API: ${RAG_API || "undefined"}`);
     console.log(`Domain: ${DOMAIN}`);
     console.log(`Environment: ${NODE_ENV}`);
-  }else {
+  } else {
     console.log("Environment Configuration:");
     console.log(`API URL: ${API_URL || "undefined"}`);
     console.log(`RAG API: ${RAG_API || "undefined"}`);
@@ -128,8 +128,36 @@ const env = getEnvironmentConfig();
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  poweredByHeader: false,
+  reactStrictMode: true,
+  outputFileTracingIncludes: {
+      '/**': [
+          './config/**/*',  // 包含所有配置文件
+          './public/**/*',  // 包含所有公共文件（包括圖片）
+      ],  // 確保配置文件被包含
+    },
+  // 確保靜態文件被正確處理
+  assetPrefix: process.env.NODE_ENV === 'production' ? undefined : undefined,
+
+  // 明確定義公共資源文件夾
+  publicRuntimeConfig: {
+    staticFolder: '/static',
+  },
+
+  // 處理靜態資源
+  transpilePackages: ['next'],
+
   headers: async () => getSecurityHeaders(env),
   ...getRoutingConfig(env),
+
+  experimental: {
+
+    serverActions: {
+  bodySizeLimit: '50mb', // 可選，設置請求體大小限制
+  allowedOrigins: ['*'] // 可選，設置允許的來源
+},
+
+  },
 };
 
 export default nextConfig;

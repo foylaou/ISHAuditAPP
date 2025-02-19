@@ -25,11 +25,12 @@ const api = axios.create({
   baseURL: '/proxy'
 });
 
-// Cookie 配置
+// Cookie 配置改進
 const COOKIE_OPTIONS = {
-  secure: true,        // 只在 HTTPS 下傳輸
-  sameSite: 'strict' as const,  // 防止 CSRF 攻擊
-  expires: 1           // 1天後過期
+  secure: process.env.NODE_ENV === 'production', // 生產環境才啟用 HTTPS 限制
+  sameSite: 'lax' as const,  // 允許跨站點導航時帶上 cookie
+  expires: 1,                 // 1天後過期
+  path: '/'                   // 設置 cookie 可用於整個站點
 };
 
 // 請求攔截器
@@ -41,24 +42,31 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// 響應攔截器
+// 響應攔截器 - 修改為使用 callback 而非直接操作 window.location
+let authErrorCallback = () => {};
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
       authService.clearAuth();
-      window.location.href = '/login';
+      authErrorCallback(); // 呼叫回調而非直接操作路由
     }
     return Promise.reject(error);
   }
 );
 
 export const authService = {
+  // 註冊認證錯誤的回調函數
+  registerAuthErrorCallback(callback: () => void) {
+    authErrorCallback = callback;
+  },
+
   clearAuth() {
-    Cookies.remove('token');
-    Cookies.remove('userRoles');
-    Cookies.remove('userName');
-    Cookies.remove('tokenExp');
+    Cookies.remove('token', { path: '/' });
+    Cookies.remove('userRoles', { path: '/' });
+    Cookies.remove('userName', { path: '/' });
+    Cookies.remove('tokenExp', { path: '/' });
   },
 
   async login(formData: LoginForm) {
@@ -103,14 +111,40 @@ export const authService = {
     throw new Error('Token not found in response');
   },
 
+  async refreshToken() {
+    try {
+      // 使用現有 token 請求刷新
+      const currentToken = this.getToken();
+      if (!currentToken) throw new Error('No token to refresh');
+
+      const response = await api.post('/refresh-token', { token: currentToken });
+      const { token } = response.data;
+
+      if (token) {
+        // 更新 token 相關信息
+        const decoded = jwtDecode<JWTPayload>(token);
+        // 存儲新 token
+        Cookies.set('token', token, COOKIE_OPTIONS);
+        Cookies.set('tokenExp', decoded.exp.toString(), COOKIE_OPTIONS);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      this.clearAuth();
+      return false;
+    }
+  },
+
   getTokenExpiration(): number | null {
     const exp = Cookies.get('tokenExp');
     return exp ? parseInt(exp) : null;
   },
 
-  logout() {
+  logout(redirectCallback?: () => void) {
     this.clearAuth();
-    window.location.href = '/Login';
+    if (redirectCallback) {
+      redirectCallback();
+    }
   },
 
   getToken(): string | undefined {

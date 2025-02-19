@@ -88,7 +88,7 @@ const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
       <div>
         <div className="flex items-center gap-4 mt-4 mb-4">
           <label htmlFor="toggle-detail-time" className="flex cursor-pointer items-center gap-2">
-            <FontAwesomeIcon icon={faCalendarWeek} />
+            <FontAwesomeIcon icon={faCalendarWeek}  className="text-base-content"/>
             <input
                 id="toggle-detail-time"
                 type="checkbox"
@@ -96,14 +96,14 @@ const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
                 onChange={() => setIsDetailTimeOn(!isDetailTimeOn)}
                 className="toggle theme-controller"
             />
-          <FontAwesomeIcon icon={faCalendarDays} />
+          <FontAwesomeIcon icon={faCalendarDays} className="text-base-content" />
           </label>
         </div>
 
 
         {isDetailTimeOn ? (
 
-            <div className="relative">
+            <div className="relative text-base-content">
               <label htmlFor="year-selector">督導年份範圍</label>
               <div
                   tabIndex={0}
@@ -150,8 +150,8 @@ const DateRangePicker = ({ onChange }: DateRangePickerProps) => {
 
         ) : (
             <div>
-              <label htmlFor="year-selector" className="block mb-2">選擇年份</label>
-              <select id="year-selector" className="select select-bordered w-full" defaultValue="">
+              <label htmlFor="year-selector" className="block mb-2 text-base-content">選擇年份</label>
+              <select id="year-selector" className="select select-bordered w-full text-base-content" defaultValue="">
                 <option value="" disabled>
                   --請選擇--
                 </option>

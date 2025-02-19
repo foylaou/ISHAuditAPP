@@ -1,3 +1,4 @@
+'use client'
 import {useRouter} from "next/navigation";
 import {useGlobalStore} from "@/store/useGlobalStore";
 import React, {useEffect, useState} from "react";

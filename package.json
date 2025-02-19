@@ -9,7 +9,8 @@
     "lint": "next lint",
     "test": "jest --runInBand --detectOpenHandles",
     "test:watch": "jest --runInBand --watchAll",
-    "test:ci": "jest --ci --runInBand --detectOpenHandles"
+    "test:ci": "jest --ci --runInBand --detectOpenHandles",
+    "start:prod": "cross-env NODE_ENV=production API=https://7267-61-216-117-67.ngrok-free.app RAG_API=http://localhost:8080 node .next/standalone/server.js"
   },
   "dependencies": {
     "@ag-grid-community/locale": "^33.0.3",
@@ -72,6 +73,7 @@
     "@types/react-date-range": "^1.4.9",
     "@types/react-dom": "^19",
     "@types/react-signature-canvas": "^1.0.6",
+    "cross-env": "^7.0.3",
     "daisyui": "^4.12.23",
     "depcheck": "^1.4.7",
     "eslint": "^8",

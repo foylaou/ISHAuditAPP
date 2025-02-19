@@ -22,29 +22,29 @@ export default function Sidebar() {
   const { menuItems, filterMenuByAuth } = useMenuStore();
   const [openMenuIndex, setOpenMenuIndex] = useState<string | null>(null);
   const router = useRouter();
-  const {Username} = userInfoStore()
+  const {Username} = userInfoStore();
 
-  // 添加一個本地登入狀態，用於同步全局狀態
-  const [localIsLoggedIn, setLocalIsLoggedIn] = useState(isLoggedIn);
+  // Track client-side mounting status
+  const [mounted, setMounted] = useState(false);
+  const [localIsLoggedIn, setLocalIsLoggedIn] = useState(false);
+  const [clientMenuItems, setClientMenuItems] = useState<MenuItem[]>([]);
 
-  // 同步全局登入狀態到本地
+  // Only run on client-side after hydration
   useEffect(() => {
+    setMounted(true);
     setLocalIsLoggedIn(isLoggedIn);
-  }, [isLoggedIn]);
+
+    if (isLoggedIn) {
+      const filtered = filterMenuByAuth(menuItems);
+      setClientMenuItems(filtered.filter(item => item.label !== '登出'));
+    }
+  }, [isLoggedIn, menuItems, filterMenuByAuth]);
 
   const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
-    // 先更新全局狀態
     logout();
-
-    // 再調用auth服務的登出
     authService.logout();
-
-    // 更新本地狀態
     setLocalIsLoggedIn(false);
-
-    // 導航到登入頁
     router.push('/Login');
   };
 
@@ -101,7 +101,6 @@ export default function Sidebar() {
     });
   };
 
-  // 自訂的AvatarMenu內容渲染
   const renderCustomAvatarContent = () => {
     return (
       <div className="flex flex-col items-center p-4">
@@ -148,10 +147,19 @@ export default function Sidebar() {
     );
   };
 
-  // Filter menu and add logout
-  const filteredMenu = filterMenuByAuth(menuItems);
-  const menuWithLogout = filteredMenu.filter(item => item.label !== '登出');
+  // Return a consistent initial UI for server rendering
+  if (!mounted) {
+    return (
+      <div className="drawer-side pt-16">
+        <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
+        <div className="w-80 min-h-full bg-base-200 text-base-content flex flex-col">
+          {/* Empty sidebar shell for initial render */}
+        </div>
+      </div>
+    );
+  }
 
+  // Client-side conditional rendering after hydration is complete
   return (
     <div className="drawer-side pt-16">
       <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
@@ -166,7 +174,7 @@ export default function Sidebar() {
 
           {/* 一般選單項目 */}
           <ul className="menu p-4 w-full">
-            {renderMenuItems(menuWithLogout)}
+            {renderMenuItems(clientMenuItems)}
           </ul>
         </div>
       ) : (

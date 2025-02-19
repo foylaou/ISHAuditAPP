@@ -43,7 +43,7 @@ export default function LoginForm()  {
       setRoles(roles);
       login(roles);
       console.log(message);
-      router.push('/');
+      router.push('/Home');
     } catch (error) {
         console.error('Error:', error);
 

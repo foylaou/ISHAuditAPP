@@ -3,15 +3,14 @@
 import '@/styles/globals.css';
 import React, { useEffect, useState } from 'react';
 import { useGlobalStore } from '@/store/useGlobalStore';
-import HeaderMenu from '@/components/HeaderMenu';
-import Sidebar from '@/components/Sidebar';
 import Footer from '@/components/Footer';
 import {MantineProvider} from "@mantine/core";
 import { ModuleRegistry } from "ag-grid-community";
 import { AllEnterpriseModule, LicenseManager } from "ag-grid-enterprise";
 import {ToastContainer} from "react-toastify";
 import {SystemStatusProvider} from "@/contexts/SystemStatusContext";
-import {useMenuStore} from "@/store/menuStore";
+import HeaderMenu from "@/components/Menu/HeaderMenu";
+import Sidebar from "@/components/Menu/Sidebar";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   ModuleRegistry.registerModules([AllEnterpriseModule]);
@@ -46,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <HeaderMenu/>
               <main className="flex-1 pt-24 bg-base-100">
                    <MantineProvider>
+
                   {children}
                        < ToastContainer
                         draggable={true}
