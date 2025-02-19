@@ -122,8 +122,8 @@ const getRoutingConfig = (env: EnvironmentConfig) => ({
 
     return {
       beforeFiles: rules,
-      afterFiles: [],
-      fallback: []
+      afterFiles: rules,
+      fallback: rules
     };
   },
 });
