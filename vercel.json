@@ -3,7 +3,7 @@
   "rewrites": [
     {
       "source": "/proxy/:path*",
-      "destination": "http://foynas.synology.me:8080/:path*"
+      "destination": "https://7267-61-216-117-67.ngrok-free.app/:path*"
     }
   ],
   "headers": [
