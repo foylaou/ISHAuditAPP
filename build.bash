@@ -7,7 +7,3 @@ npm run build
 mkdir -p .next/standalone/public
 cp -R .next/static .next/standalone/.next/
 cp -R public/* .next/standalone/public/
-
-# 3. 啟動應用
-cd .next/standalone
-NODE_ENV=production node server.js

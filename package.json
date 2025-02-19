@@ -10,7 +10,7 @@
     "test": "jest --runInBand --detectOpenHandles",
     "test:watch": "jest --runInBand --watchAll",
     "test:ci": "jest --ci --runInBand --detectOpenHandles",
-    "start:prod": "cross-env NODE_ENV=production API=https://7267-61-216-117-67.ngrok-free.app RAG_API=http://localhost:8080 node .next/standalone/server.js"
+    "start:prod": "cross-env NODE_ENV=production API=https://foynas.synology.me:8080 RAG_API=http://localhost:8080 node .next/standalone/server.js"
   },
   "dependencies": {
     "@ag-grid-community/locale": "^33.0.3",
