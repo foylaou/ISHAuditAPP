@@ -45,11 +45,6 @@
       ]
     }
   ],
-  "functions": {
-    "api/proxy/*.js": {
-      "maxDuration": 60
-    }
-  },
   "redirects": [
     {
       "source": "/",
