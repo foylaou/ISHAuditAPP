@@ -1,5 +1,20 @@
-# 運行階段
-FROM base AS runner
+# 基礎階段
+FROM node:18-alpine AS base
+
+# 依賴階段
+FROM base AS deps
+WORKDIR /app
+
+# 初始化 yarn 專案並設定 node-modules 模式
+COPY package.json yarn.lock ./
+
+
+RUN apk add --no-cache libc6-compat
+RUN yarn install --network-timeout 1000000
+RUN ls -la /app
+
+# 構建階段
+FROM base AS builder
 WORKDIR /app
 
 # 安裝運行時所需的工具
