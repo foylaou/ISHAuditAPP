@@ -91,7 +91,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.2, delay: index * 0.05 }}
+          transition={{ duration: 0.4, delay: index * 0.1 }}
         >
           {item.link ? (
             <Link
@@ -121,7 +121,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
                 <motion.span
                   className="ml-2"
                   animate={{ rotate: isOpen ? 180 : 0 }}
-                  transition={{ duration: 0.2 }}
+                  transition={{ duration: 0.4 }}
                 >
                   ▾
                 </motion.span>
@@ -132,7 +132,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
                     exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.2 }}
+                    transition={{ duration: 0.4 }}
                     className="p-2 bg-base-200 rounded-md mt-1"
                     role="menu"
                     id={`submenu-${currentIndex}`}

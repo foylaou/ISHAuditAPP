@@ -25,24 +25,25 @@ const api = axios.create({
   baseURL: '/proxy'
 });
 
-// Cookie 配置改進
-const COOKIE_OPTIONS = {
-  secure: process.env.NODE_ENV === 'production', // 生產環境才啟用 HTTPS 限制
-  sameSite: 'lax' as const,  // 允許跨站點導航時帶上 cookie
-  expires: 1,                 // 1天後過期
-  path: '/'                   // 設置 cookie 可用於整個站點
+// Cookie 配置
+const AUTH_COOKIE_OPTIONS = {
+  secure: true,                // 強制使用 HTTPS
+  sameSite: 'strict' as const, // 強制使用嚴格模式
+  httpOnly: false,             // 允許 JavaScript 讀取
+  expires: 1,                  // 1天後過期
+  path: '/'
 };
 
 // 請求攔截器
 api.interceptors.request.use((config) => {
-  const token = Cookies.get('token');
+  const token = Cookies.get('auth_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-// 響應攔截器 - 修改為使用 callback 而非直接操作 window.location
+let autoRefreshInterval: NodeJS.Timeout | null = null;
 let authErrorCallback = () => {};
 
 api.interceptors.response.use(
@@ -50,23 +51,28 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       authService.clearAuth();
-      authErrorCallback(); // 呼叫回調而非直接操作路由
+      authErrorCallback();
     }
     return Promise.reject(error);
   }
 );
 
 export const authService = {
-  // 註冊認證錯誤的回調函數
   registerAuthErrorCallback(callback: () => void) {
     authErrorCallback = callback;
   },
 
   clearAuth() {
-    Cookies.remove('token', { path: '/' });
-    Cookies.remove('userRoles', { path: '/' });
-    Cookies.remove('userName', { path: '/' });
-    Cookies.remove('tokenExp', { path: '/' });
+    Cookies.remove('auth_token', { path: '/' });
+    Cookies.remove('user_roles', { path: '/' });
+    Cookies.remove('user_name', { path: '/' });
+    Cookies.remove('token_exp', { path: '/' });
+
+    // 清除自動刷新定時器
+    if (autoRefreshInterval) {
+      clearInterval(autoRefreshInterval);
+      autoRefreshInterval = null;
+    }
   },
 
   async login(formData: LoginForm) {
@@ -88,11 +94,14 @@ export const authService = {
       const roles: UserRoles = JSON.parse(decoded.roles);
       const userName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
 
-      // 使用 Cookies 存儲資訊
-      Cookies.set('token', token, COOKIE_OPTIONS);
-      Cookies.set('userRoles', JSON.stringify(roles), COOKIE_OPTIONS);
-      Cookies.set('userName', userName, COOKIE_OPTIONS);
-      Cookies.set('tokenExp', decoded.exp.toString(), COOKIE_OPTIONS);
+      // 存儲認證信息
+      Cookies.set('auth_token', token, AUTH_COOKIE_OPTIONS);
+      Cookies.set('user_roles', JSON.stringify(roles), AUTH_COOKIE_OPTIONS);
+      Cookies.set('user_name', userName, AUTH_COOKIE_OPTIONS);
+      Cookies.set('token_exp', decoded.exp.toString(), AUTH_COOKIE_OPTIONS);
+
+      // 啟動自動刷新
+      this.startAutoRefresh();
 
       return {
         token,
@@ -113,51 +122,108 @@ export const authService = {
 
   async refreshToken() {
     try {
-      // 使用現有 token 請求刷新
       const currentToken = this.getToken();
-      if (!currentToken) throw new Error('No token to refresh');
+      if (!currentToken) {
+        throw new Error('No token to refresh');
+      }
 
-      const response = await api.post('/refresh-token', { token: currentToken });
-      const { token } = response.data;
+      const response = await api.post('/refresh-token', null, {
+        headers: {
+          Authorization: `Bearer ${currentToken}`
+        }
+      });
 
-      if (token) {
-        // 更新 token 相關信息
-        const decoded = jwtDecode<JWTPayload>(token);
-        // 存儲新 token
-        Cookies.set('token', token, COOKIE_OPTIONS);
-        Cookies.set('tokenExp', decoded.exp.toString(), COOKIE_OPTIONS);
+      if (response.data.token) {
+        const decoded = jwtDecode<JWTPayload>(response.data.token);
+
+        if (decoded.exp * 1000 < Date.now()) {
+          throw new Error('Refreshed token is already expired');
+        }
+
+        // 更新所有認證信息
+        Cookies.set('auth_token', response.data.token, AUTH_COOKIE_OPTIONS);
+        Cookies.set('token_exp', decoded.exp.toString(), AUTH_COOKIE_OPTIONS);
+
+        if (decoded.roles) {
+          const roles = JSON.parse(decoded.roles);
+          Cookies.set('user_roles', JSON.stringify(roles), AUTH_COOKIE_OPTIONS);
+        }
+
+        if (decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']) {
+          const userName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+          Cookies.set('user_name', userName, AUTH_COOKIE_OPTIONS);
+        }
+
         return true;
       }
       return false;
     } catch (error) {
+      console.error('Token refresh failed:', error);
       this.clearAuth();
       return false;
     }
   },
 
-  getTokenExpiration(): number | null {
-    const exp = Cookies.get('tokenExp');
-    return exp ? parseInt(exp) : null;
+  startAutoRefresh() {
+    // 如果已經有定時器在運行，先清除它
+    if (autoRefreshInterval) {
+      clearInterval(autoRefreshInterval);
+    }
+
+    // 設置新的定時器，每4分鐘檢查一次
+    autoRefreshInterval = setInterval(async () => {
+      const tokenExp = this.getTokenExpiration();
+      if (!tokenExp) return;
+
+      const currentTime = Math.floor(Date.now() / 1000);
+      // 如果 token 將在 5 分鐘內過期，就刷新它
+      if (tokenExp - currentTime <= 300) {
+        try {
+          const refreshed = await this.refreshToken();
+          if (!refreshed) {
+            this.clearAuth();
+            authErrorCallback();
+          }
+        } catch (error) {
+          console.error('Auto refresh failed:', error);
+          this.clearAuth();
+          authErrorCallback();
+        }
+      }
+    }, 4 * 60 * 1000); // 4分鐘檢查一次
+
+    // 返回清理函數
+    return () => {
+      if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+      }
+    };
   },
 
-  logout(redirectCallback?: () => void) {
-    this.clearAuth();
-    if (redirectCallback) {
-      redirectCallback();
+  stopAutoRefresh() {
+    if (autoRefreshInterval) {
+      clearInterval(autoRefreshInterval);
+      autoRefreshInterval = null;
     }
   },
 
   getToken(): string | undefined {
-    return Cookies.get('token');
+    return Cookies.get('auth_token');
   },
 
   getUserRoles(): UserRoles | null {
-    const roles = Cookies.get('userRoles');
+    const roles = Cookies.get('user_roles');
     return roles ? JSON.parse(roles) : null;
   },
 
   getUserName(): string | undefined {
-    return Cookies.get('userName');
+    return Cookies.get('user_name');
+  },
+
+  getTokenExpiration(): number | null {
+    const exp = Cookies.get('token_exp');
+    return exp ? parseInt(exp) : null;
   },
 
   isAuthenticated() {
@@ -180,6 +246,13 @@ export const authService = {
       return true;
     } catch {
       return false;
+    }
+  },
+
+  logout(redirectCallback?: () => void) {
+    this.clearAuth();
+    if (redirectCallback) {
+      redirectCallback();
     }
   },
 

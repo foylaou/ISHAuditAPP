@@ -39,62 +39,6 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
   };
 };
 
-const getSecurityHeaders = (env: EnvironmentConfig) => {
-  const scriptSrc = env.isDev
-    ? "'self' 'unsafe-inline' 'unsafe-eval'"
-    : "'self' 'unsafe-inline' 'unsafe-eval'";
-
-  const csp = `
-    default-src 'self';
-    script-src ${scriptSrc};
-    style-src 'self' 'unsafe-inline' ${env.DOMAIN};
-    img-src 'self' data: blob: ${env.DOMAIN};
-    font-src 'self' ${env.DOMAIN};
-    connect-src 'self' ${env.API_URL || ''} ${env.RAG_API || ''} ${
-    env.isDev ? "ws: wss:" : ""
-  };
-    frame-src 'self';
-    object-src 'none';
-    base-uri 'self';
-    form-action 'self';
-    upgrade-insecure-requests;
-  `
-    .replace(/\s{2,}/g, " ")
-    .trim();
-
-  return [
-    {
-      source: "/(.*)",
-      headers: [
-        {
-          key: "Content-Security-Policy",
-          value: csp,
-        },
-        {
-          key: "X-Content-Type-Options",
-          value: "nosniff",
-        },
-        {
-          key: "X-Frame-Options",
-          value: "DENY",
-        },
-        {
-          key: "X-XSS-Protection",
-          value: "1; mode=block",
-        },
-        {
-          key: "Strict-Transport-Security",
-          value: "max-age=31536000; includeSubDomains",
-        },
-        {
-          key: "Referrer-Policy",
-          value: "strict-origin-when-cross-origin",
-        },
-      ],
-    },
-  ];
-};
-
 const getRoutingConfig = (env: EnvironmentConfig) => ({
   redirects: async () => [
     {
@@ -136,28 +80,24 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   outputFileTracingIncludes: {
     '/**': [
-      './config/**/*',  // Include all configuration files
-      './public/**/*',  // Include all public files (including images)
-    ],  // Ensure configuration files are included
+      './config/**/*',
+      './public/**/*',
+    ],
   },
-  // Ensure static files are handled correctly
   assetPrefix: process.env.NODE_ENV === 'production' ? undefined : undefined,
 
-  // Explicitly define public resource folder
   publicRuntimeConfig: {
     staticFolder: '/static',
   },
 
-  // Handle static resources
   transpilePackages: ['next'],
 
-  headers: async () => getSecurityHeaders(env),
   ...getRoutingConfig(env),
 
   experimental: {
     serverActions: {
-      bodySizeLimit: '100mb', // Optional, set request body size limit
-      allowedOrigins: ['*'] // Optional, set allowed origins
+      bodySizeLimit: '100mb',
+      allowedOrigins: ['*']
     },
   },
 };
