@@ -5,34 +5,37 @@ FROM node:18-alpine AS base
 FROM base AS deps
 WORKDIR /app
 
-# 初始化 yarn 專案並設定 node-modules 模式
+# 複製依賴文件
 COPY package.json yarn.lock ./
 
-
+# 安裝依賴
 RUN apk add --no-cache libc6-compat
 RUN yarn install --network-timeout 1000000
-RUN ls -la /app
 
 # 構建階段
 FROM base AS builder
 WORKDIR /app
-
 
 # 複製依賴
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # 設置構建參數和環境變數
-ARG NEXT_PUBLIC_API_URL
+ARG NODE_ENV
+ARG API
+ARG RAG_API
 ARG NEXT_PUBLIC_DOMAIN
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
+ENV NODE_ENV=${NODE_ENV}
+ENV API_URL=${API_URL}
+ENV RAG_API=${RAG_API}
 ENV NEXT_PUBLIC_DOMAIN=${NEXT_PUBLIC_DOMAIN}
 
 # 構建應用
 RUN yarn build
 
 # 運行階段
-FROM base AS runner
+FROM node:18-alpine AS runner
 WORKDIR /app
 
 # 安裝運行時所需的工具
@@ -43,9 +46,11 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# 創建非 root 用戶
+# 創建非 root 用戶和確保快取目錄可寫
 RUN addgroup --system --gid 1001 nodejs && \
-    adduser --system --uid 1001 nextjs
+    adduser --system --uid 1001 nextjs && \
+    mkdir -p /home/nextjs/.cache/yarn && \
+    chown -R nextjs:nodejs /home/nextjs/.cache
 
 # 複製 builder 階段的輸出
 COPY --from=builder /app/public ./public
@@ -63,6 +68,5 @@ USER nextjs
 # 開放端口
 EXPOSE 3000
 
-# 設置入口腳本和啟動命令
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# 啟動命令
 CMD ["yarn", "start"]

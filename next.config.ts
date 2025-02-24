@@ -10,8 +10,8 @@ interface EnvironmentConfig {
 }
 
 const getEnvironmentConfig = (): EnvironmentConfig => {
-  const API_URL = process.env.API || "https://foynas.synology.me:8080";
-  const RAG_API = process.env.RAG_API || "https://foynas.synology.me:8080";
+  const API_URL = process.env.API || "http://ishabackend:8080";
+  const RAG_API = process.env.RAG_API || "http://ishabackend:8080";
   const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "http://localhost:3000";
   const NODE_ENV = process.env.NODE_ENV || "development";
   const isDev = NODE_ENV === "development";
