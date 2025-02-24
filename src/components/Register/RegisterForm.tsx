@@ -145,7 +145,7 @@ const handleSubmit = async (e: React.FormEvent) => {
             {/* Basic Information */}
             <div className="space-y-4">
               <div className="form-control w-full">
-                <label className="label">
+                <label className="label" title="帳號">
                   <span className="label-text">帳號</span>
                 </label>
                 <input
@@ -159,7 +159,7 @@ const handleSubmit = async (e: React.FormEvent) => {
               </div>
 
               <div className="form-control w-full">
-                <label className="label">
+                <label className="label" title="密碼">
                   <span className="label-text">密碼</span>
                 </label>
                 <input

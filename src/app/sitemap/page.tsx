@@ -71,7 +71,7 @@ export default function Page() {
 
         {/* Windows 說明 */}
         {activeTab === 'windows' && (
-          <div className="bg-base-200 p-4 rounded" role="tabpanel" aria-labelledby="windows-tab">
+          <div className="bg-base-200 p-4 rounded text-base-content" role="tabpanel" aria-labelledby="windows-tab">
             <h3 className="text-lg font-medium mb-2">Windows 作業系統使用者說明</h3>
             <ul className="list-disc pl-6 space-y-2">
               <li>Internet Explorer：請按 <kbd className="kbd kbd-sm bg-base-100">Alt</kbd> + <kbd className="kbd kbd-sm bg-base-100">快速鍵</kbd></li>
@@ -83,7 +83,7 @@ export default function Page() {
 
         {/* Mac 說明 */}
         {activeTab === 'mac' && (
-          <div className="bg-base-200 p-4 rounded" role="tabpanel" aria-labelledby="mac-tab">
+          <div className="bg-base-200 p-4 rounded text-base-content" role="tabpanel" aria-labelledby="mac-tab">
             <h3 className="text-lg font-medium mb-2">Mac OS X 作業系統使用者說明</h3>
             <ul className="list-disc pl-6 space-y-2">
               <li>Safari：請按 <kbd className="kbd kbd-sm bg-base-100">Control</kbd> + <kbd className="kbd kbd-sm bg-base-100">Option</kbd> + <kbd className="kbd kbd-sm bg-base-100">快速鍵</kbd></li>
@@ -95,7 +95,7 @@ export default function Page() {
 
         {/* Linux 說明 */}
         {activeTab === 'linux' && (
-          <div className="bg-base-200 p-4 rounded" role="tabpanel" aria-labelledby="linux-tab">
+          <div className="bg-base-200 p-4 rounded text-base-content" role="tabpanel" aria-labelledby="linux-tab">
             <h3 className="text-lg font-medium mb-2">Linux 作業系統使用者說明</h3>
             <ul className="list-disc pl-6 space-y-2">
               <li>Firefox：請按 <kbd className="kbd kbd-sm bg-base-100">Alt</kbd> + <kbd className="kbd kbd-sm bg-base-100">Shift</kbd> + <kbd className="kbd kbd-sm bg-base-100">快速鍵</kbd></li>

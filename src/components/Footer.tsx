@@ -46,6 +46,24 @@ export default function Footer() {
             >
               網站導覽
             </Link>
+             <Link
+              href="/help"
+              className="text-xs text-gray-300 hover:text-white transition-colors hover:underline focus:outline-none focus:ring-1 focus:ring-white/50 rounded-sm min-h-[44px] min-w-[44px] flex items-center px-3" // 確保最小點擊區域
+            >
+              操作說明
+            </Link>
+             <Link
+              href="/about"
+              className="text-xs text-gray-300 hover:text-white transition-colors hover:underline focus:outline-none focus:ring-1 focus:ring-white/50 rounded-sm min-h-[44px] min-w-[44px] flex items-center px-3" // 確保最小點擊區域
+            >
+              關於我們
+            </Link>
+             <Link
+              href="/contect"
+              className="text-xs text-gray-300 hover:text-white transition-colors hover:underline focus:outline-none focus:ring-1 focus:ring-white/50 rounded-sm min-h-[44px] min-w-[44px] flex items-center px-3" // 確保最小點擊區域
+            >
+              聯絡我們
+            </Link>
           </div>
         </div>
       </div>

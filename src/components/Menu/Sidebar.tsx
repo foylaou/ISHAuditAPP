@@ -161,6 +161,7 @@ export default function Sidebar() {
 
   // Client-side conditional rendering after hydration is complete
   return (
+
       <div className="drawer-side pt-16">
         <a href="#L"
            accessKey="l"
@@ -168,7 +169,6 @@ export default function Sidebar() {
           左方導覽列
         </a>
 
-        <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
 
         {localIsLoggedIn ? (
             // 登入後顯示的內容
