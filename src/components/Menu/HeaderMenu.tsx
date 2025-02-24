@@ -186,16 +186,17 @@ export default function HeaderMenu() {
       <div className="drawer">
 
         {/*<input id="my-drawer-3" type="checkbox" className="drawer-toggle"/>*/}
-        <a href="#U"
-           accessKey="u"
-           className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-white focus:p-4 focus:text-black">
-          上方導覽列
-        </a>
+
+
         <div className="drawer-content flex flex-col">
 
 
           {/* Navbar */}
           <div className="navbar bg-base-200 text-base-content fixed top-0 z-40 shadow-xl">
+            <a accessKey="u" href="#U" title="上方功能區塊"
+               className="bg-base-200 text-base-300">
+              :::
+            </a>
             <div className="flex-none lg:hidden">
 
               <label htmlFor="my-drawer-3" className="btn btn-ghost btn-square" title="大型石化督導資料庫（回首頁）">

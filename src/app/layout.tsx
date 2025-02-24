@@ -43,11 +43,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="h-screen flex flex-col">
 
                   <HeaderMenu/>
-                  <main className="flex-1 pt-24 bg-base-100">
-                      <a href="#c"
-                         accessKey="c"
-                         className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-white focus:p-4 focus:text-black">
-                          中間內容區塊
+                  <main className="flex-1  pt-24 bg-base-100">
+                      <a accessKey="c" href="#c" title="中間內容區塊"
+                         className="bg-base-100 text-base-300 ml-2">
+                          :::
                       </a>
 
                       <MantineProvider>

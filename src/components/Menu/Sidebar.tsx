@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import { useGlobalStore } from '@/store/useGlobalStore';
 import { useMenuStore } from '@/store/menuStore';
 import { authService } from '@/services/authService';
@@ -23,6 +23,7 @@ export default function Sidebar() {
   const [openMenuIndex, setOpenMenuIndex] = useState<string | null>(null);
   const router = useRouter();
   const {Username} = userInfoStore();
+  const sidebarLinkRef = useRef<HTMLAnchorElement>(null);
 
   // Track client-side mounting status
   const [mounted, setMounted] = useState(false);
@@ -39,6 +40,38 @@ export default function Sidebar() {
       setClientMenuItems(filtered.filter(item => item.label !== '登出'));
     }
   }, [isLoggedIn, menuItems, filterMenuByAuth]);
+
+  // 添加鍵盤快捷鍵功能
+  useEffect(() => {
+    if (!mounted) return;
+
+    // 為快捷鍵添加事件處理
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Alt+L 快捷鍵 (對應 accessKey="l")
+      if (e.altKey && e.key === 'l') {
+        // 找到 checkbox 並切換其狀態
+        const checkbox = document.getElementById('my-drawer-3') as HTMLInputElement;
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+          e.preventDefault(); // 防止默認的瀏覽器行為
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => {
+      window.removeEventListener('keydown', handleKeyPress);
+    };
+  }, [mounted]);
+
+  // 當側邊欄鏈接被點擊時的處理
+  const handleSidebarLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const checkbox = document.getElementById('my-drawer-3') as HTMLInputElement;
+    if (checkbox) {
+      checkbox.checked = !checkbox.checked;
+    }
+  };
 
   const handleLogout = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -161,19 +194,23 @@ export default function Sidebar() {
 
   // Client-side conditional rendering after hydration is complete
   return (
-
       <div className="drawer-side pt-16">
-        <a href="#L"
-           accessKey="l"
-           className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-white focus:p-4 focus:text-black">
-          左方導覽列
-        </a>
-
+        <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
 
         {localIsLoggedIn ? (
             // 登入後顯示的內容
             <div className="w-80 min-h-full bg-base-200 text-base-content flex flex-col">
               {/* 客製化的用戶檔案區塊 - 行動版顯示 */}
+              <a
+                accessKey="l"
+                href="#l"
+                title="左側功能區塊"
+                className="bg-base-200 text-base-300 ml-2"
+                ref={sidebarLinkRef}
+                onClick={handleSidebarLinkClick}
+              >
+                :::
+              </a>
               <div className="sm:hidden border-b border-base-300">
                 {renderCustomAvatarContent()}
               </div>
