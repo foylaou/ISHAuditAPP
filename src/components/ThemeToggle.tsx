@@ -28,6 +28,7 @@ export default function ThemeToggle() {
         aria-checked={theme}
       >
         <input
+          id="toggleTheme"
           type="checkbox"
           checked={theme}
           onChange={toggleTheme}

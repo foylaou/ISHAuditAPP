@@ -161,37 +161,44 @@ export default function Sidebar() {
 
   // Client-side conditional rendering after hydration is complete
   return (
-    <div className="drawer-side pt-16">
-      <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
+      <div className="drawer-side pt-16">
+        <a href="#L"
+           accessKey="l"
+           className="sr-only focus:not-sr-only focus:absolute focus:top-0 focus:left-0 focus:z-50 focus:bg-white focus:p-4 focus:text-black">
+          左方導覽列
+        </a>
 
-      {localIsLoggedIn ? (
-        // 登入後顯示的內容
-        <div className="w-80 min-h-full bg-base-200 text-base-content flex flex-col">
-          {/* 客製化的用戶檔案區塊 - 行動版顯示 */}
-          <div className="sm:hidden border-b border-base-300">
-            {renderCustomAvatarContent()}
-          </div>
+        <label htmlFor="my-drawer-3" className="drawer-overlay"></label>
 
-          {/* 一般選單項目 */}
-          <ul className="menu p-4 w-full">
-            {renderMenuItems(clientMenuItems)}
-          </ul>
-        </div>
-      ) : (
-        // 未登入時顯示的內容 - 只有登入按鈕
-        <div className="w-80 min-h-full bg-base-200 text-base-content flex flex-col items-center justify-center p-8">
-          <div className="text-center mb-8">
-            <h3 className="text-lg font-medium mb-2">請先登入</h3>
-            <p className="text-sm text-base-content/70">登入後查看完整選單</p>
-          </div>
-          <Link
-            href="/Login"
-            className="btn btn-primary w-full"
-          >
-            登入系統
-          </Link>
-        </div>
-      )}
-    </div>
+        {localIsLoggedIn ? (
+            // 登入後顯示的內容
+            <div className="w-80 min-h-full bg-base-200 text-base-content flex flex-col">
+              {/* 客製化的用戶檔案區塊 - 行動版顯示 */}
+              <div className="sm:hidden border-b border-base-300">
+                {renderCustomAvatarContent()}
+              </div>
+
+              {/* 一般選單項目 */}
+              <ul className="menu p-4 w-full">
+                {renderMenuItems(clientMenuItems)}
+              </ul>
+            </div>
+        ) : (
+            // 未登入時顯示的內容 - 只有登入按鈕
+            <div
+                className="w-80 min-h-full bg-base-200 text-base-content flex flex-col items-center justify-center p-8">
+              <div className="text-center mb-8">
+                <h3 className="text-lg font-medium mb-2">請先登入</h3>
+                <p className="text-sm text-base-content/70">登入後查看完整選單</p>
+              </div>
+              <Link
+                  href="/Login"
+                  className="btn btn-primary w-full"
+              >
+                登入系統
+              </Link>
+            </div>
+        )}
+      </div>
   );
 }
