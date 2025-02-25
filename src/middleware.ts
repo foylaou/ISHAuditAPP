@@ -88,11 +88,11 @@ export function middleware(req: NextRequest) {
     // 生產環境 CSP - 基於 AG Grid 最小要求
     cspDirectives = {
       'default-src': ["'self'"],
-      'script-src': ["'self'", `'nonce-${nonce}'`],
-      'style-src': ["'self'", "'unsafe-inline'"], // AG Grid 需要
+      'script-src': ["'self'", `'nonce-${nonce}'`, "'unsafe-eval'"], // 開發環境需要 unsafe-eval
+      'style-src': ["'self'", "'unsafe-inline'"],
       'img-src': ["'self'", "data:", "blob:"],
-      'font-src': ["'self'", "data:"], // AG Grid 需要
-      'connect-src': ["'self'", apiUrl, ragApiUrl].filter(Boolean),
+      'font-src': ["'self'", "data:"],
+      'connect-src': ["'self'", apiUrl, ragApiUrl, "ws:", "wss:"].filter(Boolean),
       'frame-src': ["'self'"],
       'object-src': ["'none'"],
       'base-uri': ["'self'"],
