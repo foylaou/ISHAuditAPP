@@ -70,6 +70,7 @@ export function middleware(req: NextRequest) {
       'frame-src': ["'self'"],
       'object-src': ["'none'"],
       'base-uri': ["'self'"],
+      'frame-ancestors':["'none'"],
       'form-action': ["'self'"]
     },
     // 生產環境配置
