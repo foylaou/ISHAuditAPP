@@ -1,4 +1,4 @@
-//src/middleware.ts
+// src/middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -26,16 +26,29 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
   };
 };
 
+// 使用 Web Crypto API 生成一個隨機字符串作為 nonce
+function generateNonce() {
+  const array = new Uint8Array(16);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
+
 export function middleware(_req: NextRequest) {
   const res = NextResponse.next();
   const env = getEnvironmentConfig();
+
+  // 使用 Web Crypto API 生成 nonce
+  const nonce = generateNonce();
+
+  // 將 nonce 設置到響應對象中，以便在頁面中使用
+  res.headers.set('x-nonce', nonce);
 
   // Define CSP directives based on environment
   const cspDirectives = {
     // 開發環境允許更寬鬆的設定
     development: {
       'default-src': ["'self'"],
-      'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      'script-src': ["'self'", `'nonce-${nonce}'`, "'unsafe-inline'", "'unsafe-eval'"],
       'style-src': ["'self'", "'unsafe-inline'", env.DOMAIN],
       'img-src': ["'self'", "data:", "blob:", env.DOMAIN],
       'font-src': ["'self'", env.DOMAIN],
@@ -48,7 +61,7 @@ export function middleware(_req: NextRequest) {
     // 生產環境使用更嚴格的設定
     production: {
       'default-src': ["'self'"],
-      'script-src': ["'self'", "'unsafe-inline'"],
+      'script-src': ["'self'", `'nonce-${nonce}'`, "'unsafe-inline'"],
       'style-src': ["'self'", "'unsafe-inline'", env.DOMAIN],
       'img-src': ["'self'", "data:", "blob:", env.DOMAIN],
       'font-src': ["'self'", env.DOMAIN],
@@ -80,6 +93,7 @@ export function middleware(_req: NextRequest) {
   res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   res.headers.set('X-Robots-Tag', "noindex,nofollow, noarchive, nosnippet, notranslate, noimageindex");
+  res.headers.set('Access-Control-Allow-Origin', 'null');
 
   return res;
 }

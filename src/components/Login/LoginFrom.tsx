@@ -1,7 +1,7 @@
 // components/LoginForm.tsx
 'use client';
 
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
 import { useRouter } from "next/navigation";
 import { KeyRound, User } from "lucide-react";
 import { useGlobalStore } from "@/store/useGlobalStore";
@@ -26,7 +26,16 @@ export default function LoginForm()  {
       [name.toLowerCase()]: value
     }));
   };
+  useEffect(() => {
+    // 從 meta 標籤中獲取 nonce
+    const nonce = document.querySelector('meta[name="csp-nonce"]')?.getAttribute('content') || '';
 
+    // 在添加內聯腳本時使用 nonce
+    const script = document.createElement('script');
+    script.nonce = nonce;
+    script.textContent = `console.log('動態添加的安全內聯腳本');`;
+    document.body.appendChild(script);
+  }, []);
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (!formData.username || !formData.password) {

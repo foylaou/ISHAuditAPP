@@ -8,7 +8,7 @@ import type {MenuItem, ModulePermission} from '@/types/menuTypes';
 import Image from "next/image";
 import logo from '@/../public/logo.svg';
 import logodark from '@/../public/logo-dark.svg';
-
+import * as Icons from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import AvatarMenu from "@/components/Menu/AvatarMenu";
 import NotificationComponent from "@/components/Menu/Notification";
@@ -193,7 +193,7 @@ export default function HeaderMenu() {
 
           {/* Navbar */}
           <div className="navbar bg-base-200 text-base-content fixed top-0 z-40 shadow-xl">
-            <a accessKey="u" href="#U" title="上方功能區塊"
+            <a accessKey="u" href="#u" title="上方功能區塊"
                className="bg-base-200 text-base-300">
               :::
             </a>
