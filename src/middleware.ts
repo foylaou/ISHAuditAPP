@@ -1,3 +1,4 @@
+//src/middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -7,18 +8,14 @@ interface EnvironmentConfig {
   DOMAIN: string;
   NODE_ENV: string;
   isDev: boolean;
-  NONCE: string;
 }
 
-const getEnvironmentConfig = (req: NextRequest): EnvironmentConfig => {
+const getEnvironmentConfig = (): EnvironmentConfig => {
   const API_URL = process.env.API || "http://ishabackend:8080";
   const RAG_API = process.env.RAG_API || "http://ishabackend:8080";
   const DOMAIN = process.env.NEXT_PUBLIC_DOMAIN || "http://localhost:3000";
   const NODE_ENV = process.env.NODE_ENV || "development";
   const isDev = NODE_ENV === "development";
-
-  // 生成唯一的 nonce 值用於腳本和樣式
-  const NONCE = Buffer.from(crypto.randomUUID()).toString('base64');
 
   return {
     API_URL,
@@ -26,79 +23,37 @@ const getEnvironmentConfig = (req: NextRequest): EnvironmentConfig => {
     DOMAIN,
     NODE_ENV,
     isDev,
-    NONCE
   };
 };
 
-export function middleware(req: NextRequest) {
+export function middleware(_req: NextRequest) {
   const res = NextResponse.next();
-  const env = getEnvironmentConfig(req);
+  const env = getEnvironmentConfig();
 
-  // 從請求 URL 中提取具體域名
-  const apiUrl = new URL(env.API_URL || '').hostname;
-  const ragApiUrl = new URL(env.RAG_API || '').hostname;
-  const domain = new URL(env.DOMAIN).hostname;
-
-  // 定義 CSP 指令，避免使用通配符
+  // Define CSP directives based on environment
   const cspDirectives = {
-    // 開發環境配置
+    // 開發環境允許更寬鬆的設定
     development: {
       'default-src': ["'self'"],
-      'script-src': [
-        "'self'",
-          "'unsafe-eval'",
-          "'unsafe-inline'",
-        // 避免使用 unsafe-inline，用 nonce 替代
-        apiUrl && `https://${apiUrl}`,
-        domain && `https://${domain}`
-      ].filter(Boolean),
-      'style-src': [
-        "'self'",
-          "'unsafe-eval'",
-          "'unsafe-inline'",
-        // 替代 unsafe-inline
-        apiUrl && `https://${apiUrl}`,
-        domain && `https://${domain}`
-      ].filter(Boolean),
-      'img-src': ["'self'", "data:", "blob:", domain && `https://${domain}`].filter(Boolean),
-      'font-src': ["'self'", domain && `https://${domain}`].filter(Boolean),
-      'connect-src': [
-        "'self'",
-        apiUrl && `https://${apiUrl}`,
-        ragApiUrl && `https://${ragApiUrl}`,
-        "ws://localhost:*",
-        "wss://localhost:*"
-      ].filter(Boolean),
+      'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      'style-src': ["'self'", "'unsafe-inline'", env.DOMAIN],
+      'img-src': ["'self'", "data:", "blob:", env.DOMAIN],
+      'font-src': ["'self'", env.DOMAIN],
+      'connect-src': ["'self'", env.API_URL, env.RAG_API, "ws:", "wss:"].filter(Boolean),
       'frame-src': ["'self'"],
-      'frame-ancestors': ["'self'"],  // 添加 frame-ancestors 控制嵌入
       'object-src': ["'none'"],
       'base-uri': ["'self'"],
       'form-action': ["'self'"]
     },
-    // 生產環境配置
+    // 生產環境使用更嚴格的設定
     production: {
       'default-src': ["'self'"],
-      'script-src': [
-        "'self'",
-          "'unsafe-eval'",
-          "'unsafe-inline'",
-      ].filter(Boolean),
-      'style-src': [
-        "'self'",
-          "'unsafe-eval'",
-          "'unsafe-inline'",
-        domain && `https://${domain}`
-        // 移除 unsafe-inline
-      ].filter(Boolean),
-      'img-src': ["'self'", "data:", "blob:", domain && `https://${domain}`].filter(Boolean),
-      'font-src': ["'self'", domain && `https://${domain}`].filter(Boolean),
-      'connect-src': [
-        "'self'",
-        apiUrl && `https://${apiUrl}`,
-        ragApiUrl && `https://${ragApiUrl}`
-      ].filter(Boolean),
+      'script-src': ["'self'", "'unsafe-inline'"],
+      'style-src': ["'self'", "'unsafe-inline'", env.DOMAIN],
+      'img-src': ["'self'", "data:", "blob:", env.DOMAIN],
+      'font-src': ["'self'", env.DOMAIN],
+      'connect-src': ["'self'", env.API_URL, env.RAG_API].filter(Boolean),
       'frame-src': ["'self'"],
-      'frame-ancestors': ["'self'"],  // 生產環境禁止任何網站嵌入
       'object-src': ["'none'"],
       'base-uri': ["'self'"],
       'form-action': ["'self'"],
@@ -122,14 +77,9 @@ export function middleware(req: NextRequest) {
   res.headers.set('X-Content-Type-Options', 'nosniff');
   res.headers.set('X-Frame-Options', 'DENY');
   res.headers.set('X-XSS-Protection', '1; mode=block');
-  res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
   res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-
-  // 移除 X-Powered-By 頭以防止信息洩露
-  res.headers.delete('X-Powered-By');
-
-  // 將 nonce 值添加到響應中，這樣 Next.js 和其他腳本可以使用它
-  res.headers.set('x-nonce', env.NONCE);
+  res.headers.set('X-Robots-Tag', "noindex,nofollow, noarchive, nosnippet, notranslate, noimageindex");
 
   return res;
 }

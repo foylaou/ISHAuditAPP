@@ -24,14 +24,18 @@ export default function ThemeToggle() {
         className="relative inline-block w-14 h-10 cursor-pointer"
         tabIndex={0}
         onKeyDown={handleKeyDown}
-        role="switch"
-        aria-checked={theme}
+
+
+
       >
         <input
           id="toggleTheme"
           type="checkbox"
           checked={theme}
           onChange={toggleTheme}
+          role="switch"
+          aria-checked={theme}
+          aria-label="切換深色模式"
           className="sr-only" // Visually hidden but still accessible
           tabIndex={-1} // 防止 input 接收鍵盤焦點
         />
