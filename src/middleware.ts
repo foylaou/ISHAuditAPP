@@ -46,14 +46,16 @@ export function middleware(req: NextRequest) {
       'default-src': ["'self'"],
       'script-src': [
         "'self'",
-        `'nonce-${env.NONCE}'`,
+          "'unsafe-eval'",
+          "'unsafe-inline'",
         // 避免使用 unsafe-inline，用 nonce 替代
         apiUrl && `https://${apiUrl}`,
         domain && `https://${domain}`
       ].filter(Boolean),
       'style-src': [
         "'self'",
-        `'nonce-${env.NONCE}'`,
+          "'unsafe-eval'",
+          "'unsafe-inline'",
         // 替代 unsafe-inline
         apiUrl && `https://${apiUrl}`,
         domain && `https://${domain}`
@@ -78,12 +80,13 @@ export function middleware(req: NextRequest) {
       'default-src': ["'self'"],
       'script-src': [
         "'self'",
-        `'nonce-${env.NONCE}'`
-        // 移除 unsafe-inline
+          "'unsafe-eval'",
+          "'unsafe-inline'",
       ].filter(Boolean),
       'style-src': [
         "'self'",
-        `'nonce-${env.NONCE}'`,
+          "'unsafe-eval'",
+          "'unsafe-inline'",
         domain && `https://${domain}`
         // 移除 unsafe-inline
       ].filter(Boolean),
@@ -95,7 +98,7 @@ export function middleware(req: NextRequest) {
         ragApiUrl && `https://${ragApiUrl}`
       ].filter(Boolean),
       'frame-src': ["'self'"],
-      'frame-ancestors': ["'none'"],  // 生產環境禁止任何網站嵌入
+      'frame-ancestors': ["'self'"],  // 生產環境禁止任何網站嵌入
       'object-src': ["'none'"],
       'base-uri': ["'self'"],
       'form-action': ["'self'"],
