@@ -68,9 +68,9 @@ export function middleware(req: NextRequest) {
         "wss://localhost:*"
       ].filter(Boolean),
       'frame-src': ["'self'"],
+      'frame-ancestors': ["'self'"],  // 添加 frame-ancestors 控制嵌入
       'object-src': ["'none'"],
       'base-uri': ["'self'"],
-      'frame-ancestors':["'none'"],
       'form-action': ["'self'"]
     },
     // 生產環境配置
@@ -95,6 +95,7 @@ export function middleware(req: NextRequest) {
         ragApiUrl && `https://${ragApiUrl}`
       ].filter(Boolean),
       'frame-src': ["'self'"],
+      'frame-ancestors': ["'none'"],  // 生產環境禁止任何網站嵌入
       'object-src': ["'none'"],
       'base-uri': ["'self'"],
       'form-action': ["'self'"],
