@@ -10,6 +10,62 @@ interface EnvironmentConfig {
   isDev: boolean;
 }
 
+// 模擬從後端撈取的白名單
+// 實際應用中，你可以使用 getStaticProps 或在伺服器啟動時從後端 API 獲取這些白名單
+interface CSPWhitelist {
+  scriptSrc: string[];
+  styleSrc: string[];
+  imgSrc: string[];
+  fontSrc: string[];
+  connectSrc: string[];
+  frameSrc: string[];
+}
+
+// 從後端獲取白名單的函數 (這裡使用模擬數據)
+function getCSPWhitelist(): CSPWhitelist {
+
+    // 使用環境變數中的 API URL
+  //   const apiUrl = process.env.API || "http://ishabackend:8080";
+  //   const response = await fetch(`${apiUrl}/security/csp-whitelist`);
+  //
+  //   if (!response.ok) {
+  //     throw new Error(`HTTP error! Status: ${response.status}`);
+  //   }
+  //
+  //   return await response.json();
+  // } catch (error) {
+  //   console.error("Error fetching CSP whitelist:", error);
+  // // 在實際應用中，這里應該是從後端 API 獲取的數據
+  return {
+    scriptSrc: [
+      // 可以添加你需要的外部腳本來源
+      "'self'",
+      "'unsafe-inline'",
+      "'unsafe-eval'"
+    ],
+    styleSrc: [
+      "'self'",
+      "'unsafe-inline'"
+    ],
+    imgSrc: [
+      "'self'",
+      "data:",
+      "blob:"
+    ],
+    fontSrc: [
+      "'self'",
+      "data:"
+    ],
+    connectSrc: [
+      "'self'",
+      // 可以添加其他允許的連接來源
+    ],
+    frameSrc: [
+      "'self'"
+    ]
+  };
+}
+
 const getEnvironmentConfig = (): EnvironmentConfig => {
   const API_URL = process.env.API || "http://ishabackend:8080";
   const RAG_API = process.env.RAG_API || "http://ishabackend:8080";
@@ -26,22 +82,9 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
   };
 };
 
-// 使用 Web Crypto API 生成一個隨機字符串作為 nonce
-function generateNonce() {
-  const array = new Uint8Array(16);
-  crypto.getRandomValues(array);
-  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
-}
-
 export function middleware(req: NextRequest) {
   const res = NextResponse.next();
   const env = getEnvironmentConfig();
-
-  // 使用 Web Crypto API 生成 nonce
-  const nonce = generateNonce();
-
-  // 將 nonce 設置到響應對象中
-  res.headers.set('x-nonce', nonce);
 
   // 檢查是否來自 ZAP 掃描器
   const userAgent = req.headers.get('user-agent') || '';
@@ -52,14 +95,17 @@ export function middleware(req: NextRequest) {
   const ragApiUrl = new URL(env.RAG_API || '').origin;
   const domainUrl = new URL(env.DOMAIN).origin;
 
-  // 為 AG Grid 設置最小 CSP
+  // 獲取 CSP 白名單
+  const whitelist = getCSPWhitelist();
+
+  // 為不同環境設置 CSP 配置
   let cspDirectives;
 
   if (isZapScan) {
-    // 針對 ZAP 掃描的 CSP - 使用 AG Grid 最小要求
+    // 針對 ZAP 掃描的 CSP - 使用 AG Grid 最小要求，但更寬鬆
     cspDirectives = {
       'default-src': ["'self'"],
-      'script-src': ["'self'", `'nonce-${nonce}'`],
+      'script-src': ["'self'", "'unsafe-inline'"], // 允許內聯腳本，沒有 nonce
       'style-src': ["'self'", "'unsafe-inline'"], // AG Grid 需要 unsafe-inline
       'img-src': ["'self'", "data:"],
       'font-src': ["'self'", "data:"], // AG Grid 需要 data: 字體
@@ -71,29 +117,29 @@ export function middleware(req: NextRequest) {
       'upgrade-insecure-requests': []
     };
   } else if (env.isDev) {
-    // 開發環境 CSP - 較寬鬆
+    // 開發環境 CSP - 最寬鬆
     cspDirectives = {
-      'default-src': ["'self'"],
-      'script-src': ["'self'", `'nonce-${nonce}'`, "'unsafe-eval'"], // 開發環境需要 unsafe-eval
-      'style-src': ["'self'", "'unsafe-inline'"],
-      'img-src': ["'self'", "data:", "blob:"],
-      'font-src': ["'self'", "data:"],
-      'connect-src': ["'self'", apiUrl, ragApiUrl, "ws:", "wss:"].filter(Boolean),
-      'frame-src': ["'self'"],
+      'default-src': ["'self'", "http:", "https:"],
+      'script-src': [...whitelist.scriptSrc, apiUrl, ragApiUrl].filter(Boolean),
+      'style-src': whitelist.styleSrc,
+      'img-src': whitelist.imgSrc,
+      'font-src': whitelist.fontSrc,
+      'connect-src': [...whitelist.connectSrc, apiUrl, ragApiUrl, "ws:", "wss:"].filter(Boolean),
+      'frame-src': whitelist.frameSrc,
       'object-src': ["'none'"],
       'base-uri': ["'self'"],
       'form-action': ["'self'"]
     };
   } else {
-    // 生產環境 CSP - 基於 AG Grid 最小要求
+    // 生產環境 CSP - 根據白名單配置，寬鬆但仍有保護
     cspDirectives = {
       'default-src': ["'self'"],
-      'script-src': ["'self'", `'nonce-${nonce}'`],
-      'style-src': ["'self'", "'unsafe-inline'"], // AG Grid 需要
-      'img-src': ["'self'", "data:", "blob:"],
-      'font-src': ["'self'", "data:"], // AG Grid 需要
-      'connect-src': ["'self'", apiUrl, ragApiUrl].filter(Boolean),
-      'frame-src': ["'self'"],
+      'script-src': [...whitelist.scriptSrc, apiUrl, ragApiUrl].filter(Boolean),
+      'style-src': whitelist.styleSrc,
+      'img-src': whitelist.imgSrc,
+      'font-src': whitelist.fontSrc,
+      'connect-src': [...whitelist.connectSrc, apiUrl, ragApiUrl].filter(Boolean),
+      'frame-src': whitelist.frameSrc,
       'object-src': ["'none'"],
       'base-uri': ["'self'"],
       'form-action': ["'self'"],
