@@ -76,7 +76,7 @@
     "cross-env": "^7.0.3",
     "daisyui": "^4.12.23",
     "depcheck": "^1.4.7",
-    "eslint": "^8",
+    "eslint": "latest",
     "eslint-config-next": "15.0.4",
     "jest": "^29.7.0",
     "postcss": "^8.4.21",
