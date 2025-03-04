@@ -62,7 +62,6 @@ export default function Page() {
 
                                 formData={formData}
                                 onChange={handleInputChange}
-                                displayMode={2}
                             />
                         </div>
                     </div>

@@ -84,7 +84,7 @@ const CustomLoginUITabs = () => {
                 返回登入
               </button>
             </div>
-            <Steps />
+            <Steps/>
           </motion.div>
         )}
       </AnimatePresence>

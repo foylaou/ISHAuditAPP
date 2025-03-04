@@ -3,18 +3,25 @@
 import {useState, ReactNode, ChangeEvent} from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
+/**
+ * TabTriggerProps 介面
+ * 用於定義標籤觸發器的屬性
+ *
+ * @interface TabTriggerProps
+ * @member {string} value 標籤的唯一值
+ * @member {string} currentTab 當前選中的標籤值
+ * @member {ReactNode} children 標籤內容
+ * @member {(value: string) => void} onClick 點擊標籤時的回調函數
+ * @member {boolean} useCustomStyles 是否使用自定義樣式
+ */
 interface TabTriggerProps {
-  /** 標籤的唯一值 */
   value: string;
-  /** 當前選中的標籤值 */
   currentTab: string;
-  /** 標籤內容 */
   children: ReactNode;
-  /** 點擊標籤時的回調函數 */
   onClick: (value: string) => void;
-  /** 是否使用自定義樣式 */
   useCustomStyles: boolean;
 }
+
 
 const TabTrigger = ({ value, currentTab, children, onClick, useCustomStyles }: TabTriggerProps) => {
   return (
@@ -34,22 +41,29 @@ const TabTrigger = ({ value, currentTab, children, onClick, useCustomStyles }: T
   )
 }
 
+/**
+ * 標籤內容屬性
+ * 用於描述標籤頁的內容與行為。
+ *
+ * @interface TabContentProps
+ * @property {string} value 標籤的唯一值
+ * @property {string} title 標籤頁標題
+ * @property {ReactNode} content 標籤頁內容
+ * @property {string} buttonText 按鈕文字
+ * @property {boolean} isActive 是否為當前激活的標籤頁
+ * @property {boolean} useCustomStyles 是否使用自定義樣式
+ * @property {() => void} onButtonClick 按鈕點擊事件處理函數
+ */
 interface TabContentProps {
-  /** 標籤的唯一值 */
   value: string;
-  /** 標籤頁標題 */
   title: string;
-  /** 標籤頁內容 */
   content: ReactNode;
-  /** 按鈕文字 */
   buttonText: string;
-  /** 是否為當前激活的標籤頁 */
   isActive: boolean;
-  /** 是否使用自定義樣式 */
   useCustomStyles: boolean;
-  /** 按鈕點擊事件處理函數 */
   onButtonClick: () => void;
 }
+
 
 const TabContent = ({ value, title, content, buttonText, isActive, useCustomStyles, onButtonClick }: TabContentProps) => {
   return (
