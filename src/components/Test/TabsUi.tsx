@@ -206,6 +206,37 @@ export default function LoginUITabs({ defaultTab = "一般登入", className = "
     setTab(newTab)
   }
 
+  // 驗證碼輸入框的動畫變體
+  const verificationInputVariants = {
+    hidden: {
+      opacity: 0,
+      y: -20,
+      height: 0,
+      marginBottom: 0
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+      height: 'auto',
+      marginBottom: '10px',
+      transition: {
+        type: 'spring',
+        stiffness: 300,
+        damping: 20,
+        duration: 0.3
+      }
+    },
+    exit: {
+      opacity: 0,
+      y: -20,
+      height: 0,
+      marginBottom: 0,
+      transition: {
+        duration: 0.2
+      }
+    }
+  }
+
   return (
     <div className={`w-full max-w-md flex flex-col space-y-6  p-4  mx-auto ${className}`}>
       <div className={useCustomStyles ? "tabs-root" : "card bg-base-200 shadow-md"}>
@@ -267,15 +298,25 @@ export default function LoginUITabs({ defaultTab = "一般登入", className = "
                     onChange={handleEmailChange}
                     className={useCustomStyles ? "input-field" : "input input-bordered w-full text-base-content"}
                   />
-                  {sendemail ? (
-                    <input
-                      type="text"
-                      placeholder="驗證碼"
-                      value={verificationCode}
-                      onChange={handleVerificationCodeChange}
-                      className={useCustomStyles ? "input-field" : "input input-bordered w-full text-base-content"}
-                    />
-                  ) : null}
+                  <AnimatePresence>
+                    {sendemail && (
+                      <motion.div
+                        key="verification-input"
+                        variants={verificationInputVariants}
+                        initial="hidden"
+                        animate="visible"
+                        exit="exit"
+                      >
+                        <input
+                          type="text"
+                          placeholder="驗證碼"
+                          value={verificationCode}
+                          onChange={handleVerificationCodeChange}
+                          className={useCustomStyles ? "input-field" : "input input-bordered w-full text-base-content"}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                   <div className="text-error">{emailerror}</div>
                 </div>
               }
@@ -309,122 +350,7 @@ export default function LoginUITabs({ defaultTab = "一般登入", className = "
 function StyleSheet() {
   return (
     <style>{`
-      .tabs-root {
-          display: flex;
-          flex-direction: column;
-          width: 400px;
-          max-width: 100%;
-          background-color: var(--layer);
-          border: 1px solid var(--border);
-          overflow: hidden;
-      }
 
-      .tabs-list {
-          display: flex;
-          border-bottom: 1px solid var(--border);
-      }
-
-      .tabs-trigger {
-          font-family: inherit;
-          padding: 0 20px;
-          height: 45px;
-          flex: 1;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 15px;
-          line-height: 1;
-          color: var(--feint-text);
-          user-select: none;
-          cursor: pointer;
-          background: transparent;
-          border: none;
-          border-bottom: 2px solid transparent;
-          transition: all 0.2s ease;
-          position: relative;
-      }
-
-      .tabs-trigger .tabs-indicator {
-          position: absolute;
-          bottom: -2px;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background: #ff0088;
-      }
-
-      .tabs-trigger:hover {
-          color: var(--text);
-      }
-
-      .tabs-trigger[data-state='active'] {
-          color: var(--text);
-      }
-
-      .tabs-content {
-          padding: 20px;
-          will-change: opacity, filter;
-      }
-
-      .tabs-content h3 {
-          margin: 0 0 10px 0;
-          color: var(--text);
-          font-size: 18px;
-          font-weight: 500;
-      }
-
-      .content-wrapper {
-          margin: 0 0 20px 0;
-          color: var(--feint-text);
-          font-size: 14px;
-          line-height: 1.5;
-      }
-
-      .form-fields {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-      }
-
-      .input-field {
-          padding: 8px 12px;
-          border: 1px solid var(--border);
-          border-radius: 4px;
-          background: var(--layer);
-          color: var(--text);
-          font-size: 14px;
-      }
-
-      .input-field:focus {
-          outline: none;
-          border-color: #ff0088;
-          transition: border-color 0.2s ease;
-      }
-
-      .button-container {
-          display: flex;
-          justify-content: flex-end;
-      }
-
-      .button {
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 5px;
-          font-weight: 500;
-          user-select: none;
-          border: none;
-          background: #ff0088;
-          color: white;
-          cursor: pointer;
-      }
-
-      .button.large {
-          font-size: 16px;
-          padding: 0 20px;
-          line-height: 35px;
-          height: 35px;
-      }
     `}</style>
   )
 }

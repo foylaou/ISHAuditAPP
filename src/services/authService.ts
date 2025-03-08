@@ -81,7 +81,7 @@ export const authService = {
       Password: formData.password,
     };
 
-    const response = await api.post('/login', apiData);
+    const response = await api.post('/Auth/login', apiData);
     const { token, message } = response.data;
 
     if (token) {

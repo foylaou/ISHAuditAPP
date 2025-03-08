@@ -3,7 +3,7 @@ import React from "react";
 
 export default function Footer() {
   return (
-      <footer className="bg-footerbg text-white py-4">
+      <footer className="bg-footer-bg text-white py-4">
         {/* 導盲磚 */}
         <a accessKey="z" href="#z" title="頁尾內容區塊"
            className="bg-footerbg text-base-300 ml-2">

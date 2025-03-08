@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import LoginUITabs from "@/components/Test/TabsUi"
 import Steps from "@/components/Steps/Register"
 import { motion, AnimatePresence } from "framer-motion"
@@ -8,39 +8,68 @@ import { motion, AnimatePresence } from "framer-motion"
 export default function Page() {
   // 控制顯示登入還是註冊組件
   const [showRegister, setShowRegister] = useState(false)
+  // 添加狀態追踪組件是否已加載
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  // 組件掛載後設置加載狀態
+  useEffect(() => {
+    setIsLoaded(true)
+    console.log("Page component mounted")
+  }, [])
 
   // 切換到註冊流程
   const handleRegister = () => {
+    console.log("Register")
+    console.log(isLoaded)
+    if(isLoaded){
+      console.log("handleRegister called")
     setShowRegister(true)
+    }
+
   }
 
   // 返回登入頁面
   const handleBackToLogin = () => {
+    console.log("handleBackToLogin called")
     setShowRegister(false)
   }
 
-  // 自定義修改 LoginUITabs 的註冊按鈕行為
-const CustomLoginUITabs = () => {
-  console.log("CustomLoginUITabs rendering"); // 添加日誌
+  // 自定義修改 LoginUITabs 的註冊按鈕行為 - 將其移到外部避免閉包問題
+  const CustomLoginUITabs = () => {
+    console.log("CustomLoginUITabs rendering")
 
-  return (
-    <div className="max-w-md flex flex-col space-y-6 p-4 mx-auto ">
-      <LoginUITabs />
-      <div className="text-center text-neutral-content " style={{ position: "relative", zIndex: 10 }}> {/* 添加樣式確保可見 */}
-        <span className="text-sm">還沒有帳號？</span>
-        <button
-          onClick={handleRegister}
-          className="text-primary ml-2 text-sm font-bold" // 增強按鈕樣式
-        >
-          立即註冊
-        </button>
+    return (
+
+      <div className="max-w-md flex flex-col space-y-6 p-4 mx-auto">
+
+        <LoginUITabs />
+        <div className="text-center text-base-content" style={{ position: "relative", zIndex: 10 }}>
+          <span className="text-sm">還沒有帳號？</span>
+          <button
+            onClick={() => {
+              console.log("註冊按鈕被點擊")
+              handleRegister()
+            }}
+            className="text-primary ml-2 text-sm font-bold"
+            type="button" // 明確指定按鈕類型
+          >
+            立即註冊
+          </button>
+        </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
 
-  return (
-    <div className=" flex items-center justify-center p-12">
+  // 如果組件尚未加載，返回加載狀態
+  if (!isLoaded) {
+      return <span className="loading loading-dots loading-lg"></span>
+  }
+
+    return (
+        <div className="flex items-center justify-center p-12">
+      {/* 添加調試信息 */}
+      <div className="hidden">當前狀態: {showRegister ? '註冊' : '登入'}</div>
+
       <AnimatePresence mode="wait" initial={false}>
         {!showRegister ? (
           <motion.div
@@ -62,10 +91,11 @@ const CustomLoginUITabs = () => {
             transition={{ duration: 0.3 }}
             className="w-full min-h-[400px]"
           >
-            <div className="">
+            <div className="p-4">
               <button
                 onClick={handleBackToLogin}
                 className="flex items-center text-base-content hover:text-neutral-content"
+                type="button" // 明確指定按鈕類型
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -84,7 +114,7 @@ const CustomLoginUITabs = () => {
                 返回登入
               </button>
             </div>
-            <Steps/>
+            <Steps />
           </motion.div>
         )}
       </AnimatePresence>

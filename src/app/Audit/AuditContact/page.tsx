@@ -1,7 +1,6 @@
 "use client"
 import {EnterpriseSelector} from "@/components/Selector/EnterpriseSelector";
 import React, {useCallback, useState} from "react";
-import {EnterPriseForm} from "@/types/Selector/enterPrise";
 
 interface ContactForm {
     enterpriseId: string; // 添加 enterpriseId 以配合 EnterpriseSelector
