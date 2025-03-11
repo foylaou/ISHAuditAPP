@@ -81,7 +81,7 @@ export default {
                     "accent": "#EA5404",
                     "accent-content": "#FFFFFF",
                     "neutral": "#2b2b2b",
-                    "neutral-content": "#ececec",
+                    "neutral-content": "#939393",
                     "base-100": "#F3F6FA",
                     "base-200": "#FCFCFC",
                     "base-300": "#cad7f7",

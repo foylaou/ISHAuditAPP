@@ -26,6 +26,7 @@ interface QueryResponse {
   answer: string;
 }
 
+
 export default function FileUploadComponent() {
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [question, setQuestion] = useState<string>('');

@@ -1,6 +1,6 @@
 import React, {StrictMode, useState} from "react";
-import {ColDef, colorSchemeDarkBlue, colorSchemeLightWarm, themeQuartz} from "ag-grid-community";
-import {AllCommunityModule, ModuleRegistry} from "ag-grid-community";
+import {ColDef, colorSchemeDarkBlue, colorSchemeLightWarm, themeQuartz} from "ag-grid-enterprise";
+import {AllCommunityModule, ModuleRegistry} from "ag-grid-enterprise";
 import {AgGridReact} from "ag-grid-react";
 import {useGlobalStore} from '@/store/useGlobalStore';
 import { AG_GRID_LOCALE_TW } from '@ag-grid-community/locale';

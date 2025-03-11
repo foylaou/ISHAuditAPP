@@ -27,7 +27,7 @@ export default function Error({ error, reset }: { error: Error; reset: () => voi
 
         <div className="relative w-full h-64 sm:h-96">
                   <FloatingImage
-            src="/500error.svg"
+            src="/500R3.svg"
             alt="500 伺服器錯誤"
           />
         </div>

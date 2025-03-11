@@ -1,11 +1,8 @@
 // components/File/FileUpload.tsx
 import React from 'react';
 import { Upload, X, AlertCircle, CheckCircle, Loader2,
-  FileIcon,
   Image,
-  FileText,
-  Film,
-  Music  } from 'lucide-react';
+  FileText, } from 'lucide-react';
 import { useFileUpload } from "@/hooks/useFileUpload";
 import axios from "axios";
 import {toast} from "react-toastify";
