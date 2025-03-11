@@ -100,7 +100,7 @@ export default function Page() {
         <div
             className="bg-base-200 text-base-content rounded-xl  shadow-lg overflow-hidden transition-all hover:shadow-xl">
             <NumberAnime
-                value={10}
+                value={9000}
                 className={"text-base-content"}
                 Title="督導人次"
             />
@@ -108,6 +108,6 @@ export default function Page() {
 
         </div>
       </div>
-        </AuthGuard>
+      </AuthGuard>
       );
       }

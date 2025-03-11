@@ -43,7 +43,7 @@ const getRoutingConfig = (env: EnvironmentConfig) => ({
   redirects: async () => [
     {
       source: "/",
-      destination: "/Home",
+      destination: "/Login",
       permanent: false,
     },
   ],

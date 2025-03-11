@@ -70,6 +70,7 @@ export default function LoginForm()  {
                       id="username"
                       type="text"
                       placeholder="請輸入帳號"
+                      title="請輸入帳號"
                       name="username"
                       value={formData.username}
                       onChange={handleInputChange}
@@ -89,6 +90,7 @@ export default function LoginForm()  {
                       id="password"
                       type="password"
                       placeholder="請輸入密碼"
+                      title="請輸入密碼"
                       name="password"
                       value={formData.password}
                       onChange={handleInputChange}

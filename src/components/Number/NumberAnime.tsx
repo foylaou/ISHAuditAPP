@@ -68,8 +68,8 @@ export default function NumberAnime({
 
     // Determine difference status
     const getDifferenceStatus = () => {
-        if (difference > 0) return "success text-success-content";
-        if (difference < 0) return "error text-error-content";
+        if (difference > 0) return "badge-success text-success-content";
+        if (difference < 0) return "badge-error text-error-content";
         return "badge-info";
     };
 

@@ -12,11 +12,6 @@ type PermissionLevel = 'Admin' | 'Power' | 'Edit' | 'None';
 
 /**
  * AuthGuard 組件的屬性定義
- *
- * @property {React.ReactNode} children - 需要保護的子組件
- * @property {Object} [requiredPermissions] - 所需的權限（預設為 Sys 模組，等級 None）
- * @property {ModuleType} requiredPermissions.module - 權限所屬模組
- * @property {PermissionLevel} requiredPermissions.level - 權限等級
  */
 interface AuthGuardProps {
   children?: React.ReactNode;
@@ -31,9 +26,6 @@ interface AuthGuardProps {
  *
  * 此組件用於保護受限頁面，確保使用者具有適當的登入狀態與權限。
  * 如果使用者未登入或無權訪問，則會自動導向登入或未授權頁面。
- *
- * @param {AuthGuardProps} props - 組件屬性
- * @returns {JSX.Element} 如果權限驗證通過則渲染子組件，否則返回空白內容
  */
 export default function AuthGuard({
   children,
@@ -61,115 +53,86 @@ export default function AuthGuard({
     return actualLevelIndex !== -1 && actualLevelIndex <= requiredLevelIndex;
   };
 
-  // 設置客戶端掛載狀態
+  // 验证并处理重定向逻辑
+  const verifyAndRedirect = async () => {
+    // 立即检查身份验证状态，在重定向前阻止显示任何内容
+    if (!authService.isAuthenticated()) {
+      router.replace('/Login');
+      return false;
+    }
+
+    // 获取用户权限
+    const userPermissions = authService.getUserRoles();
+    if (!userPermissions) {
+      router.replace('/Home');
+      return false;
+    }
+
+    // 检查模块权限
+    const modulePermission = userPermissions[requiredPermissions.module];
+    if (!hasRequiredPermission(modulePermission)) {
+      router.replace('/Unauthorized');
+      return false;
+    }
+
+    return true;
+  };
+
+  // 初始客户端验证
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    const initialize = async () => {
+      setMounted(true);
 
-  // 初始化驗證
-  useEffect(() => {
-    if (!mounted) return;
+      // 执行验证，如果验证失败则函数内部会处理重定向
+      const isAuthorized = await verifyAndRedirect();
 
-    let isRedirecting = false;
-
-    const initAuth = async () => {
-      if (isRedirecting) return;
-
-      try {
-        // 頁面初始化時，先檢查 Cookie 中的 token 是否有效
-        if (authService.isAuthenticated()) {
-          // 如果 token 有效但狀態為未登入，更新全局狀態
-          if (!isLoggedIn) {
-            useGlobalStore.setState({ isLoggedIn: true });
-          }
-
-          // 獲取使用者權限
-          const userPermissions = authService.getUserRoles();
-          if (!userPermissions) {
-            isRedirecting = true;
-            setAuthorized(false);
-            router.push('/Home');
-            return;
-          }
-
-          // 取得指定模組的權限
-          const modulePermission = userPermissions[requiredPermissions.module];
-
-          // 檢查權限
-          if (!hasRequiredPermission(modulePermission)) {
-            isRedirecting = true;
-            setAuthorized(false);
-            router.push('/Unauthorized');
-            return;
-          }
-
-          setAuthorized(true);
-        } else {
-          // 如果 token 無效但狀態為已登入，嘗試刷新 token
-          if (isLoggedIn) {
-            const refreshed = await authService.refreshToken();
-            if (!refreshed) {
-              useGlobalStore.setState({ isLoggedIn: false });
-              setAuthorized(false);
-              isRedirecting = true;
-              router.push('/Login');
-              return;
-            }
-
-            // 重新檢查權限
-            const userPermissions = authService.getUserRoles();
-            const modulePermission = userPermissions?.[requiredPermissions.module];
-            setAuthorized(hasRequiredPermission(modulePermission || ''));
-          } else {
-            setAuthorized(false);
-            isRedirecting = true;
-            router.push('/Login');
-            return;
-          }
-        }
-      } catch (error) {
-        console.error('Authentication error:', error);
-        setAuthorized(false);
-      } finally {
-        setIsChecking(false);
-      }
+      setAuthorized(isAuthorized);
+      setIsChecking(false);
     };
 
-    initAuth();
-  }, [mounted, isLoggedIn, router, requiredPermissions, permissions]);
+    initialize();
+  }, []);
 
-  // 自動刷新機制
+  // 自动刷新机制
   useEffect(() => {
     if (!mounted) return;
 
     const refreshAuth = async () => {
       if (isLoggedIn && !authService.isAuthenticated()) {
-        // Token 已過期但狀態仍為登入中，嘗試刷新 token
+        // Token 已过期但状态仍为登录中，尝试刷新 token
         try {
-          await authService.refreshToken();
+          const refreshed = await authService.refreshToken();
+          if (!refreshed) {
+            useGlobalStore.setState({ isLoggedIn: false });
+            setAuthorized(false);
+            router.replace('/Login');
+          }
         } catch (error) {
-          // 如刷新失敗，重置登入狀態
           useGlobalStore.setState({ isLoggedIn: false });
           setAuthorized(false);
-          router.push('/Login');
+          router.replace('/Login');
         }
       }
     };
 
-    const refreshInterval = setInterval(refreshAuth, 5 * 60 * 1000); // 每5分鐘刷新一次
+    const refreshInterval = setInterval(refreshAuth, 5 * 60 * 1000); // 每5分钟刷新一次
 
     return () => clearInterval(refreshInterval);
   }, [mounted, isLoggedIn, router]);
 
-  // 提供一致的初始渲染結構，避免水合錯誤
-  if (!mounted) {
-    return <div className="auth-guard-container">{children}</div>;
+  // 验证状态变化时重新验证
+  useEffect(() => {
+    if (mounted && !isChecking) {
+      verifyAndRedirect().then(setAuthorized);
+    }
+  }, [isLoggedIn, permissions]);
+
+  // 重要：只有在授权成功且不再检查时才渲染子组件
+  if (!mounted || isChecking || !authorized) {
+    // 显示加载状态或空白页，而不是子组件
+    return <div className="auth-guard-loading"></div>;
   }
 
-  // 客戶端驗證完成後的條件渲染
-  return (
-    <div className="auth-guard-container">
-      {authorized && !isChecking ? children : null}
-    </div>
-  );
+  // 只有在完全验证通过后才渲染子组件
+  return <div className="auth-guard-container">{children}</div>;
 }

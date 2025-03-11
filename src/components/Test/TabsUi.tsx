@@ -29,6 +29,10 @@ const TabTrigger = ({ value, currentTab, children, onClick, useCustomStyles }: T
       className={useCustomStyles ? "tabs tabs-lg" : `tab tab-bordered ${currentTab === value ? 'tab-active' : ''}`}
       onClick={() => onClick(value)}
       data-state={currentTab === value ? 'tab active' : 'tab'}
+      role="tab"
+      aria-selected={currentTab === value}
+      aria-controls={`${value}-panel`}
+      id={`${value}-tab`}
     >
       {children}
       {currentTab === value && (
@@ -77,6 +81,10 @@ const TabContent = ({ value, title, content, buttonText, isActive, useCustomStyl
       }}
       layout="position"
       className={useCustomStyles ? "tabs-content" : `p-5 will-change-[opacity,filter] text-base-content`}
+      role="tabpanel"
+      id={`${value}-panel`}
+      aria-labelledby={`${value}-tab`}
+      tabIndex={0}
     >
       <h3 className={useCustomStyles ? "" : "text-lg font-medium mb-2.5"}>{title}</h3>
       <div className={useCustomStyles ? "content-wrapper" : "mb-5 text-sm text-opacity-70"}>{content}</div>
@@ -188,13 +196,83 @@ export default function LoginUITabs({ defaultTab = "一般登入", className = "
     // 實際應用中，這裡可能會進行頁面跳轉或其他操作
   }
 
-  // 處理Passkey登入按鈕點擊
-  const handlePasskeyLogin = () => {
-    // 實際應用中，這裡應該調用WebAuthn API進行Passkey認證
-    console.log("觸發Passkey認證流程")
-    // 實際應用中，這裡可能會進行頁面跳轉或其他操作
-  }
+const handlePasskeyLogin = async () => {
+  try {
+    // 創建認證選項
+    const options: CredentialRequestOptions = {
+      publicKey: {
+        // 必須項: 挑戰值 (通常由服務器生成)
+        challenge: new Uint8Array(32), // 在實際應用中，這應該是從服務器獲取的隨機挑戰值
 
+        // 不指定用戶名稱，讓瀏覽器顯示所有可用的passkeys
+        rpId: window.location.hostname,
+
+        // 要求使用者驗證（例如指紋或面容識別）
+        userVerification: 'preferred',
+
+        // 可以為空陣列，表示接受任何憑證
+        allowCredentials: []
+      },
+
+      // mediation 應該在 publicKey 外面
+      mediation: 'required'
+    };
+
+    // 請求憑證
+    const credential = await navigator.credentials.get(options);
+
+    // 獲取到憑證後處理
+    if (credential && credential.type === 'public-key') {
+      // 確保憑證是 PublicKeyCredential 類型
+      const pkCredential = credential as PublicKeyCredential;
+
+      // 將憑證發送到伺服器進行驗證
+      const response = await verifyCredentialWithServer(pkCredential);
+
+      if (response.success) {
+        console.log("Passkey登入成功");
+        // 導向至登入後頁面
+        window.location.href = "/dashboard";
+      } else {
+        console.error("Passkey驗證失敗");
+      }
+    } else {
+      console.error("未獲取到有效的PublicKey憑證");
+    }
+  } catch (error) {
+    console.error("Passkey登入過程發生錯誤:", error);
+  }
+}; // 這裡添加了缺少的大括號
+
+const verifyCredentialWithServer = async (credential: PublicKeyCredential) => {
+  // 將 response 轉換為 AuthenticatorAssertionResponse 類型
+  const assertionResponse = credential.response as AuthenticatorAssertionResponse;
+
+  // 將憑證轉換為JSON
+  const authenticatorData = {
+    id: credential.id,
+    rawId: Array.from(new Uint8Array(credential.rawId)),
+    type: credential.type,
+    response: {
+      authenticatorData: Array.from(new Uint8Array(assertionResponse.authenticatorData)),
+      clientDataJSON: Array.from(new Uint8Array(assertionResponse.clientDataJSON)),
+      signature: Array.from(new Uint8Array(assertionResponse.signature)),
+      userHandle: assertionResponse.userHandle ?
+        Array.from(new Uint8Array(assertionResponse.userHandle)) : null
+    }
+  };
+
+  // 發送到伺服器
+  const serverResponse = await fetch('/api/verify-credential', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ credential: authenticatorData })
+  });
+
+  return await serverResponse.json();
+};
   /**
    * 處理標籤切換
    * @param newTab 新選中的標籤值
@@ -238,9 +316,9 @@ export default function LoginUITabs({ defaultTab = "一般登入", className = "
   }
 
   return (
-    <div className={`w-full max-w-md flex flex-col space-y-6  p-4  mx-auto ${className}`}>
+    <div className={`w-full max-w-md flex flex-col space-y-6 p-4 mx-auto ${className}`}>
       <div className={useCustomStyles ? "tabs-root" : "card bg-base-200 shadow-md"}>
-        <div className={useCustomStyles ? "tabs-list" : "tabs tabs-bordered tabs-lg"}>
+        <div className={useCustomStyles ? "tabs-list" : "tabs tabs-bordered tabs-lg"} role="tablist">
           <TabTrigger value="一般登入" currentTab={tab} onClick={handleTabChange} useCustomStyles={useCustomStyles}>
             一般登入
           </TabTrigger>
@@ -261,20 +339,32 @@ export default function LoginUITabs({ defaultTab = "一般登入", className = "
               title="一般登入"
               content={
                 <div className={useCustomStyles ? "form-fields" : "flex flex-col gap-2.5 text-base-content"}>
-                  <input
-                    type="text"
-                    placeholder="帳號"
-                    value={username}
-                    onChange={handleUsernameChange}
-                    className={useCustomStyles ? "input-field" : "input input-bordered w-full text-base-content"}
-                  />
-                  <input
-                    type="password"
-                    placeholder="密碼"
-                    value={password}
-                    onChange={handlePasswordChange}
-                    className={useCustomStyles ? "input-field" : "input input-bordered w-full text-base-content"}
-                  />
+                  <div className="form-control">
+                    <label htmlFor="username" className="label">
+                      <span className="label-text">帳號</span>
+                    </label>
+                    <input
+                      id="username"
+                      type="text"
+                      placeholder="請輸入帳號"
+                      value={username}
+                      onChange={handleUsernameChange}
+                      className={useCustomStyles ? "input-field" : "input input-bordered w-full text-base-content"}
+                    />
+                  </div>
+                  <div className="form-control">
+                    <label htmlFor="password" className="label">
+                      <span className="label-text">密碼</span>
+                    </label>
+                    <input
+                      id="password"
+                      type="password"
+                      placeholder="請輸入密碼"
+                      value={password}
+                      onChange={handlePasswordChange}
+                      className={useCustomStyles ? "input-field" : "input input-bordered w-full text-base-content"}
+                    />
+                  </div>
                 </div>
               }
               buttonText="登入"
@@ -291,13 +381,19 @@ export default function LoginUITabs({ defaultTab = "一般登入", className = "
               content={
                 <div className={useCustomStyles ? "form-fields" : "flex flex-col gap-2.5 text-base-content"}>
                   <h3>請輸入信箱登入</h3>
-                  <input
-                    type="email"
-                    placeholder="信箱"
-                    value={email}
-                    onChange={handleEmailChange}
-                    className={useCustomStyles ? "input-field" : "input input-bordered w-full text-base-content"}
-                  />
+                  <div className="form-control">
+                    <label htmlFor="email" className="label">
+                      <span className="label-text display">信箱</span>
+                    </label>
+                    <input
+                      id="email"
+                      type="email"
+                      placeholder="請輸入信箱"
+                      value={email}
+                      onChange={handleEmailChange}
+                      className={useCustomStyles ? "input-field" : "input input-bordered w-full text-base-content"}
+                    />
+                  </div>
                   <AnimatePresence>
                     {sendemail && (
                       <motion.div
@@ -307,17 +403,23 @@ export default function LoginUITabs({ defaultTab = "一般登入", className = "
                         animate="visible"
                         exit="exit"
                       >
-                        <input
-                          type="text"
-                          placeholder="驗證碼"
-                          value={verificationCode}
-                          onChange={handleVerificationCodeChange}
-                          className={useCustomStyles ? "input-field" : "input input-bordered w-full text-base-content"}
-                        />
+                        <div className="form-control">
+                          <label htmlFor="verificationCode" className="label">
+                            <span className="label-text">驗證碼</span>
+                          </label>
+                          <input
+                            id="verificationCode"
+                            type="text"
+                            placeholder="驗證碼"
+                            value={verificationCode}
+                            onChange={handleVerificationCodeChange}
+                            className={useCustomStyles ? "input-field" : "input input-bordered w-full text-base-content"}
+                          />
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
-                  <div className="text-error">{emailerror}</div>
+                  <div className="text-error" aria-live="polite">{emailerror}</div>
                 </div>
               }
               buttonText={sendemail ? "驗證登入" : "寄送驗證信"}
