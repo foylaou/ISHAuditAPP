@@ -49,7 +49,6 @@ export default function PieExample() {
       enabled: true,
       item: {
         label: {
-          fontSize: 14,
           color: isdarkmode ? "#ffffff" : "#000000", // 讓文字在深色或淺色模式下都清晰可讀
         },
       },

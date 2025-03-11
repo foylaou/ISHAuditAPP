@@ -40,7 +40,6 @@ const getOptions = (isdarkmode: boolean): AgChartOptions => ({
     enabled: true,
     item: {
       label: {
-        fontSize: 14,
         color: isdarkmode ? "#ffffff" : "#000000",
       },
     },

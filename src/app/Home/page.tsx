@@ -27,7 +27,7 @@ export default function Page() {
           <div className="p-6">
             <div className=" grid grid-cols-1 md:grid-cols-3 gap-4">
               <button
-                  className="btn btn-primary btn-lg transition-all hover:scale-105 flex items-center justify-center gap-2 h-16">
+                  className="btn btn-primary btn-lg text-3xl transition-all hover:scale-105 flex items-center justify-center gap-2 h-16">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -37,7 +37,7 @@ export default function Page() {
               </button>
 
               <button
-                  className="btn btn-secondary btn-lg transition-all hover:scale-105 flex items-center justify-center gap-2 h-16">
+                  className="btn btn-secondary btn-lg text-3xl transition-all hover:scale-105 flex items-center justify-center gap-2 h-16">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
@@ -46,7 +46,7 @@ export default function Page() {
               </button>
 
               <button
-                  className="btn btn-neutral btn-lg transition-all hover:scale-105 flex items-center justify-center gap-2 h-16">
+                  className="btn btn-neutral btn-lg text-3xl transition-all hover:scale-105 flex items-center justify-center gap-2 h-16">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24"
                      stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
