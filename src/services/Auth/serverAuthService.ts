@@ -1,5 +1,3 @@
-// /services/Auth/serverAuthService.ts
-
 "use server";
 import { cookies } from 'next/headers';
 import { jwtDecode } from 'jwt-decode';
@@ -41,49 +39,77 @@ export default async function getAuthtoken() {
 }
 
 /**
- * 存儲認證 Cookies
- * @param token JWT Token
- * @returns 用戶信息
+ * 存儲 Access Token 和 Refresh Token 到 Cookies
+ * @param accessToken JWT 的 Access Token
+ * @param refreshToken JWT 的 Refresh Token
+ * @returns 用戶基本信息 (userName, roles, userId)
  */
-export async function storeAuthCookies(token: string) {
-  if (!token) {
-    throw new Error('未提供 token');
+export async function storeAuthTokens(accessToken: string, refreshToken: string) {
+  if (!accessToken || !refreshToken) {
+    throw new Error('未提供 AccessToken 或 RefreshToken');
   }
 
   try {
-    const decoded = jwtDecode<JWTPayload>(token);
-    const expirationDate = new Date(decoded.exp * 1000);
+    // 解析 Access Token
+    const decodedAccess = jwtDecode<JWTPayload>(accessToken);
 
+    // 計算 Access Token 過期時間
+    const accessExpiration = new Date(decodedAccess.exp * 1000);
     const cookieStore = await cookies();
-    cookieStore.set('auth_token', token, {
-      expires: expirationDate,
+
+    // 存儲 Access Token
+    cookieStore.set('auth_token', accessToken, {
+      expires: accessExpiration,
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',
       path: '/',
     });
 
-    // 獲取用戶名稱和角色
-    const userName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
-    let roles: string[] = [];
+    // 存儲 Refresh Token，過期時間設置為 7 天
+    const refreshExpiration = new Date();
+    refreshExpiration.setDate(refreshExpiration.getDate() + 7);
 
-    if (decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']) {
-      const roleData = decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
+    cookieStore.set('refresh_token', refreshToken, {
+      expires: refreshExpiration,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+    });
+
+    // 解析 userName
+    let userName = decodedAccess["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || "未提供名稱";
+
+    // 移除不可見字符並清理空格
+    userName = userName.normalize("NFKC")
+                      .replace(/[\u200B-\u200D\uFEFF\u00A0\ufffc]/g, "")
+                      .trim()
+                      .replace(/\s+/g, " "); // 轉換多個空格為單一空格
+
+    // 解析 UserId
+    const userId = decodedAccess.sub || "未知";
+
+    // 解析角色
+    let roles: string[] = [];
+    if (decodedAccess["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"]) {
+      const roleData = decodedAccess["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
       roles = Array.isArray(roleData) ? roleData : [roleData];
-    } else if (decoded.role) {
-      roles = Array.isArray(decoded.role) ? decoded.role : [decoded.role];
+    } else if (decodedAccess.role) {
+      roles = Array.isArray(decodedAccess.role) ? decodedAccess.role : [decodedAccess.role];
     }
 
     return {
       userName,
       roles,
-      userId: decoded.sub
+      userId,
     };
   } catch (error) {
-    console.error('存儲認證 Cookie 時發生錯誤:', error);
+    console.error('存儲 Token 時發生錯誤:', error);
     throw error;
   }
 }
+
 
 
 

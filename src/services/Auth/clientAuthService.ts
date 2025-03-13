@@ -13,7 +13,11 @@ import {
   ValidateEmailTokenResponse,
   UserInfo
 } from "@/types/authType";
-import getAuthtoken, { storeAuthCookies, clearAuthCookies, isAuthenticated as serverIsAuthenticated } from './serverAuthService';
+import getAuthtoken, {
+
+  clearAuthCookies,
+  isAuthenticated as serverIsAuthenticated, storeAuthTokens,
+} from './serverAuthService';
 import {useGlobalStore} from "@/store/useGlobalStore";
 import {userInfoStore} from "@/store/useUserinfoStore";
 
@@ -108,6 +112,86 @@ export async function verifyCaptcha(captchaResponse: string): Promise<{
     };
   }
 }
+export async function SendVerificationEmail(email: string): Promise<{ success: boolean; message: string ; }> {
+  try {
+    const response = await api.post('/Auth/SendVerificationEmail', {Email: email},{
+            headers: { 'Content-Type': 'application/json' }
+    });
+    console.log(response);
+    if (response.status === 200 && response.data.success) {
+      return { success: true, message: response.data.Message };
+    }
+    else {
+      return { success: false, message: response.data.Message };
+    }
+  }catch(error) {
+    console.log(error);
+    return { success: false, message: "功能錯誤" };
+  }
+
+
+}
+
+export async function VerifyEmailCode(email: string,code:string): Promise<{ success: boolean; message: string ; }> {
+  try {
+    const response = await api.post('/Auth/VerifyEmailCode', {Email: email,Code:code},{
+            headers: { 'Content-Type': 'application/json' }
+    });
+    console.log(response);
+    if (response.status === 200 && response.data.success) {
+      return { success: true, message: response.data.Message };
+    }
+    else {
+      return { success: false, message: response.data.Message };
+    }
+  }catch(error) {
+    console.log(error);
+    return { success: false, message: "功能錯誤" };
+  }
+}
+export async function SignUp(username: string,nickname:string,password:string,email:string): Promise<{ success: boolean; message: string ; }> {
+  try {
+    const response = await api.post('/Auth/SignUp', {UserName:username,Password:password,Nickname:nickname,Email:email},{
+            headers: { 'Content-Type': 'application/json' }
+    });
+    console.log(response);
+    if (response.status === 200 && response.data.success) {
+      return { success: true, message: response.data.Message };
+    }
+    else {
+      return { success: false, message: response.data.Message };
+    }
+  }catch(error) {
+    console.log(error);
+    return { success: false, message: "功能錯誤" };
+  }
+}
+
+
+export async function DomainQuery(email: string): Promise<{ success: boolean; message: string ;data?:{ org: string; type: string[] } }> {
+  try {
+    const response = await axios.post('/proxy/Auth/DomainQuery', { Email: email }, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    console.log("📥 API 回應:", response.data);
+
+    if (response.status === 200 && response.data.org) {
+      return { success: true, message: "此郵件域名已通過組織驗證" , data: response.data };
+    }
+    return { success: false, message: "此郵件域名尚未通過組織驗證" };
+  } catch (error) {
+    if (axios.isAxiosError(error) && error.response) {
+      console.error("❌ API 錯誤回應:", error.response.data);
+
+      if (error.response.status === 403) {
+        return { success: false, message: "此郵件域名尚未通過組織驗證" };
+      }
+    }
+    return { success: false, message: "無法驗證電子郵件域名，請稍後再試" };
+  }
+}
+
 
 export async function login(formData: LoginForm) {
   const apiData: LoginApiRequest = {
@@ -121,7 +205,7 @@ export async function login(formData: LoginForm) {
   if (accessToken && refreshToken) {
 
     // 存儲 Access Token 到 Cookie
-    await storeAuthCookies(accessToken);
+    await storeAuthTokens(accessToken, refreshToken);
     const decoded = jwtDecode<JWTPayload>(accessToken);
     const username = (decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || "未提供名稱")
       .normalize("NFKC") // 標準化 Unicode 字符
@@ -162,12 +246,13 @@ export async function refreshToken() {
     const decoded = jwtDecode<JWTPayload>(token.value);
 
     const response = await api.post('/Auth/refresh-token', {
+
       refreshToken: token.value,  // 傳遞 Refresh Token
       userId: decoded.sub         // 傳遞 UserId
     });
 
     if (response.data.AccessToken) {
-      await storeAuthCookies(response.data.AccessToken);
+      await storeAuthTokens(response.data.AccessToken,response.data.RefreshToken);
       return true;
     }
     return false;
@@ -325,7 +410,7 @@ export async function loginWithEmail(email: string): Promise<{
     if (axios.isAxiosError(error) && error.response) {
       return {
         success: false,
-        message: error.response.data?.error || '電子郵件登入請求失敗'
+        message: error.response.data.message
       };
     }
     return {
@@ -334,80 +419,86 @@ export async function loginWithEmail(email: string): Promise<{
     };
   }
 }
-
-export async function validateEmailToken(token: string): Promise<ValidateEmailTokenResponse> {
+export async function validateEmailToken(token: string) {
   try {
+    console.log("📥 接收到的驗證 Token:", token);
+
+    // 發送 API 請求
     const response = await api.post('/Auth/ValidateEmailToken', { Token: token });
 
-    if (response.data.token) {
-      const jwtToken = response.data.token;
-      await processAndStoreToken(jwtToken);
+    const { accessToken, refreshToken, message } = response.data;
 
-      const decoded = jwtDecode<JWTPayload>(jwtToken);
-
-      const user: UserInfo = {
-        id: decoded.sub,
-        username: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
-        email: decoded.sub,
-        roles: Array.isArray(decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'])
-          ? decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
-          : decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
-            ? [decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']]
-            : []
-      };
-
-      return {
-        success: true,
-        message: response.data.message || '驗證成功',
-        token: jwtToken,
-        user
-      };
+    if (!accessToken || !refreshToken) {
+      console.error("❌ 伺服器未返回完整 Token:", response.data);
+      throw new Error("後端未返回完整 Token");
     }
 
-    return {
-      success: false,
-      message: response.data.message || '驗證失敗，未返回有效令牌'
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      return {
-        success: false,
-        message: error.response.data?.error || '驗證碼驗證失敗'
-      };
+    console.log("✅ 從後端取得 Access Token:", accessToken);
+    console.log("✅ 從後端取得 Refresh Token:", refreshToken);
+
+    // **確保 accessToken 是標準 JWT**
+    if (accessToken.split(".").length !== 3) {
+      throw new Error("無效的 Access Token，格式錯誤");
     }
+
+    // 存儲 Token 到 Cookie
+    await storeAuthTokens(accessToken, refreshToken);
+
+    // **只解析 accessToken，不解析 refreshToken**
+    let decoded: JWTPayload;
+    try {
+      decoded = jwtDecode<JWTPayload>(accessToken);
+      console.log("✅ 成功解析 JWT:", decoded);
+    } catch (decodeError) {
+      console.error("❌ 解析 JWT 失敗:", decodeError);
+      throw new Error("無法解析 Access Token");
+    }
+
+    // 清理 `username`
+    const username = (decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"] || "未提供名稱")
+      .normalize("NFKC")
+      .replace(/[\u200B-\u200D\uFEFF\u00A0\ufffc]/g, "")
+      .trim()
+      .replace(/\s+/g, " ");
+
+    console.log("✅ 清理後的使用者名稱:", `"${username}"`);
+
+    // 取得 UserId
+    let userId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
+    if (!userId) {
+      throw new Error("無法取得使用者 ID");
+    }
+    userId = userId.toUpperCase();
+    console.log("✅ 使用者 ID:", userId);
+
+    // 取得 Email
+    const email = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] || "未提供 Email";
+    console.log("✅ 解析出的 Email:", email);
+
+    // 更新全域狀態
+    useGlobalStore.getState().setUserId(userId);
+    useGlobalStore.getState().setUserName(username);
+    useGlobalStore.getState().setIsLoggedIn(true);
+    userInfoStore.getState().setUsername(username);
+    userInfoStore.getState().setEmail(email);
+
+    console.log("🚀 登入資訊已存儲於 Zustand");
+
     return {
-      success: false,
-      message: '驗證碼處理過程發生錯誤'
-    };
-  }
-}
-
-export async function processAndStoreToken(token: string) {
-  if (!token) {
-    throw new Error('未提供 token');
-  }
-
-  try {
-    const authInfo = await storeAuthCookies(token);
-
-    const decoded = jwtDecode<JWTPayload>(token);
-
-    return {
-      token,
-      ...authInfo,
-      tokenInfo: {
-        issuedAt: decoded.iat ? new Date(decoded.iat * 1000).toISOString() : new Date().toISOString(),
-        expiresAt: decoded.exp ? new Date(decoded.exp * 1000).toISOString() : null,
-        notBefore: decoded.nbf && !isNaN(decoded.nbf) ? new Date(decoded.nbf * 1000).toISOString() : null,
-        jwtId: decoded.jti
-      }
+      success: true,
+      username,
+      accessToken,
+      refreshToken,
+      userId,
+      message
     };
   } catch (error) {
-    console.error('處理 token 時發生錯誤:', error);
-    await clearAuthCookies();
+    console.error("❌ validateEmailToken 失敗:", error);
     throw error;
   }
 }
+
+
 
 export async function logout() {
   await clearAuthCookies();

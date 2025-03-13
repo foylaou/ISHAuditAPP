@@ -81,10 +81,11 @@ export interface DomainQueryResponse {
 
 
 export interface ValidateEmailTokenResponse {
-  success: boolean;
+  success?: boolean;
   message: string;
-  token?: string;
-  user?: UserInfo;
+  accessToken:string
+  refreshToken: string;
+  UserId: string;
 }
 
 // FIDO2 Assertion 選項

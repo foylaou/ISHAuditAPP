@@ -224,15 +224,10 @@ const handleEmailButton = async () => {
       // 驗證用戶輸入的驗證碼
       const validationResult = await authService.validateEmailToken(verificationCode);
 
-      if (!validationResult.success) {
-        setEmailerror(validationResult.message || "驗證碼無效");
+      if (!validationResult) {
+        setEmailerror("驗證碼無效");
         setLoading(false);
         return;
-      }
-
-      // 驗證成功，存儲用戶信息
-      if (validationResult.user) {
-         useGlobalStore.getState().setUserName(validationResult.user.username);
       }
 
       // 驗證成功後重定向到主頁
@@ -299,8 +294,7 @@ const handleNormalLogin = async () => {
 
     if (loginResult.accessToken && loginResult.refreshToken && loginResult.UserId) {
 
-      // 儲存 Access Token
-      await authService.processAndStoreToken(loginResult.accessToken);
+
 
       // 根據角色導航到不同頁面
       router.push('/Home');
