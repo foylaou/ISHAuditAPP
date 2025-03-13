@@ -151,7 +151,7 @@ export async function VerifyEmailCode(email: string,code:string): Promise<{ succ
 }
 export async function SignUp(username: string,nickname:string,password:string,email:string): Promise<{ success: boolean; message: string ; }> {
   try {
-    const response = await api.post('/Auth/SignUp', {UserName:username,Password:password,Nickname:nickname,Email:email},{
+    const response = await api.post('/Auth/SignUp', {userName:username,password:password,nickName:nickname,email:email},{
             headers: { 'Content-Type': 'application/json' }
     });
     console.log(response);
@@ -323,31 +323,7 @@ export async function register(userData: RegisterUserDto): Promise<RegisterRespo
   }
 }
 
-export async function signUp(userData: RegisterUserDto): Promise<{
-  success: boolean;
-  message: string;
-  data?: string;
-}> {
-  try {
-    const response = await api.post('/Auth/SignUp', userData);
-    return {
-      success: true,
-      message: response.data.message,
-      data: response.data.data
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      return {
-        success: false,
-        message: error.response.data?.error || '註冊失敗'
-      };
-    }
-    return {
-      success: false,
-      message: '註冊過程發生錯誤'
-    };
-  }
-}
+
 
 export async function getAssertionOptions(clientParams: AssertionClientParams): Promise<AssertionOptionsResponse> {
   try {
