@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import Link from "next/link";
-import { authService } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import { useGlobalStore } from "@/store/useGlobalStore";
 import Image from "next/image";
@@ -9,6 +8,7 @@ import { useAvatarStore } from "@/store/menuStore";
 import { AvatarMenuItem } from "@/types/Menu/MainMenu";
 import * as Icons from "lucide-react";
 import { motion ,AnimatePresence } from "motion/react"
+import {authService} from "@/services/Auth/authService";
 
 interface AvatarMenuProps {
   name: string;
@@ -206,7 +206,7 @@ export default function AvatarMenu(props: AvatarMenuProps) {
                     className="flex items-center gap-2 px-3 py-2"
                   >
                     <p className="font-medium text-2xl">
-                      {Username}
+                      {Username.toString()}
                     </p>
                     <p className="text-sm text-gray-600 ml-2">
                       您好

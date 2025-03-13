@@ -1,7 +1,7 @@
 'use client';
 import { useState, Fragment } from 'react';
 import SearchBar from '@/components/Audit/SearchBar';
-import AuthGuard from '@/components/auth/AuthGuard';
+
 import BasicResult from "@/components/Audit/AuditResult";
 import SuggestResult from "@/components/Audit/AuditSuggest";
 
@@ -17,7 +17,7 @@ export default function AuditPage() {
   const [activeTab, setActiveTab] = useState<TabType>('SearchBar');
 
   return (
-    <AuthGuard requiredPermissions={{ module: 'Audit', level: 'Admin' }}>
+
       <div className="px-5 pb-3">
         <div role="tablist" className="tabs tabs-lifted tabs-lg">
           {Object.entries(TAB_CONFIG).map(([key, { label, component: Component }]) => (
@@ -38,6 +38,6 @@ export default function AuditPage() {
           ))}
         </div>
       </div>
-    </AuthGuard>
+
   );
 }

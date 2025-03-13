@@ -5,9 +5,9 @@ import React, {useState} from "react";
 import { useRouter } from "next/navigation";
 import { KeyRound, User } from "lucide-react";
 import { useGlobalStore } from "@/store/useGlobalStore";
-import { authService } from "@/services/authService";
 import type { LoginForm } from "@/types/authType";
 import {userInfoStore} from "@/store/useUserinfoStore";
+import {authService} from "@/services/Auth/authService";
 
 
 

@@ -1,6 +1,7 @@
 // src/middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { isAuthenticated } from './services/Auth/serverAuthService';
 
 interface EnvironmentConfig {
   API_URL: string | undefined;
@@ -20,49 +21,26 @@ interface CSPWhitelist {
   frameSrc: string[];
 }
 
-// 定义需要保护的路由及其权限要求
-const protectedRoutes: Record<string, { module: string; level: string }> = {
-  '/dashboard': { module: 'Sys', level: 'Edit' },
-  '/admin': { module: 'Sys', level: 'Admin' },
-  '/report': { module: 'Audit', level: 'None' },
-  // 添加其他受保护的路由...
-};
+// 無需驗證的公開路由
+const publicRoutes = [
+  '/Login',            // 大寫路徑
+  '/404',
+  '/Unauthorized',
+  '/Maintenance',
+  '/api',
+  '/_next',
+  '/static',
+  '/favicon.ico',
+  '/public',  // 添加公開資源目錄
+  '/proxy',   // proxy 路徑
+];
 
-// 从cookie中获取和解析用户权限信息
-function getUserPermissionsFromCookie(request: NextRequest): Record<string, string> | null {
-  try {
-    // 获取包含权限的cookie
-    const permissionsCookie = request.cookies.get('userRoles')?.value;
-    if (!permissionsCookie) return null;
-
-    // 解析权限信息 (根据你的应用调整解析逻辑)
-    return JSON.parse(permissionsCookie);
-  } catch (error) {
-    console.error('Error parsing permissions from cookie:', error);
-    return null;
-  }
-}
-
-// 检查用户是否有权限访问指定路由
-function hasRequiredPermission(
-  userPermissions: Record<string, string> | null,
-  requiredPermission: { module: string; level: string }
-): boolean {
-  if (!userPermissions) return false;
-
-  const modulePermission = userPermissions[requiredPermission.module];
-  if (!modulePermission) return false;
-
-  // 取得使用者的實際權限等級
-  const actualLevel = modulePermission.replace(requiredPermission.module, '');
-
-  // 權限等級順序（由高至低）
-  const permissionLevels = ['Admin', 'Power', 'Edit', 'None'];
-  const requiredLevelIndex = permissionLevels.indexOf(requiredPermission.level);
-  const actualLevelIndex = permissionLevels.indexOf(actualLevel);
-
-  // 使用者的權限等級需大於或等於要求的權限等級
-  return actualLevelIndex !== -1 && actualLevelIndex <= requiredLevelIndex;
+// 驗證請求是否為公開路由
+function isPublicRoute(pathname: string): boolean {
+  return publicRoutes.some(route =>
+    pathname.startsWith(route) ||
+    pathname.toLowerCase().startsWith(route.toLowerCase())
+  );
 }
 
 // 從後端獲取白名單的函數 (這裡使用模擬數據)
@@ -113,46 +91,17 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
   };
 };
 
-export function middleware(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-
-  // 检查是否为受保护的路由
-  const requiredPermissionKey = Object.keys(protectedRoutes).find(
-    route => pathname.startsWith(route)
-  );
-
-  // 如果是受保护的路由，进行权限验证
-  if (requiredPermissionKey) {
-    // 获取认证令牌
-    const token = req.cookies.get('token')?.value;
-
-    // 如果没有令牌，重定向到登录页面
-    if (!token) {
-      return NextResponse.redirect(new URL('/Login', req.url));
-    }
-
-    // 获取用户权限
-    const userPermissions = getUserPermissionsFromCookie(req);
-
-    // 如果没有权限信息，重定向到首页
-    if (!userPermissions) {
-      return NextResponse.redirect(new URL('/Home', req.url));
-    }
-
-    // 检查是否有所需权限
-    const requiredPermission = protectedRoutes[requiredPermissionKey];
-    if (!hasRequiredPermission(userPermissions, requiredPermission)) {
-      return NextResponse.redirect(new URL('/Unauthorized', req.url));
-    }
-  }
-
-  // 继续处理CSP和其他安全标头
+// 應用安全頭部
+function applySecurity(req: NextRequest) {
   const res = NextResponse.next();
   const env = getEnvironmentConfig();
 
   // 檢查是否來自 ZAP 掃描器
   const userAgent = req.headers.get('user-agent') || '';
   const isZapScan = userAgent.includes('ZAP') || req.url.includes('zap');
+
+  // 檢查請求是否為靜態資源（圖片等）
+  const isStaticResource = req.nextUrl.pathname.match(/\.(jpg|jpeg|png|gif|svg|webp|ico|css|js)$/i);
 
   // 獲取域名具體的來源
   const apiUrl = new URL(env.API_URL || '').origin;
@@ -171,7 +120,7 @@ export function middleware(req: NextRequest) {
       'default-src': ["'self'"],
       'script-src': ["'self'", "'unsafe-inline'"], // 允許內聯腳本，沒有 nonce
       'style-src': ["'self'", "'unsafe-inline'"], // AG Grid 需要 unsafe-inline
-      'img-src': ["'self'", "data:"],
+      'img-src': ["'self'", "data:", "blob:"],
       'font-src': ["'self'", "data:"], // AG Grid 需要 data: 字體
       'connect-src': ["'self'", apiUrl, ragApiUrl].filter(Boolean),
       'frame-src': ["'self'"],
@@ -180,15 +129,15 @@ export function middleware(req: NextRequest) {
       'form-action': ["'self'"],
       'upgrade-insecure-requests': []
     };
-  } else if (env.isDev) {
-    // 開發環境 CSP - 最寬鬆
+  } else if (env.isDev || isStaticResource) {
+    // 開發環境 CSP 或靜態資源 - 最寬鬆
     cspDirectives = {
       'default-src': ["'self'", "http:", "https:"],
       'script-src': [...whitelist.scriptSrc, apiUrl, ragApiUrl].filter(Boolean),
       'style-src': whitelist.styleSrc,
-      'img-src': whitelist.imgSrc,
+      'img-src': ["'self'", "data:", "blob:", "http:", "https:"], // 允許所有圖片來源
       'font-src': whitelist.fontSrc,
-      'connect-src': [...whitelist.connectSrc, apiUrl, ragApiUrl, "ws:", "wss:"].filter(Boolean),
+      'connect-src': [...whitelist.connectSrc, apiUrl, ragApiUrl, "ws:", "wss:", "*"].filter(Boolean),
       'frame-src': whitelist.frameSrc,
       'object-src': ["'none'"],
       'base-uri': ["'self'"],
@@ -230,11 +179,58 @@ export function middleware(req: NextRequest) {
 
   // 使用具體的來源而不是 'null'
   res.headers.set('Access-Control-Allow-Origin', domainUrl);
+  // 添加 CORS 允許的方法和頭部
+  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.headers.set('Access-Control-Allow-Credentials', 'true');
 
   return res;
 }
 
-// 定义中间件应用的路径，保留原有配置
+export async function middleware(req: NextRequest) {
+  const { pathname } = req.nextUrl;
+
+  // 增加 debug 日誌，可以在 console 查看
+  console.log(`Middleware processing: ${pathname}`);
+
+  // 1. 如果是 API 請求，處理 CORS 和安全性並直接放行
+  if (pathname.startsWith('/api') || pathname.startsWith('/proxy')) {
+    console.log('API or Proxy request detected, applying security and passing through');
+    return applySecurity(req);
+  }
+
+  // 2. 如果是靜態資源或公開路由，直接放行
+  if (isPublicRoute(pathname) || pathname.match(/\.(jpg|jpeg|png|gif|svg|webp|ico|css|js)$/i)) {
+    console.log('Public route or static resource detected, applying security and passing through');
+    return applySecurity(req);
+  }
+
+  // 3. 檢查用戶是否已登入 (使用 serverAuthService 的 isAuthenticated)
+  if (!await isAuthenticated(req)) {
+    console.log('User not authenticated, redirecting to login page');
+    // 未登入用戶重定向到登入頁面
+    // 可以保存原始URL作為參數，便於登入後重定向回來
+    const url = new URL('/Login', req.url);
+    url.searchParams.set('returnUrl', encodeURIComponent(pathname));
+    return NextResponse.redirect(url);
+  }
+
+  // 4. 用戶已登入，應用安全頭並繼續
+  console.log('User authenticated, applying security and continuing');
+  return applySecurity(req);
+}
+
+// 定義中間件應用的路徑
+// 添加例外模式，避免對某些靜態資源路徑應用中間件
 export const config = {
-  matcher: '/:path*',
+  matcher: [
+    /*
+     * 比對所有路徑，除了：
+     * - 以下擴展名的靜態文件: (css, js, png, jpg, jpeg, gif, svg, webp, ico)
+     * - api 路由
+     * - _next 路由 (Next.js內部使用)
+     * - 通常不需要額外安全頭的靜態資源
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:css|js|png|jpg|jpeg|gif|svg|webp|ico)$).*)',
+  ],
 };

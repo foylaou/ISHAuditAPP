@@ -39,45 +39,45 @@ export default function Page() {
 
     return (
 
-      <div className="max-w-md flex flex-col space-y-6 p-4 mx-auto">
-
-        <LoginUITabs />
-        <div className="text-center text-base-content" style={{ position: "relative", zIndex: 10 }}>
-          <span className="text-sm">還沒有帳號？</span>
-          <button
-            onClick={() => {
-              console.log("註冊按鈕被點擊")
-              handleRegister()
-            }}
-            className="text-primary ml-2 text-sm font-bold"
-            type="button" // 明確指定按鈕類型
-          >
-            立即註冊
-          </button>
+        <div className="flex flex-col space-y-2 p-2 sm:p-3 w-full max-w-md mx-auto">
+          <div className="w-full">
+            <LoginUITabs/>
+          </div>
+          <div className="text-center text-base-content mt-2" style={{position: "relative", zIndex: 10}}>
+            <span className="text-xs sm:text-sm">還沒有帳號？</span>
+            <button
+                onClick={() => {
+                  console.log("註冊按鈕被點擊")
+                  handleRegister()
+                }}
+                className="text-primary ml-2 text-xs sm:text-sm font-bold"
+                type="button" // 明確指定按鈕類型
+            >
+              立即註冊
+            </button>
+          </div>
         </div>
-      </div>
     )
   }
 
   // 如果組件尚未加載，返回加載狀態
   if (!isLoaded) {
-      return <span className="loading loading-dots loading-lg"></span>
+    return <span className="loading loading-dots loading-lg"></span>
   }
 
-    return (
-        <div className="flex items-center justify-center p-12">
-      {/* 添加調試信息 */}
-      <div className="hidden">當前狀態: {showRegister ? '註冊' : '登入'}</div>
+  return (
+      <div className="flex items-center justify-center p-12">
+        {/* 添加調試信息 */}
+        <div className="hidden">當前狀態: {showRegister ? '註冊' : '登入'}</div>
 
-      <AnimatePresence mode="wait" initial={false}>
-        {!showRegister ? (
-          <motion.div
-            key="login"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+        <AnimatePresence mode="wait" initial={false}>
+          {!showRegister ? (
+              <motion.div
+                  key="login"
+                  initial={{opacity: 0, y: 20}}
+                  animate={{opacity: 1, y: 0}}
+                  exit={{opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="w-full min-h-[400px] p-10"
           >
             <CustomLoginUITabs />
           </motion.div>

@@ -3,7 +3,9 @@ import * as Icons from "lucide-react";
 import { LucideIcon } from 'lucide-react';
 import { useMenuStore } from "@/store/menuStore";
 import { usePathname } from 'next/navigation';
-import {MenuItem} from "@/types/menuTypes";
+
+import Link from 'next/link';
+import {MenuItems} from "@/types/menuTypes";
 
 // 定義麵包屑項目的介面
 interface BreadcrumbItem {
@@ -85,9 +87,9 @@ export default function BreadcrumbsIcons(props: BreadcrumbsIconsProps) {
 
       // 查找匹配的菜單項和父項
       const findMatchingItem = (
-        items: MenuItem[],
+        items: MenuItems[],
         path: string,
-        parentItems: MenuItem[] = []
+        parentItems: MenuItems[] = []
       ): { found: boolean; breadcrumbs: BreadcrumbItem[] } => {
         for (const item of items) {
           // 檢查當前項是否匹配路徑
@@ -148,7 +150,7 @@ export default function BreadcrumbsIcons(props: BreadcrumbsIconsProps) {
     isLast: boolean
   ): React.ReactElement {
 
-    
+
     const IconComponent = (Icons[item.icon] as LucideIcon) || Icons.File;
 
     // 創建內容元素
@@ -170,19 +172,19 @@ export default function BreadcrumbsIcons(props: BreadcrumbsIconsProps) {
 
     // 有連結的項目顯示為連結
     return (
-      <li key={index}>
-        <a href={item.link || "#"}>
-          {content}
-        </a>
-      </li>
+        <li key={index}>
+          <Link href={item.link ?? "#"}> {/* 確保 `item.link` 存在，否則使用 `#` */}
+            {content}
+          </Link>
+        </li>
     );
   }
 
   // 組件主體渲染
   return (
-    <div className={`breadcrumbs text-sm text-base-content ${className}`}>
-      <ul>
-        {breadcrumbItems.map((item, index) =>
+      <div className={`breadcrumbs text-sm text-base-content ${className}`}>
+        <ul>
+          {breadcrumbItems.map((item, index) =>
           renderBreadcrumbItem(item, index, index === breadcrumbItems.length - 1)
         )}
       </ul>

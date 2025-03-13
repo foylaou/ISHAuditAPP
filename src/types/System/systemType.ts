@@ -50,6 +50,6 @@ export interface HealthCheckResponse {
   details: {
     maintenance: boolean;
     database: boolean;
-    message: string;
+    message?: string;
   };
 }

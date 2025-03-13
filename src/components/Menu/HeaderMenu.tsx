@@ -2,25 +2,27 @@
 import Link from 'next/link';
 import React, {useEffect, useState} from 'react';
 import { useGlobalStore } from '@/store/useGlobalStore';
-import { useMenuStore } from '@/store/menuStore';
-import { authService } from '@/services/authService';
-import type {MenuItem, ModulePermission} from '@/types/menuTypes';
 import Image from "next/image";
 import logo from '@/../public/logo.svg';
 import logodark from '@/../public/logo-dark.svg';
-import * as Icons from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import AvatarMenu from "@/components/Menu/AvatarMenu";
 import NotificationComponent from "@/components/Menu/Notification";
+import {useMenuStore} from "@/store/menuStore";
+import {MenuItems} from "@/types/Menu/MainMenu";
 
+// 擴展 MenuItems 類型來包含 onClick 屬性
+interface ExtendedMenuItem extends MenuItems {
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
+}
 
 export default function HeaderMenu() {
   const { theme } = useGlobalStore();
   const { isLoggedIn } = useGlobalStore();
-  const { menuItems, fetchMenuItems } = useMenuStore();
+  const { menuItems, fetchMenuItems, getFilteredMenuItems } = useMenuStore(); // 使用 getFilteredMenuItems 代替 getProcessedMenuItems
   const [openMenuIndex, setOpenMenuIndex] = useState<string | null>(null);
   const [isClient, setIsClient] = useState(false);
-  const [filteredMenuItems, setFilteredMenuItems] = useState<MenuItem[]>([]);
+  const [processedMenuItems, setProcessedMenuItems] = useState<ExtendedMenuItem[]>([]);
 
   // 客戶端初始化檢測
   useEffect(() => {
@@ -30,65 +32,43 @@ export default function HeaderMenu() {
   // 獲取菜單數據
   useEffect(() => {
     if (isClient && isLoggedIn) {
-      fetchMenuItems();
+      fetchMenuItems().then(() => {
+        console.log("Menu items fetched successfully");
+      }).catch(error => {
+        console.error("Error fetching menu items:", error);
+      });
     }
   }, [fetchMenuItems, isLoggedIn, isClient]);
 
-  // 過濾菜單項目 - 只在客戶端進行
+  // 處理菜單項目 - 只過濾掉隱藏的選單
   useEffect(() => {
     if (isClient) {
-      const filtered = menuItems.filter(hasMenuPermission);
-      const menuWithLogout = isLoggedIn
-        ? [
-            ...filtered.filter(item => item.label !== '登出'),
-            // { label: '登出', link: '#', onClick: handleLogout }
-          ]
-        : filtered;
+      // 使用 getFilteredMenuItems 獲取處理後的選單
+      getFilteredMenuItems().then(items => {
+        // 添加或過濾登出選項
+        const menuWithLogout = isLoggedIn
+          ? [
+              ...items.filter(item => item.label !== '登出'),
+              // 如果需要可以添加登出選項
+              // { label: '登出', link: '#', onClick: handleLogout } as ExtendedMenuItem
+            ]
+          : items;
 
-      setFilteredMenuItems(menuWithLogout);
+        setProcessedMenuItems(menuWithLogout as ExtendedMenuItem[]);
+      });
     }
-  }, [menuItems, isLoggedIn, isClient]);
+  }, [menuItems, isLoggedIn, isClient, getFilteredMenuItems]);
 
-  const checkPermission = (required: ModulePermission): boolean => {
-    if (!isClient) return false;
-
-    const userRoles = authService.getUserRoles();
-    if (!userRoles) return false;
-
-    const modulePermission = userRoles[required.module];
-    if (!modulePermission) return false;
-
-    // 簡化比較邏輯
-    switch (required.level) {
-      case 'Admin':
-        return modulePermission === 'Admin';
-      case 'Power':
-        return ['Admin', 'Power'].includes(modulePermission);
-      case 'Edit':
-        return ['Admin', 'Power', 'Edit'].includes(modulePermission);
-      case 'None':
-        return true;
-      default:
-        return false;
+  // 渲染菜單項
+  const renderMenuItems = (items: ExtendedMenuItem[], isMobile: boolean = false, parentIndex: string = '') => {
+    if (!Array.isArray(items)) {
+      return null;
     }
-  };
 
-  const hasMenuPermission = (item: MenuItem): boolean => {
-    if (!isClient) return false;
-    if (!item.permission) return true;
-
-    return Array.isArray(item.permission)
-      ? item.permission.some(perm => checkPermission(perm))
-      : checkPermission(item.permission);
-  };
-
-  const renderMenuItems = (items: MenuItem[], isMobile: boolean = false, parentIndex: string = '') => {
     return items.map((item, index) => {
-      if (!hasMenuPermission(item)) return null;
-
       const currentIndex = parentIndex ? `${parentIndex}-${index}` : `${index}`;
 
-      if (item.children) {
+      if (item.children && item.children.length > 0) {
         const isOpen = openMenuIndex === currentIndex;
 
         return (
@@ -108,7 +88,7 @@ export default function HeaderMenu() {
                 {item.label}
               </summary>
               <ul className={isMobile ? 'collapse-content pl-4' : 'bg-base-200'}>
-                {renderMenuItems(item.children, isMobile, currentIndex)}
+                {renderMenuItems(item.children as ExtendedMenuItem[], isMobile, currentIndex)}
               </ul>
             </details>
           </li>
@@ -147,7 +127,7 @@ export default function HeaderMenu() {
         <div className="hidden flex-none lg:block">
           {isLoggedIn && (
             <ul className="menu lg:menu-horizontal px-6 rounded-box">
-              {renderMenuItems(filteredMenuItems, false)}
+              {renderMenuItems(processedMenuItems, false)}
             </ul>
           )}
         </div>
@@ -184,13 +164,7 @@ export default function HeaderMenu() {
 
   return (
       <div className="drawer">
-
-        {/*<input id="my-drawer-3" type="checkbox" className="drawer-toggle"/>*/}
-
-
         <div className="drawer-content flex flex-col">
-
-
           {/* Navbar */}
           <div className="navbar bg-base-200 text-base-content fixed top-0 z-40 shadow-xl">
             <a accessKey="u" href="#u" title="上方功能區塊"
@@ -198,7 +172,6 @@ export default function HeaderMenu() {
               :::
             </a>
             <div className="flex-none lg:hidden">
-
               <label htmlFor="my-drawer-3" className="btn btn-ghost btn-square" title="大型石化督導資料庫（回首頁）">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"

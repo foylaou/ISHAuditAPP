@@ -1,72 +1,119 @@
-/**
- * 登入表單
- * 定義使用者登入時提交的表單數據結構。
- *
- * @interface LoginForm
- * @property {string} username 使用者名稱
- * @property {string} password 使用者密碼
- */
+// types/authType.ts
+
+// 登入表單數據
 export interface LoginForm {
   username: string;
   password: string;
+  captchaToken?: string;
 }
 
-/**
- * 登入 API 請求
- * 定義發送至伺服器的登入請求格式。
- *
- * @interface LoginApiRequest
- * @property {string} Username 使用者名稱
- * @property {string} Password 使用者密碼
- */
+// 登入 API 請求數據
 export interface LoginApiRequest {
   Username: string;
   Password: string;
 }
 
-/**
- * 登入回應
- * 定義登入成功時伺服器返回的數據結構。
- *
- * @interface LoginResponse
- * @property {string} token JWT 權杖
- * @property {string} message 伺服器返回的訊息
- */
+// 註冊用戶數據
+export interface RegisterUserDto {
+  Username: string;
+  Password: string;
+  Email: string;
+  FullName?: string;
+  PhoneNumber?: string;
+  Department?: string;
+  Position?: string;
+  // 可以根據實際需求添加更多字段
+}
+
+// FIDO2 驗證客戶端參數
+export interface AssertionClientParams {
+  username?: string;
+  userVerification?: string;
+  // 可根據後端需求添加更多參數
+}
+
+// 錯誤響應
+export interface ErrorResponse {
+  message: string;
+  errors?: string[];
+}
+
+// 登入響應
 export interface LoginResponse {
   token: string;
   message: string;
 }
 
-/**
- * 使用者角色
- * 定義使用者在不同模組中的權限角色。
- *
- * @interface UserRoles
- * @property {string} Audit 稽核模組角色
- * @property {string} KPI 關鍵績效指標模組角色
- * @property {string} Sys 系統管理模組角色
- * @property {string} Org 組織管理模組角色
- */
-export interface UserRoles {
-  Audit: string;
-  KPI: string;
-  Sys: string;
-  Org: string;
+// Token 驗證響應
+export interface TokenValidationResponse {
+  isValid: boolean;
+  roles?: string[];
+  message: string;
 }
 
-/**
- * JWT 負載
- * 定義 JWT 權杖中的負載數據。
- *
- * @interface JWTPayload
- * @property {string} roles 使用者角色資訊（可能為逗號分隔的字串）
- * @property {string} sub 使用者標識符（通常為使用者 ID）
- * @property {number} exp 權杖過期時間（Unix 時間戳記）
- * @property {string} http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name 使用者名稱（基於 WS-身份驗證協議的聲明）
- */
-export interface JWTPayload {
-  roles: string;
-  sub: string;
-  exp: number;
-  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
+// 用戶信息
+export interface UserInfo {
+  id: string;
+  username: string;
+  email: string;
+  fullName?: string;
+  phoneNumber?: string;
+  department?: string;
+  position?: string;
+  roles?: string[];
+  [key: string]: unknown; // 允許其他後端可能返回的字段
+}
+
+// 註冊響應
+export interface RegisterResponse {
+  success: boolean;
+  message: string;
+  user?: UserInfo;
+}
+
+// 域名查詢響應
+export interface DomainQueryResponse {
+  success: boolean;
+  organization?: string;
+  organizationType?: string;
+  message?: string;
+}
+
+
+export interface ValidateEmailTokenResponse {
+  success: boolean;
+  message: string;
+  token?: string;
+  user?: UserInfo;
+}
+
+// FIDO2 Assertion 選項
+export interface AssertionOptions {
+  challenge: string;
+  timeout: number;
+  rpId: string;
+  allowCredentials?: {
+    type: string;
+    id: string;
+    transports?: string[];
+  }[];
+  userVerification?: string;
+  extensions?: Record<string, unknown>;
+  [key: string]: unknown;
+}
+
+// FIDO2 會話數據
+export interface SessionData {
+  challenge: string;
+  username?: string;
+  userId?: string;
+  [key: string]: unknown;
+}
+
+// FIDO2 Assertion 選項響應
+export interface AssertionOptionsResponse {
+  success: boolean;
+  message: string;
+  assertionOptions?: AssertionOptions;
+  sessionData?: SessionData;
 }

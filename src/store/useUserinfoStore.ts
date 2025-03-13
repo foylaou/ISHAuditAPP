@@ -1,33 +1,32 @@
-import { UserRoles } from "@/types/authType";
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 interface UserInfo {
   Username: string;
-  setUsername: (username: string) => void;
+  setUsername: (username: string) => void; // 🔹修正 setUserName -> setUsername
   Email: string;
   setEmail: (email: string) => void;
-  roles: UserRoles;
-  setRoles: (roles: UserRoles) => void;
 }
 
 export const userInfoStore = create<UserInfo>()(
   persist(
     (set) => ({
       Username: "",
-      setUsername: (username) => set({ Username: username }),
+      setUsername: (username) => {
+        set({ Username: username }); // 🔹修正 `name` 變數錯誤
+      },
       Email: "",
-      setEmail: (email) => set({ Email: email }),
-      roles: {} as UserRoles,
-      setRoles: (roles) => set({ roles: roles }),
+      setEmail: (email) => {
+        set({ Email: email });
+      },
     }),
     {
       name: "user-info-storage",
       storage: createJSONStorage(() =>
-        typeof window !== 'undefined' ? localStorage : {
+        typeof window !== "undefined" ? localStorage : {
           getItem: (_name: string) => null,
           setItem: (_name: string, _value: string) => {},
-          removeItem: (_name: string) => {}
+          removeItem: (_name: string) => {},
         }
       ),
     }

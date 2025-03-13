@@ -3,23 +3,20 @@ import Link from 'next/link';
 import React, {useState, useEffect, useRef} from 'react';
 import { useGlobalStore } from '@/store/useGlobalStore';
 import { useMenuStore } from '@/store/menuStore';
-import { authService } from '@/services/authService';
-
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {userInfoStore} from "@/store/useUserinfoStore";
+import {authService} from "@/services/Auth/authService";
+import { MenuItems } from "@/types/Menu/MainMenu";
 
-interface MenuItem {
-  label: string;
-  link?: string;
-  auth?: string;
-  children?: MenuItem[];
+// 擴展 MenuItems 類型來包含 onClick 屬性
+interface ExtendedMenuItem extends MenuItems {
   onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }
 
 export default function Sidebar() {
   const { isLoggedIn, logout } = useGlobalStore();
-  const { menuItems, filterMenuByAuth } = useMenuStore();
+  const { menuItems, fetchMenuItems, getFilteredMenuItems } = useMenuStore();
   const [openMenuIndex, setOpenMenuIndex] = useState<string | null>(null);
   const router = useRouter();
   const {Username} = userInfoStore();
@@ -28,18 +25,43 @@ export default function Sidebar() {
   // Track client-side mounting status
   const [mounted, setMounted] = useState(false);
   const [localIsLoggedIn, setLocalIsLoggedIn] = useState(false);
-  const [clientMenuItems, setClientMenuItems] = useState<MenuItem[]>([]);
+  const [clientMenuItems, setClientMenuItems] = useState<ExtendedMenuItem[]>([]);
 
-  // Only run on client-side after hydration
+  // 客戶端初始化檢測
   useEffect(() => {
     setMounted(true);
     setLocalIsLoggedIn(isLoggedIn);
+  }, [isLoggedIn]);
 
-    if (isLoggedIn) {
-      const filtered = filterMenuByAuth(menuItems);
-      setClientMenuItems(filtered.filter(item => item.label !== '登出'));
+  // 獲取菜單數據
+  useEffect(() => {
+    if (mounted && isLoggedIn) {
+      fetchMenuItems().then(() => {
+        console.log("Sidebar menu items fetched successfully");
+      }).catch(error => {
+        console.error("Error fetching sidebar menu items:", error);
+      });
     }
-  }, [isLoggedIn, menuItems, filterMenuByAuth]);
+  }, [fetchMenuItems, isLoggedIn, mounted]);
+
+  // 處理菜單項目 - 只過濾掉隱藏的選單
+  useEffect(() => {
+    if (mounted) {
+      // 使用 getFilteredMenuItems 獲取處理後的選單
+      getFilteredMenuItems().then(items => {
+        // 添加或過濾登出選項
+        const menuWithLogout = isLoggedIn
+          ? [
+              ...items.filter(item => item.label !== '登出'),
+              // 如果需要可以添加登出選項
+              // { label: '登出', link: '#', onClick: handleLogout } as ExtendedMenuItem
+            ]
+          : items;
+
+        setClientMenuItems(menuWithLogout as ExtendedMenuItem[]);
+      });
+    }
+  }, [menuItems, isLoggedIn, mounted, getFilteredMenuItems]);
 
   // 添加鍵盤快捷鍵功能
   useEffect(() => {
@@ -81,14 +103,19 @@ export default function Sidebar() {
     router.push('/Login');
   };
 
-  const renderMenuItems = (items: MenuItem[], parentIndex: string = '') => {
+  // 渲染菜單項
+  const renderMenuItems = (items: ExtendedMenuItem[], parentIndex: string = '') => {
+    if (!Array.isArray(items)) {
+      return null;
+    }
+
     return items.map((item, index) => {
       const currentIndex = parentIndex ? `${parentIndex}-${index}` : `${index}`;
       const isOpen = openMenuIndex === currentIndex;
 
       return (
         <li key={`${item.label}-${index}`}>
-          {item.children ? (
+          {item.children && item.children.length > 0 ? (
             <details
               open={isOpen}
             >
@@ -102,7 +129,7 @@ export default function Sidebar() {
                 {item.label}
               </summary>
               <ul className="menu menu-compact pl-4">
-                {renderMenuItems(item.children, currentIndex)}
+                {renderMenuItems(item.children as ExtendedMenuItem[], currentIndex)}
               </ul>
             </details>
           ) : (
@@ -134,6 +161,7 @@ export default function Sidebar() {
     });
   };
 
+  // 客製化用戶頭像內容
   const renderCustomAvatarContent = () => {
     return (
       <div className="flex flex-col items-center p-4">

@@ -176,13 +176,7 @@ export default function MaintenancePage() {
         </div>
         {/*<progress className="progress w-56"></progress>*/}
         <div className="space-y-4">
-          {/*<Link*/}
-          {/*  href="/"*/}
-          {/*  className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200 gap-2"*/}
-          {/*>*/}
-          {/*  <HomeIcon className="w-5 h-5" />*/}
-          {/*  回到首頁*/}
-          {/*</Link>*/}
+
           <p className="text-sm text-base-content">
             如有緊急事項，請聯繫我們的客服人員
           </p>

@@ -2,11 +2,9 @@ import PieExample from "@/components/chart/Pie";
 import BarExample from "@/components/chart/Bar";
 import BoxPlotExample from "@/components/chart/BoxPlot";
 import NumberAnime from "@/components/Number/NumberAnime";
-import AuthGuard from "@/components/auth/AuthGuard";
 
 export default function Page() {
   return (
-      <AuthGuard>
     <div className="min-h-screen bg-gradient-to-br from-base-100 to-base-200">
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-3xl font-bold text-primary mb-8 text-center">督導管理系統</h1>
@@ -108,6 +106,5 @@ export default function Page() {
 
         </div>
       </div>
-      </AuthGuard>
       );
       }

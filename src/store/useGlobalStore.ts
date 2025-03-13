@@ -1,47 +1,86 @@
-//@store/useGlobalStore.ts
+// store/useGlobalStore.ts
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import {UserRoles} from "@/types/authType";
-import {authService} from "@/services/authService";  // 需要引入 persist middleware
+import { isAuthenticated } from '@/services/Auth/clientAuthService';
+import getAuthToken, { clearAuthCookies } from '@/services/Auth/serverAuthService';
+import { authService } from "@/services/Auth/authService";
+import { jwtDecode } from 'jwt-decode';
 
-
+interface JWTPayload {
+  sub: string;
+  exp: number;
+  'http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name': string;
+}
 
 interface GlobalState {
   isLoggedIn: boolean;
+  userId: string | null;
+  userName: string | null;
   setIsLoggedIn: (status: boolean) => void;
-  permissions: UserRoles;
+  setUserId: (id: string | null) => void;
+  setUserName: (name: string | null) => void;
   theme: boolean;
-  login: (permissions: UserRoles) => void;
-  logout: () => void;
+  checkIsLoggedIn: () => Promise<void>;
+  checkAuthStatus: () => Promise<void>;
+  logout: () => Promise<void>;
   toggleTheme: () => void;
 }
 
-
 export const useGlobalStore = create<GlobalState>()(
-
   persist(
-    (set) => ({
+    (set, get) => ({
+      isLoggedIn: false,
+      userId: null,
+      userName: null,
+      theme: false,
 
-      isLoggedIn: authService.isAuthenticated(),
-        setIsLoggedIn: (status) => set({ isLoggedIn: status }),
-      permissions: { Audit: 'none', KPI: 'none', Sys: 'none' ,Org:'none'},
-      theme: false,  // 預設為 light mode
+      // ✅ 客戶端檢查登入狀態
+      checkIsLoggedIn: async () => {
+        try {
+          const authStatus = await isAuthenticated();
+          set({ isLoggedIn: authStatus });
+        } catch (error) {
+          console.error('Authentication check failed:', error);
+          set({ isLoggedIn: false, userId: null, userName: null });
+        }
+      },
 
-      login: (permissions) =>
-        set(() => ({ isLoggedIn: true, permissions })),
+      // ✅ 伺服器端檢查登入狀態，並解析 Token 取得 `userId`
+      checkAuthStatus: async () => {
+        try {
+          const token = await getAuthToken();
+          if (!token) {
+            set({ isLoggedIn: false, userId: null, userName: null });
+            return;
+          }
 
-      logout: () =>
-        set(() => ({
-          isLoggedIn: false,
-          permissions: { Audit: 'none', KPI: 'none', Sys: 'none' ,Org:'none' },
-        })),
+          const decoded = jwtDecode<JWTPayload>(token.value);
+          set({
+            isLoggedIn: true,
+            userId: decoded.sub, // 設定 UserId
+            userName: decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name']
+          });
+        } catch (error) {
+          console.error('Server-side auth check failed:', error);
+          set({ isLoggedIn: false, userId: null, userName: null });
+        }
+      },
 
+      setIsLoggedIn: (status) => set({ isLoggedIn: status }),
+      setUserId: (id) => set({ userId: id }),
+      setUserName: (name) => set({ userName: name }),
 
-      toggleTheme: () =>
-        set((state) => ({ theme: !state.theme })),
+      // ✅ 登出時清除 `auth_token` 並重置 `userId`
+      logout: async () => {
+        await authService.logout();
+        await clearAuthCookies();
+        set({ isLoggedIn: false, userId: null, userName: null });
+      },
+
+      toggleTheme: () => set((state) => ({ theme: !state.theme })),
     }),
     {
-      name: 'global-store', // localStorage 的 key 名稱
+      name: 'global-storage',
     }
   )
 );
