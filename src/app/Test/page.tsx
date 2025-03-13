@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import LoginUITabs from "@/components/Test/TabsUi"
+
 import Steps from "@/components/Steps/Register"
 import { motion, AnimatePresence } from "framer-motion"
+import ResponsiveLoginUITabs from "@/components/Login/TabsUi";
 
 export default function Page() {
   // 控制顯示登入還是註冊組件
@@ -42,7 +43,7 @@ export default function Page() {
 
       <div className="max-w-md flex flex-col space-y-6 p-4 mx-auto">
 
-        <LoginUITabs />
+        <ResponsiveLoginUITabs />
         <div className="text-center text-base-content" style={{ position: "relative", zIndex: 10 }}>
           <span className="text-sm">還沒有帳號？</span>
           <button
