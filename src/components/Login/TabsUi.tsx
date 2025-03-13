@@ -8,7 +8,7 @@ import {bufferUtils} from "@/utils/buffer";
 import axios from "axios";
 import {useGlobalStore} from "@/store/useGlobalStore";
 import { authService } from "@/services/Auth/authService";
-import {clearAuthCookies} from "@/services/Auth/serverAuthService";
+import {clearAuthCookies, storeAuthTokens} from "@/services/Auth/serverAuthService";
 
 /**
  * 標籤觸發器屬性介面
@@ -377,10 +377,10 @@ const handleNormalLogin = async () => {
   const result = response.data;
 
   // 驗證成功，保存 token
-  if (result.token) {
+  if (result.success) {
     // 使用 authService 處理 token，而不是直接儲存
     // 這將確保正確處理 JWT 解碼、儲存和自動刷新
-    await authService.processAndStoreToken(result.token);
+    await storeAuthTokens(result.accessToken, result.refreshToken);
 
     return {
       success: true,
