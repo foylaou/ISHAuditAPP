@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import React, {useState, useEffect, useRef} from 'react';
 import { useGlobalStore } from '@/store/useGlobalStore';
-import { useMenuStore } from '@/store/menuStore';
+import {useAvatarStore, useMenuStore} from '@/store/menuStore';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {userInfoStore} from "@/store/useUserinfoStore";
@@ -21,7 +21,7 @@ export default function Sidebar() {
   const router = useRouter();
   const {Username} = userInfoStore();
   const sidebarLinkRef = useRef<HTMLAnchorElement>(null);
-
+  const { AvatarMenuItems } = useAvatarStore();
   // Track client-side mounting status
   const [mounted, setMounted] = useState(false);
   const [localIsLoggedIn, setLocalIsLoggedIn] = useState(false);
@@ -181,7 +181,22 @@ export default function Sidebar() {
         <div className="divider"></div>
 
         <div className="w-full space-y-2">
-          <Link href="/profile" className="btn btn-sm btn-ghost w-full justify-start" onClick={() => setOpenMenuIndex(null)}>
+          {AvatarMenuItems.map((item, index) => (
+            <Link
+              key={index}
+              href={item.link || "#"}
+              className="hover:bg-base-200 rounded-md flex items-center p-2 cursor-pointer"
+              onClick={() => setOpenMenuIndex(null)}
+            >
+              {item.icon && (
+                <span className="mr-2">
+                  <item.icon  />
+                </span>
+              )}
+              {item.label}
+            </Link>
+          ))}
+          <Link href="/個人" className="btn btn-sm btn-ghost w-full justify-start" onClick={() => setOpenMenuIndex(null)}>
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>

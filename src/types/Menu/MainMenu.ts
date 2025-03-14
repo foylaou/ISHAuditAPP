@@ -9,6 +9,7 @@ export interface MenuItems {
 }
 
 export interface AvatarMenuItem {
+  icon?: string;
   label: string;
   link?: string;
   children?: AvatarMenuItem[];

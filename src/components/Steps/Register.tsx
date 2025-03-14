@@ -474,9 +474,35 @@ export default function Register() {
       if (!formData.password) {
         newErrors.password = '請設定密碼';
         isValid = false;
-      } else if (formData.password.length < 8) {
-        newErrors.password = '密碼至少需要8個字符';
-        isValid = false;
+      } else {
+        if (formData.password.length < 8 || formData.password.length > 128) {
+          newErrors.password = '密碼長度必須在 8 到 128 個字符之間';
+          isValid = false;
+        }
+        if (!/[A-Z]/.test(formData.password)) {
+          newErrors.password = '密碼需包含至少一個大寫字母';
+          isValid = false;
+        }
+        if (!/[a-z]/.test(formData.password)) {
+          newErrors.password = '密碼需包含至少一個小寫字母';
+          isValid = false;
+        }
+        if (!/[0-9]/.test(formData.password)) {
+          newErrors.password = '密碼需包含至少一個數字';
+          isValid = false;
+        }
+        if (!/[^A-Za-z0-9]/.test(formData.password)) {
+          newErrors.password = '密碼需包含至少一個特殊字符';
+          isValid = false;
+        }
+        if ([...new Set(formData.password)].length < 4) {
+          newErrors.password = '密碼需包含至少 4 個不同的字符';
+          isValid = false;
+        }
+        if (formData.password.toLowerCase().includes(formData.userName.toLowerCase())) {
+          newErrors.password = '密碼不能包含帳號名稱';
+          isValid = false;
+        }
       }
 
       // 驗證確認密碼
@@ -588,6 +614,7 @@ export default function Register() {
                     type="password"
                     className={`input input-bordered w-full ${errors.password ? 'input-error' : ''}`}
                     placeholder="密碼至少需要8個字符"
+
                     value={formData.password}
                     onChange={handleChange}
                 />
