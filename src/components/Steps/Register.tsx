@@ -128,11 +128,14 @@ export default function Register() {
           if (sendResult.success) {
             console.log("驗證碼已發送到郵箱:", email);
             nextStep(); // 前進到下一步
+            if (!sendResult.success){
+              setError(sendResult.message)
+            }
           } else {
             setError(sendResult.message || '發送驗證碼失敗，請稍後再試');
           }
         } else {
-          setError('無法識別的信箱域名，請檢查後重試');
+          setError(result.message);
         }
       } catch (error: unknown) {
         console.error('Email verification error:', error);
@@ -141,6 +144,7 @@ export default function Register() {
         } else {
           setError('處理請求時發生錯誤，請稍後再試');
         }
+        return;
       } finally {
         setIsLoading(false);
       }

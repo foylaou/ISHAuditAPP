@@ -112,24 +112,24 @@ export async function verifyCaptcha(captchaResponse: string): Promise<{
     };
   }
 }
-export async function SendVerificationEmail(email: string): Promise<{ success: boolean; message: string ; }> {
+export async function SendVerificationEmail(email: string): Promise<{ success: boolean; message: string ;errors?: string[] }> {
   try {
     const response = await api.post('/Auth/SendVerificationEmail', {Email: email},{
             headers: { 'Content-Type': 'application/json' }
     });
     console.log(response);
-    if (response.status === 200 && response.data.success) {
+    if (response.status === 200) {
       return { success: true, message: response.data.Message };
     }
     else {
       return { success: false, message: response.data.Message };
     }
   }catch(error) {
-    console.log(error);
-    return { success: false, message: "功能錯誤" };
+    if (axios.isAxiosError(error) && error.response) {
+      return {success: false, message: "錯誤" ,errors: error.response?.data?.errors};
+    }
+    return { success: false, message: "未知錯誤" };
   }
-
-
 }
 
 export async function VerifyEmailCode(email: string,code:string): Promise<{ success: boolean; message: string ; }> {
@@ -168,18 +168,16 @@ export async function SignUp(username: string,nickname:string,password:string,em
 }
 
 
-export async function DomainQuery(email: string): Promise<{ success: boolean; message: string ;data?:{ org: string; type: string[] } }> {
+export async function DomainQuery(email: string): Promise<{ success: boolean; message: string ;data?:{org: string; type: string[] } }> {
   try {
     const response = await axios.post('/proxy/Auth/DomainQuery', { Email: email }, {
       headers: { 'Content-Type': 'application/json' }
     });
 
-    console.log("📥 API 回應:", response.data);
-
-    if (response.status === 200 && response.data.org) {
-      return { success: true, message: "此郵件域名已通過組織驗證" , data: response.data };
+    if (response.status === 200 && response.data.success) {
+      return { success: true, message: "此郵件域名已通過組織驗證", data: response.data };
     }
-    return { success: false, message: "此郵件域名尚未通過組織驗證" };
+    return { success: false, message: response.data.message ?? "查詢失敗，請稍後再試" };
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       console.error("❌ API 錯誤回應:", error.response.data);
