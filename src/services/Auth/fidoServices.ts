@@ -15,8 +15,13 @@ const api = axios.create({
     'Content-Type': 'application/json'
   }
 });
-
-// WebAuthn Type Definitions
+/**
+ * 認證器的斷言回應。
+ * @param clientDataJSON 用戶端資料 JSON
+ * @param authenticatorData 認證器資料
+ * @param signature 簽名值
+ * @param userHandle 使用者標識（可選）
+ */
 export interface AuthenticatorAssertionResponse {
   clientDataJSON: ArrayBuffer;
   authenticatorData: ArrayBuffer;
@@ -24,6 +29,13 @@ export interface AuthenticatorAssertionResponse {
   userHandle?: ArrayBuffer;
 }
 
+/**
+ * 公開金鑰憑證。
+ * @param id 憑證 ID
+ * @param type 憑證類型（通常為 "public-key"）
+ * @param rawId 原始 ID，以 ArrayBuffer 儲存
+ * @param response 認證器的回應
+ */
 export interface MyPublicKeyCredential {
   id: string;
   type: string;
@@ -31,6 +43,13 @@ export interface MyPublicKeyCredential {
   response: AuthenticatorAssertionResponse;
 }
 
+/**
+ * 斷言選項請求。
+ * @param Username 使用者名稱（可選）
+ * @param UserVerification 使用者驗證要求等級
+ * @param AuthenticatorSelection 認證器選擇設定
+ * @param Extensions 擴展功能，可擴展的鍵值對
+ */
 export interface AssertionOptionsRequest {
   Username?: string;
   UserVerification: "required" | "preferred" | "discouraged";
@@ -42,6 +61,15 @@ export interface AssertionOptionsRequest {
   Extensions: Record<string, unknown>;
 }
 
+/**
+ * 斷言選項回應。
+ * @param challenge 挑戰字串
+ * @param timeout 超時時間（毫秒）
+ * @param rpId 註冊提供者 ID
+ * @param allowCredentials 允許的憑證（可選）
+ * @param userVerification 使用者驗證方式（可選）
+ * @param extensions 擴展功能（可選）
+ */
 export interface AssertionOptions {
   challenge: string;
   timeout: number;
@@ -55,6 +83,13 @@ export interface AssertionOptions {
   extensions?: Record<string, unknown>;
 }
 
+/**
+ * 斷言結果。
+ * @param success 是否成功
+ * @param message 訊息描述
+ * @param assertionOptions 斷言選項（可選）
+ * @param sessionData 會話資料（可選）
+ */
 export interface AssertionResult {
   success: boolean;
   message: string;
@@ -62,6 +97,15 @@ export interface AssertionResult {
   sessionData?: Record<string, unknown> | string;
 }
 
+/**
+ * 驗證結果。
+ * @param success 是否成功
+ * @param message 訊息描述
+ * @param token 驗證 Token（可選）
+ * @param accessToken 存取 Token（可選）
+ * @param refreshToken 更新 Token（可選）
+ * @param userId 使用者 ID（可選）
+ */
 export interface VerificationResult {
   success: boolean;
   message: string;
@@ -71,23 +115,21 @@ export interface VerificationResult {
   userId?: string;
 }
 
+
 /**
  * WebAuthn/FIDO2 Buffer Utilities
  */
+
 export const bufferUtils = {
   /**
-   * Decode a base64url string to an ArrayBuffer
-   * @param base64Url Base64URL encoded string
-   * @returns ArrayBuffer
+   * 解碼 Base64URL 字串為 ArrayBuffer
+   * @param base64Url Base64URL 編碼的字串
+   * @returns 轉換後的 ArrayBuffer
    */
   base64UrlDecode: (base64Url: string): ArrayBuffer => {
-    // Replace base64url characters with standard base64 characters
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    // Add padding if needed
     const padded = base64.padEnd(base64.length + (4 - (base64.length % 4)) % 4, '=');
-    // Decode base64
     const binaryString = window.atob(padded);
-    // Convert to ArrayBuffer
     const bytes = new Uint8Array(binaryString.length);
     for (let i = 0; i < binaryString.length; i++) {
       bytes[i] = binaryString.charCodeAt(i);
@@ -96,9 +138,9 @@ export const bufferUtils = {
   },
 
   /**
-   * Encode an ArrayBuffer as a base64url string
-   * @param buffer ArrayBuffer to encode
-   * @returns Base64URL encoded string
+   * 將 ArrayBuffer 編碼為 Base64URL 字串
+   * @param buffer 要編碼的 ArrayBuffer
+   * @returns Base64URL 編碼的字串
    */
   arrayBufferToBase64Url: (buffer: ArrayBuffer): string => {
     const bytes = new Uint8Array(buffer);
@@ -106,21 +148,20 @@ export const bufferUtils = {
     for (let i = 0; i < bytes.byteLength; i++) {
       binary += String.fromCharCode(bytes[i]);
     }
-    // Convert to base64
     const base64 = window.btoa(binary);
-    // Convert to base64url
     return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
 };
+
 
 /**
  * FIDO2 Service for WebAuthn functionality
  */
 export const fidoService = {
   /**
-   * Get assertion options from the server to start authentication
-   * @param options Options for the assertion request
-   * @returns Promise with assertion options
+   * 從伺服器獲取驗證選項以開始驗證
+   * @param options 驗證請求的選項
+   * @returns 包含驗證選項的 Promise
    */
   getAssertionOptions: async (options: AssertionOptionsRequest): Promise<AssertionResult> => {
     try {
@@ -162,9 +203,9 @@ export const fidoService = {
   },
 
   /**
-   * Request browser credentials
-   * @param assertionOptions Options for credential request
-   * @returns Promise with credential
+   * 向瀏覽器請求憑證
+   * @param assertionOptions 憑證請求的選項
+   * @returns 解析為 MyPublicKeyCredential 或 null 的 Promise
    */
   requestCredential: async (assertionOptions: AssertionOptions): Promise<MyPublicKeyCredential | null> => {
     try {
@@ -227,10 +268,10 @@ export const fidoService = {
   },
 
   /**
-   * Verify credential with server
-   * @param credential The credential to verify
-   * @param sessionData Session data from get assertion options
-   * @returns Promise with verification result
+   * 驗證憑證與伺服器進行驗證
+   * @param credential 要驗證的憑證
+   * @param sessionData 來自獲取驗證選項的會話數據（可選）
+   * @returns 包含驗證結果的 Promise
    */
   verifyCredentialWithServer: async (
     credential: MyPublicKeyCredential,
@@ -303,44 +344,44 @@ export const fidoService = {
   },
 
   /**
-   * Complete passkey login flow
-   * @param options Options for the assertion request
-   * @returns Promise with verification result
+   * 完整的 Passkey 登入流程
+   * @param options 驗證請求的選項
+   * @returns 包含驗證結果的 Promise
    */
   completePasskeyLogin: async (options: AssertionOptionsRequest): Promise<VerificationResult> => {
     try {
-      console.log("Starting Passkey login flow with options:", JSON.stringify(options, null, 2));
+      console.log("開始 Passkey 登入流程，選項:", JSON.stringify(options, null, 2));
 
       // 1. Get assertion options from server
       const assertionResult = await fidoService.getAssertionOptions(options);
 
       if (!assertionResult.success || !assertionResult.assertionOptions) {
-        console.error("Failed to get assertion options:", assertionResult.message);
+        console.error("無法獲取驗證選項:", assertionResult.message);
         return {
           success: false,
           message: assertionResult.message || '無法獲取驗證選項'
         };
       }
 
-      console.log("Successfully received assertion options:", assertionResult.assertionOptions);
-      console.log("Session data:", assertionResult.sessionData);
+      console.log("成功接收驗證選項:", assertionResult.assertionOptions);
+      console.log("會話數據:", assertionResult.sessionData);
 
       // 2. Request credential from browser
-      console.log("Requesting credential from browser...");
+      console.log("向瀏覽器請求憑證...");
       const credential = await fidoService.requestCredential(assertionResult.assertionOptions);
 
       if (!credential) {
-        console.error("No credential returned from browser");
+        console.error("未能獲取憑證");
         return {
           success: false,
           message: '未能獲取憑證'
         };
       }
 
-      console.log("Successfully received credential");
+      console.log("成功接收憑證");
 
       // 3. Verify credential with server
-      console.log("Verifying credential with server...");
+      console.log("向伺服器驗證憑證...");
       return await fidoService.verifyCredentialWithServer(credential, assertionResult.sessionData);
 
     } catch (error) {
