@@ -1,14 +1,16 @@
 "use client"
 
-import {useState, ReactNode, ChangeEvent, useEffect, useRef} from "react"
+import React, {useState, ReactNode, ChangeEvent, useEffect, useRef} from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useRouter } from "next/navigation";
 import { LoginForm } from "@/types/authType";
 import { authService } from "@/services/Auth/authService";
 import {clearAuthCookies, storeAuthTokens} from "@/services/Auth/serverAuthService";
 import fidoService from "@/services/Auth/fidoServices";
-import Capcha from "@/components/auth/Capcha";
-import TurnstileWidget from "@/components/auth/Capcha";
+
+import axios from "axios";
+import {Turnstile} from "@marsidev/react-turnstile";
+import {useGlobalStore} from "@/store/useGlobalStore";
 
 
 
@@ -122,6 +124,7 @@ const TabContent = ({ value, title, content, buttonText, useCustomStyles, isMobi
 }
 
 export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", className = "", useCustomStyles = false }: DaisyUITabsProps = {}) {
+  const { theme } = useGlobalStore();
   const router = useRouter();
   const [isRouterReady, setIsRouterReady] = useState(false);
   const [tab, setTab] = useState(defaultTab);
@@ -138,6 +141,8 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
 
 
   // Refs for input fields to focus on error
+  const normalLogin = useRef<HTMLFormElement>(null)
+  const emailLogin = useRef<HTMLFormElement>(null)
   const usernameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -210,6 +215,8 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
     if (!isRouterReady) return;
 
     try {
+      const formData = new FormData(emailLogin.current!)
+      const token = formData.get('cf-turnstile-response')
       resetErrors();
       setLoading(true);
 
@@ -288,13 +295,13 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
 
   // 處理一般登入按鈕點擊
   const handleNormalLogin = async () => {
+    const formData = new FormData(normalLogin.current!)
+    const token = formData.get('cf-turnstile-response')
+
     if (!isRouterReady) return;
     try {
       resetErrors();
       setLoading(true);
-
-
-
       if (!username.trim()) {
         setError("請輸入帳號");
         setUsernameError(true);
@@ -310,23 +317,36 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
         setLoading(false);
         return;
       }
+      if(!token){
+        setError("請完成人機驗證");
+        setLoading(false);
+        return;
+      }
+      const res = await axios.post('/api/verify',
+          { token: token }, // POST 請求的資料
+          { headers: { 'Content-Type': 'application/json' } } // HTTP 標頭
+      );
 
-      const formData: LoginForm = {
-        username,
-        password,
-      };
 
-      // 進行登入
-      const loginResult = await authService.login(formData);
 
-      // 登入成功後的處理
-      console.log('登入成功:', loginResult);
-      if (loginResult.accessToken && loginResult.refreshToken && loginResult.UserId) {
-        // 根據角色導航到不同頁面
-        router.push('/Home');
-      } else {
-        setError("登入失敗，請重試");
-        // 重置 Turnstile
+      if (res.data.success) {
+        const formData: LoginForm = {
+          username,
+          password,
+        };
+
+        // 進行登入
+        const loginResult = await authService.login(formData);
+
+        // 登入成功後的處理
+        console.log('登入成功:', loginResult);
+        if (loginResult.accessToken && loginResult.refreshToken && loginResult.UserId) {
+          // 根據角色導航到不同頁面
+          router.push('/Home');
+        } else {
+          setError("登入失敗，請重試");
+          // 重置 Turnstile
+        }
       }
     } catch (error) {
       setError(error instanceof Error ? error.message : "登入失敗");
@@ -340,6 +360,8 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
 
   // 處理 Passkey 登入
   const handlePasskeyLogin = async () => {
+
+
     if (!isRouterReady) return;
     try {
       resetErrors();
@@ -463,24 +485,25 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
                 isActive={true}
                 title="一般登入"
                 content={
+                <form ref={normalLogin}>
                   <div className={useCustomStyles ? "form-fields" : "flex flex-col gap-2 md:gap-2.5 text-base-content"}>
                     <div className="form-control">
                       <label htmlFor="username" className="label">
                         <span className="label-text">帳號</span>
                       </label>
                       <input
-                        id="username"
-                        ref={usernameRef}
-                        type="text"
-                        placeholder="請輸入帳號"
-                        value={username}
-                        onChange={handleUsernameChange}
-                        className={
-                          useCustomStyles
-                            ? `input-field ${usernameError ? 'border-error' : ''}`
-                            : `input input-bordered w-full text-base-content text-sm md:text-base ${usernameError ? 'input-error border-error focus:border-error focus:ring-error' : ''}`
-                        }
-                        aria-invalid={usernameError}
+                          id="username"
+                          ref={usernameRef}
+                          type="text"
+                          placeholder="請輸入帳號"
+                          value={username}
+                          onChange={handleUsernameChange}
+                          className={
+                            useCustomStyles
+                                ? `input-field ${usernameError ? 'border-error' : ''}`
+                                : `input input-bordered w-full text-base-content text-sm md:text-base ${usernameError ? 'input-error border-error focus:border-error focus:ring-error' : ''}`
+                          }
+                          aria-invalid={usernameError}
                       />
                     </div>
                     <div className="form-control">
@@ -488,116 +511,129 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
                         <span className="label-text">密碼</span>
                       </label>
                       <input
-                        id="password"
-                        ref={passwordRef}
-                        type="password"
-                        placeholder="請輸入密碼"
-                        value={password}
-                        onChange={handlePasswordChange}
-                        className={
-                          useCustomStyles
-                            ? `input-field ${passwordError ? 'border-error' : ''}`
-                            : `input input-bordered w-full text-base-content text-sm md:text-base ${passwordError ? 'input-error border-error focus:border-error focus:ring-error' : ''}`
-                        }
-                        aria-invalid={passwordError}
+                          id="password"
+                          ref={passwordRef}
+                          type="password"
+                          placeholder="請輸入密碼"
+                          value={password}
+                          onChange={handlePasswordChange}
+                          className={
+                            useCustomStyles
+                                ? `input-field ${passwordError ? 'border-error' : ''}`
+                                : `input input-bordered w-full text-base-content text-sm md:text-base ${passwordError ? 'input-error border-error focus:border-error focus:ring-error' : ''}`
+                          }
+                          aria-invalid={passwordError}
                       />
                     </div>
-                    <div className="flex items-center">
-                    {/* Cloudflare Turnstile container */}
-                    <TurnstileWidget
-                    onVerify={handleNormalLogin}
-                    />
-                  </div>
+                    <div className="mb-6 flex justify-center">
+                      <Turnstile
+                          options={{
+                            language: "zh-TW",
+                            theme: theme ? "dark" : "light",
+                          }}
+                          siteKey="0x4AAAAAABA44qkoEHBUVvap"
+                          // siteKey={process.env.NODE_ENV === "development"
+                          //     ? "1x00000000000000000000AA"
+                          //     : "0x4AAAAAABA44qkoEHBUVvap"}
+                      />
+                    </div>
                     {error && <div className="text-error text-xs md:text-sm mt-1" role="alert">{error}</div>}
                   </div>
+                </form>
                 }
                 buttonText={loading ? "登入中..." : "登入"}
                 useCustomStyles={useCustomStyles}
                 isMobile={isMobile}
                 onButtonClick={handleNormalLogin}
               />
+
             )}
             {tab === "信箱登入" && (
-              <TabContent
-                key="信箱登入"
-                value="信箱登入"
-                isActive={true}
-                title="信箱登入"
-                content={
-                  <div className={useCustomStyles ? "form-fields" : "flex flex-col gap-2 md:gap-2.5 text-base-content"}>
-                    <h3 className={`text-${isMobile ? 'xs' : 'sm'} mb-1`}>請輸入信箱登入</h3>
-                    <div className="form-control">
-                      <label htmlFor="email" className="label">
-                        <span className="label-text display">信箱</span>
-                      </label>
-                      <input
-                        id="email"
-                        ref={emailRef}
-                        type="email"
-                        placeholder="請輸入信箱"
-                        value={email}
-                        onChange={handleEmailChange}
-                        className={
-                          useCustomStyles
-                            ? `input-field ${emailFieldError ? 'border-error' : ''}`
-                            : `input input-bordered w-full text-base-content text-sm md:text-base ${emailFieldError ? 'input-error border-error focus:border-error focus:ring-error' : ''}`
-                        }
-                        aria-invalid={emailFieldError}
-                      />
-                    </div>
-                    <AnimatePresence>
-                      {sendemail && (
-                        <motion.div
-                          key="verification-input"
-                          variants={verificationInputVariants}
-                          initial="hidden"
-                          animate="visible"
-                          exit="exit"
-                        >
+                <TabContent
+                    key="信箱登入"
+                    value="信箱登入"
+                    isActive={true}
+                    title="信箱登入"
+                    content={
+                      <form ref={emailLogin}>
+                        <div
+                            className={useCustomStyles ? "form-fields" : "flex flex-col gap-2 md:gap-2.5 text-base-content"}>
+                          <h3 className={`text-${isMobile ? 'xs' : 'sm'} mb-1`}>請輸入信箱登入</h3>
                           <div className="form-control">
-                            <label htmlFor="verificationCode" className="label">
-                              <span className="label-text">驗證碼</span>
+                            <label htmlFor="email" className="label">
+                              <span className="label-text display">信箱</span>
                             </label>
                             <input
-                              id="verificationCode"
-                              ref={verificationCodeRef}
-                              type="text"
-                              placeholder="驗證碼"
-                              value={verificationCode}
-                              onChange={handleVerificationCodeChange}
-                              className={
-                                useCustomStyles
-                                  ? `input-field ${verificationCodeError ? 'border-error' : ''}`
-                                  : `input input-bordered w-full text-base-content text-sm md:text-base ${verificationCodeError ? 'input-error border-error focus:border-error focus:ring-error' : ''}`
-                              }
-                              aria-invalid={verificationCodeError}
+                                id="email"
+                                ref={emailRef}
+                                type="email"
+                                placeholder="請輸入信箱"
+                                value={email}
+                                onChange={handleEmailChange}
+                                className={
+                                  useCustomStyles
+                                      ? `input-field ${emailFieldError ? 'border-error' : ''}`
+                                      : `input input-bordered w-full text-base-content text-sm md:text-base ${emailFieldError ? 'input-error border-error focus:border-error focus:ring-error' : ''}`
+                                }
+                                aria-invalid={emailFieldError}
                             />
                           </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                          <AnimatePresence>
+                            {sendemail && (
+                                <motion.div
+                                    key="verification-input"
+                                    variants={verificationInputVariants}
+                                    initial="hidden"
+                                    animate="visible"
+                                    exit="exit"
+                                >
+                                  <div className="form-control">
+                                    <label htmlFor="verificationCode" className="label">
+                                      <span className="label-text">驗證碼</span>
+                                    </label>
+                                    <input
+                                        id="verificationCode"
+                                        ref={verificationCodeRef}
+                                        type="text"
+                                        placeholder="驗證碼"
+                                        value={verificationCode}
+                                        onChange={handleVerificationCodeChange}
+                                        className={
+                                          useCustomStyles
+                                              ? `input-field ${verificationCodeError ? 'border-error' : ''}`
+                                              : `input input-bordered w-full text-base-content text-sm md:text-base ${verificationCodeError ? 'input-error border-error focus:border-error focus:ring-error' : ''}`
+                                        }
+                                        aria-invalid={verificationCodeError}
+                                    />
+                                  </div>
+                                </motion.div>
+                            )}
+                          </AnimatePresence>
 
-                    {/* Cloudflare Turnstile container */}
-                    <div id="turnstile-container" className="w-full mt-2"></div>
+                          {/* Cloudflare Turnstile container */}
 
-                    {emailerror && <div className="text-error text-xs md:text-sm" aria-live="polite" role="alert">{emailerror}</div>}
-                  </div>
-                }
-                buttonText={loading ? "處理中..." : (sendemail ? "驗證登入" : "寄送驗證信")}
-                useCustomStyles={useCustomStyles}
-                isMobile={isMobile}
-                onButtonClick={handleEmailButton}
-              />
+
+
+                          {emailerror && <div className="text-error text-xs md:text-sm" aria-live="polite"
+                                              role="alert">{emailerror}</div>}
+                        </div>
+                      </form>
+                    }
+                    buttonText={loading ? "處理中..." : (sendemail ? "驗證登入" : "寄送驗證信")}
+                    useCustomStyles={useCustomStyles}
+                    isMobile={isMobile}
+                    onButtonClick={handleEmailButton}
+                />
             )}
             {tab === "Passkey登入" && (
-              <TabContent
-                key="Passkey登入"
-                value="Passkey登入"
-                isActive={true}
-                title="Passkey登入"
-                content={
-                  <div className="flex flex-col gap-2">
-                    <p className="text-xs md:text-sm">點擊底下按鈕進行裝置認證</p>
+                <TabContent
+                    key="Passkey登入"
+                    value="Passkey登入"
+                    isActive={true}
+                    title="Passkey登入"
+                    content={
+                      <div className="flex flex-col gap-2">
+                      <p className="text-xs md:text-sm">點擊底下按鈕進行裝置認證</p>
 
                     {/* Cloudflare Turnstile container */}
                     <div id="turnstile-container" className="w-full mt-2"></div>

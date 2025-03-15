@@ -189,29 +189,29 @@ if (isZapScan) {
     };
   }
 
-  // // 構建 CSP 字串
-  // const csp = Object.entries(cspDirectives)
-  //   .map(([key, values]) => {
-  //     if (values.length === 0) return key;
-  //     return `${key} ${values.join(' ')}`;
-  //   })
-  //   .join('; ');
-  //
-  // // 設定安全標頭
-  // res.headers.set('Content-Security-Policy', csp);
-  // res.headers.set('X-Content-Type-Options', 'nosniff');
-  // res.headers.set('X-Frame-Options', 'SAMEORIGIN');
-  // res.headers.set('X-XSS-Protection', '1; mode=block');
-  // res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  // res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  // res.headers.set('X-Robots-Tag', "noindex,nofollow, noarchive, nosnippet, notranslate, noimageindex");
-  //
-  // // 使用具體的來源而不是 'null'
-  // res.headers.set('Access-Control-Allow-Origin', domainUrl);
-  // // 添加 CORS 允許的方法和頭部
-  // res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  // res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  // res.headers.set('Access-Control-Allow-Credentials', 'true');
+  // 構建 CSP 字串
+  const csp = Object.entries(cspDirectives)
+    .map(([key, values]) => {
+      if (values.length === 0) return key;
+      return `${key} ${values.join(' ')}`;
+    })
+    .join('; ');
+
+  // 設定安全標頭
+  res.headers.set('Content-Security-Policy', csp);
+  res.headers.set('X-Content-Type-Options', 'nosniff');
+  res.headers.set('X-Frame-Options', 'SAMEORIGIN');
+  res.headers.set('X-XSS-Protection', '1; mode=block');
+  res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.headers.set('X-Robots-Tag', "noindex,nofollow, noarchive, nosnippet, notranslate, noimageindex");
+
+  // 使用具體的來源而不是 'null'
+  res.headers.set('Access-Control-Allow-Origin', domainUrl);
+  // 添加 CORS 允許的方法和頭部
+  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.headers.set('Access-Control-Allow-Credentials', 'true');
 
   return res;
 }
