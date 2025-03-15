@@ -7,8 +7,8 @@ import { LoginForm } from "@/types/authType";
 import { authService } from "@/services/Auth/authService";
 import {clearAuthCookies, storeAuthTokens} from "@/services/Auth/serverAuthService";
 import fidoService from "@/services/Auth/fidoServices";
-import {useTurnstile} from "react-turnstile";
 import Capcha from "@/components/auth/Capcha";
+import TurnstileWidget from "@/components/auth/Capcha";
 
 
 
@@ -123,7 +123,6 @@ const TabContent = ({ value, title, content, buttonText, useCustomStyles, isMobi
 
 export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", className = "", useCustomStyles = false }: DaisyUITabsProps = {}) {
   const router = useRouter();
-  const turnstile = useTurnstile();
   const [isRouterReady, setIsRouterReady] = useState(false);
   const [tab, setTab] = useState(defaultTab);
   const [sendemail, setSendemail] = useState(false);
@@ -505,7 +504,9 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
                     </div>
                     <div className="flex items-center">
                     {/* Cloudflare Turnstile container */}
-                    <Capcha/>
+                    <TurnstileWidget
+                    onVerify={handleNormalLogin}
+                    />
                   </div>
                     {error && <div className="text-error text-xs md:text-sm mt-1" role="alert">{error}</div>}
                   </div>

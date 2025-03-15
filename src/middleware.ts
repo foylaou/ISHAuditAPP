@@ -19,6 +19,7 @@ interface CSPWhitelist {
   fontSrc: string[];
   connectSrc: string[];
   frameSrc: string[];
+  workerSrc: string[]; // 添加workerSrc屬性
 }
 
 // 無需驗證的公開路由
@@ -44,27 +45,33 @@ function isPublicRoute(pathname: string): boolean {
     pathname.toLowerCase().startsWith(route.toLowerCase())
   );
 }
-// 從後端獲取白名單的函數 (這裡使用模擬數據)
+// middleware.ts 中的 getCSPWhitelist 函數修改
 function getCSPWhitelist(): CSPWhitelist {
   return {
     scriptSrc: [
       "'self'",
-      "'unsafe-inline'",
-      "'unsafe-eval'",
+      "'unsafe-inline'",  // 重要：允許內聯腳本
+      "'unsafe-eval'",    // Turnstile需要eval
       "http://localhost:5238",
       "http://127.0.0.1:8000",
       "https://challenges.cloudflare.com",
+      "https://*.cloudflare.com",  // 所有cloudflare子域名
       "https://static.cloudflareinsights.com",
+      "https://*.cloudflareinsights.com",
+      "https://turnstile.com",
+      "https://*.turnstile.com"
     ],
     styleSrc: [
       "'self'",
-      "'unsafe-inline'"
+      "'unsafe-inline'",  // Turnstile可能需要內聯樣式
+      "https://challenges.cloudflare.com"
     ],
     imgSrc: [
       "'self'",
       "data:",
       "blob:",
-      "https://challenges.cloudflare.com" // 添加 Cloudflare 圖片資源
+      "https://challenges.cloudflare.com",
+      "https://*.cloudflare.com"
     ],
     fontSrc: [
       "'self'",
@@ -73,13 +80,22 @@ function getCSPWhitelist(): CSPWhitelist {
     connectSrc: [
       "'self'",
       "https://challenges.cloudflare.com",
+      "https://*.cloudflare.com",
       "https://api.cloudflare.com",
-      "https://*.cloudflare.com" // 添加所有 Cloudflare 子域名
+      "https://turnstile.com",
+      "https://*.turnstile.com"
     ],
     frameSrc: [
       "'self'",
       "https://challenges.cloudflare.com",
-      "https://*.cloudflare.com" // 添加所有 Cloudflare 子域名
+      "https://*.cloudflare.com",
+      "https://turnstile.com",
+      "https://*.turnstile.com"
+    ],
+    workerSrc: [  // 添加worker-src
+      "'self'",
+      "blob:",
+      "https://challenges.cloudflare.com"
     ]
   };
 }
@@ -102,9 +118,13 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
 
 // 應用安全頭部
 function applySecurity(req: NextRequest) {
+
   const res = NextResponse.next();
   const env = getEnvironmentConfig();
-
+  if (req.headers.get('host')?.includes('localhost')) {
+    // Skip applying CSP for local testing
+    return NextResponse.next();
+  }
   // 檢查是否來自 ZAP 掃描器
   const userAgent = req.headers.get('user-agent') || '';
   const isZapScan = userAgent.includes('ZAP') || req.url.includes('zap');
@@ -169,29 +189,29 @@ if (isZapScan) {
     };
   }
 
-  // 構建 CSP 字串
-  const csp = Object.entries(cspDirectives)
-    .map(([key, values]) => {
-      if (values.length === 0) return key;
-      return `${key} ${values.join(' ')}`;
-    })
-    .join('; ');
-
-  // 設定安全標頭
-  res.headers.set('Content-Security-Policy', csp);
-  res.headers.set('X-Content-Type-Options', 'nosniff');
-  res.headers.set('X-Frame-Options', 'DENY');
-  res.headers.set('X-XSS-Protection', '1; mode=block');
-  res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
-  res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.headers.set('X-Robots-Tag', "noindex,nofollow, noarchive, nosnippet, notranslate, noimageindex");
-
-  // 使用具體的來源而不是 'null'
-  res.headers.set('Access-Control-Allow-Origin', domainUrl);
-  // 添加 CORS 允許的方法和頭部
-  res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.headers.set('Access-Control-Allow-Credentials', 'true');
+  // // 構建 CSP 字串
+  // const csp = Object.entries(cspDirectives)
+  //   .map(([key, values]) => {
+  //     if (values.length === 0) return key;
+  //     return `${key} ${values.join(' ')}`;
+  //   })
+  //   .join('; ');
+  //
+  // // 設定安全標頭
+  // res.headers.set('Content-Security-Policy', csp);
+  // res.headers.set('X-Content-Type-Options', 'nosniff');
+  // res.headers.set('X-Frame-Options', 'SAMEORIGIN');
+  // res.headers.set('X-XSS-Protection', '1; mode=block');
+  // res.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+  // res.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+  // res.headers.set('X-Robots-Tag', "noindex,nofollow, noarchive, nosnippet, notranslate, noimageindex");
+  //
+  // // 使用具體的來源而不是 'null'
+  // res.headers.set('Access-Control-Allow-Origin', domainUrl);
+  // // 添加 CORS 允許的方法和頭部
+  // res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  // res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  // res.headers.set('Access-Control-Allow-Credentials', 'true');
 
   return res;
 }

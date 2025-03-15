@@ -40,6 +40,7 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
 };
 
 const getRoutingConfig = (env: EnvironmentConfig) => ({
+
   redirects: async () => [
     {
       source: "/",
