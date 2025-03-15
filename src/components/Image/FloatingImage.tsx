@@ -31,7 +31,7 @@ export default function FloatingImage({ src, alt }: FloatingImageProps) {
           blurDataURL={'loading.gif'}
           fill
           className="object-contain"
-
+          
         />
       </motion.div>
     </div>

@@ -5,11 +5,9 @@ import {
   LoginApiRequest,
   LoginForm,
   RegisterUserDto,
-  AssertionClientParams,
   TokenValidationResponse,
   RegisterResponse,
   DomainQueryResponse,
-  AssertionOptionsResponse,
   ValidateEmailTokenResponse,
   UserInfo
 } from "@/types/authType";
@@ -323,29 +321,6 @@ export async function register(userData: RegisterUserDto): Promise<RegisterRespo
 
 
 
-export async function getAssertionOptions(clientParams: AssertionClientParams): Promise<AssertionOptionsResponse> {
-  try {
-    const response = await api.post('/Auth/GetAssertionOptionsAsync', clientParams);
-    return {
-      success: response.data.success,
-      message: response.data.message,
-      assertionOptions: response.data.assertionOptions,
-      sessionData: response.data.sessionData
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      return {
-        success: false,
-        message: error.response.data?.message || '獲取驗證選項失敗'
-      };
-    }
-    return {
-      success: false,
-      message: '獲取驗證選項過程發生錯誤'
-    };
-  }
-}
-
 export async function queryEmailDomain(email: string): Promise<DomainQueryResponse> {
   try {
     const response = await api.post('/Auth/DomainQuery', { Email: email });
@@ -393,6 +368,20 @@ export async function loginWithEmail(email: string): Promise<{
     };
   }
 }
+export async function captcha(token:string): Promise<{ success: boolean; message: string }> {
+  try {
+    const response = await api.post('/Auth/captcha', token);
+    const { success, message } = response.data;
+    if (success) {
+      return {success,message}
+    }else {
+      return {success,message}
+    }
+  }catch(error) {
+    return {success:false,message:"組建發生錯誤"}
+  }
+}
+
 export async function validateEmailToken(token: string) {
   try {
     console.log("📥 接收到的驗證 Token:", token);

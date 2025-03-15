@@ -6,6 +6,6 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: '*',
       disallow: '/',  // 禁止爬蟲訪問所有路徑
     },
-    // 移除 sitemap 引用，因為您不希望網站被索引
+    // 移除 Sitemap 引用，因為您不希望網站被索引
   }
 }

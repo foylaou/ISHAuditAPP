@@ -2,7 +2,6 @@
 import '@/styles/globals.css';
 import React, { useEffect } from 'react';
 import { useGlobalStore } from '@/store/useGlobalStore';
-import Footer from '@/components/Footer';
 import { MantineProvider } from "@mantine/core";
 import { ModuleRegistry } from "ag-grid-community";
 
@@ -13,6 +12,7 @@ import HeaderMenu from "@/components/Menu/HeaderMenu";
 import Sidebar from "@/components/Menu/Sidebar";
 import BreadcrumbsIcons from "@/components/Breadcrumbs/BreadcrumbsIcons";
 import {AgChartsEnterpriseModule} from "ag-charts-enterprise";
+import Footer from "@/components/Footer/Footer";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     ModuleRegistry.registerModules([

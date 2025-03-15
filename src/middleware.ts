@@ -30,6 +30,8 @@ const publicRoutes = [
   '/api',
   '/_next',
   '/static',
+    "/Sitemap",
+    "/Help",
   '/favicon.ico',
   '/public',  // 添加公開資源目錄
   '/proxy',   // proxy 路徑
@@ -42,15 +44,17 @@ function isPublicRoute(pathname: string): boolean {
     pathname.toLowerCase().startsWith(route.toLowerCase())
   );
 }
-
 // 從後端獲取白名單的函數 (這裡使用模擬數據)
 function getCSPWhitelist(): CSPWhitelist {
   return {
     scriptSrc: [
-      // 可以添加你需要的外部腳本來源
       "'self'",
       "'unsafe-inline'",
-      "'unsafe-eval'"
+      "'unsafe-eval'",
+      "http://localhost:5238",
+      "http://127.0.0.1:8000",
+      "https://challenges.cloudflare.com",
+      "https://static.cloudflareinsights.com",
     ],
     styleSrc: [
       "'self'",
@@ -59,7 +63,8 @@ function getCSPWhitelist(): CSPWhitelist {
     imgSrc: [
       "'self'",
       "data:",
-      "blob:"
+      "blob:",
+      "https://challenges.cloudflare.com" // 添加 Cloudflare 圖片資源
     ],
     fontSrc: [
       "'self'",
@@ -67,10 +72,14 @@ function getCSPWhitelist(): CSPWhitelist {
     ],
     connectSrc: [
       "'self'",
-      // 可以添加其他允許的連接來源
+      "https://challenges.cloudflare.com",
+      "https://api.cloudflare.com",
+      "https://*.cloudflare.com" // 添加所有 Cloudflare 子域名
     ],
     frameSrc: [
-      "'self'"
+      "'self'",
+      "https://challenges.cloudflare.com",
+      "https://*.cloudflare.com" // 添加所有 Cloudflare 子域名
     ]
   };
 }
@@ -114,36 +123,36 @@ function applySecurity(req: NextRequest) {
   // 為不同環境設置 CSP 配置
   let cspDirectives;
 
-  if (isZapScan) {
-    // 針對 ZAP 掃描的 CSP - 使用 AG Grid 最小要求，但更寬鬆
-    cspDirectives = {
-      'default-src': ["'self'"],
-      'script-src': ["'self'", "'unsafe-inline'"], // 允許內聯腳本，沒有 nonce
-      'style-src': ["'self'", "'unsafe-inline'"], // AG Grid 需要 unsafe-inline
-      'img-src': ["'self'", "data:", "blob:"],
-      'font-src': ["'self'", "data:"], // AG Grid 需要 data: 字體
-      'connect-src': ["'self'", apiUrl, ragApiUrl].filter(Boolean),
-      'frame-src': ["'self'"],
-      'object-src': ["'none'"],
-      'base-uri': ["'self'"],
-      'form-action': ["'self'"],
-      'upgrade-insecure-requests': []
-    };
-  } else if (env.isDev || isStaticResource) {
-    // 開發環境 CSP 或靜態資源 - 最寬鬆
-    cspDirectives = {
-      'default-src': ["'self'", "http:", "https:"],
-      'script-src': [...whitelist.scriptSrc, apiUrl, ragApiUrl].filter(Boolean),
-      'style-src': whitelist.styleSrc,
-      'img-src': ["'self'", "data:", "blob:", "http:", "https:"], // 允許所有圖片來源
-      'font-src': whitelist.fontSrc,
-      'connect-src': [...whitelist.connectSrc, apiUrl, ragApiUrl, "ws:", "wss:", "*"].filter(Boolean),
-      'frame-src': whitelist.frameSrc,
-      'object-src': ["'none'"],
-      'base-uri': ["'self'"],
-      'form-action': ["'self'"]
-    };
-  } else {
+if (isZapScan) {
+  // 針對 ZAP 掃描的 CSP - 使用 AG Grid 最小要求，但更寬鬆
+  cspDirectives = {
+    'default-src': ["'self'"],
+    'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", "http://localhost:5238", "http://127.0.0.1:8000", "https://challenges.cloudflare.com", "https://static.cloudflareinsights.com"],
+    'style-src': ["'self'", "'unsafe-inline'"],
+    'img-src': ["'self'", "data:", "blob:", "https://challenges.cloudflare.com"],
+    'font-src': ["'self'", "data:"],
+    'connect-src': ["'self'", apiUrl, ragApiUrl, "https://challenges.cloudflare.com", "https://api.cloudflare.com", "https://*.cloudflare.com"].filter(Boolean),
+    'frame-src': ["'self'", "https://challenges.cloudflare.com", "https://*.cloudflare.com"],
+    'object-src': ["'none'"],
+    'base-uri': ["'self'"],
+    'form-action': ["'self'"],
+    'upgrade-insecure-requests': []
+  };
+}  else if (env.isDev || isStaticResource) {
+  // 開發環境 CSP 或靜態資源 - 最寬鬆
+  cspDirectives = {
+    'default-src': ["'self'", "http:", "https:"],
+    'script-src': [...whitelist.scriptSrc, apiUrl, ragApiUrl].filter(Boolean),
+    'style-src': whitelist.styleSrc,
+    'img-src': ["'self'", "data:", "blob:", "http:", "https:"],
+    'font-src': whitelist.fontSrc,
+    'connect-src': [...whitelist.connectSrc, apiUrl, ragApiUrl, "ws:", "wss:", "*"].filter(Boolean),
+    'frame-src': [...whitelist.frameSrc],
+    'object-src': ["'none'"],
+    'base-uri': ["'self'"],
+    'form-action': ["'self'"]
+  };
+} else {
     // 生產環境 CSP - 根據白名單配置，寬鬆但仍有保護
     cspDirectives = {
       'default-src': ["'self'"],
@@ -152,7 +161,7 @@ function applySecurity(req: NextRequest) {
       'img-src': whitelist.imgSrc,
       'font-src': whitelist.fontSrc,
       'connect-src': [...whitelist.connectSrc, apiUrl, ragApiUrl].filter(Boolean),
-      'frame-src': whitelist.frameSrc,
+      'frame-src': [...whitelist.frameSrc],
       'object-src': ["'none'"],
       'base-uri': ["'self'"],
       'form-action': ["'self'"],
