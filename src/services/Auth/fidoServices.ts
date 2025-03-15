@@ -52,6 +52,7 @@ export interface MyPublicKeyCredential {
  */
 export interface AssertionOptionsRequest {
   Username?: string;
+  rpID?: string;
   UserVerification: "required" | "preferred" | "discouraged";
   AuthenticatorSelection: {
     authenticatorAttachment?: "platform" | "cross-platform";

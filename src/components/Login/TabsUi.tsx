@@ -349,6 +349,7 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
 
       // Use the complete passkey login flow from fidoService
       const loginResult = await fidoService.completePasskeyLogin({
+        rpID: window.location.hostname, // 使用當前域名
         UserVerification: 'preferred',
         AuthenticatorSelection: {
           authenticatorAttachment: 'platform',
