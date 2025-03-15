@@ -268,15 +268,18 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
       // 發送驗證碼到用戶郵箱
       const emailResult = await authService.loginWithEmail(email);
       try {
-        if (!emailResult.success) {
+        if (emailResult.success) {
+          // 發送成功
+          setEmailerror(emailResult.message || "驗證碼已發送到您的郵箱");
+          setSendemail(true);
+
+
+
+        }else{
           setEmailerror(emailResult.message || "發送驗證碼失敗");
           setEmailFieldError(true);
           emailRef.current?.focus();
           setLoading(false);
-
-          // 發送成功
-          setEmailerror(emailResult.message || "驗證碼已發送到您的郵箱");
-          setSendemail(true);
         }
       } catch (error) {
         if (error instanceof Error) {

@@ -350,11 +350,15 @@ export async function loginWithEmail(email: string): Promise<{
 }> {
   try {
     const response = await api.post('/Auth/LoginEmail', { Email: email });
+    if( response.data.success ) {
     return {
       success: true,
       message: response.data.message || '驗證郵件已發送',
       data: response.data.data
     };
+    }else {
+      return { success: false, message: response.data.message };
+    }
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       return {
