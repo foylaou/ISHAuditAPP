@@ -202,8 +202,6 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
   const handleEmailButton = async () => {
     if (!isRouterReady) return;
     try {
-      const formData = new FormData(emailLogin.current!)
-      const token = formData.get('cf-turnstile-response')
       resetErrors();
       setLoading(true);
 
@@ -502,6 +500,7 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
                                       theme: theme ? "dark" : "light",
                                     }}
                                     siteKey="0x4AAAAAABA44qkoEHBUVvap"
+
                                 />
                               </div>
                             </div>
@@ -603,7 +602,7 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
                         <div className="flex flex-col gap-2">
                           <p className="text-xs md:text-sm">點擊底下按鈕進行裝置認證</p>
                           {error && (
-                              <div className="text-error text-xs md:text-sm mt-1 break-words max-h-16 overflow-y-auto"
+                                <div className="text-error text-xs md:text-sm break-words max-h-16 overflow-y-auto"
                                    role="alert" title={error}>
                                 {error}
                               </div>
@@ -614,6 +613,7 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
                       useCustomStyles={useCustomStyles}
                       isMobile={isMobile}
                       onButtonClick={handlePasskeyLogin}
+
                   />
               )}
             </AnimatePresence>

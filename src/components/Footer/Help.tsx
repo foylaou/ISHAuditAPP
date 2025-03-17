@@ -12,30 +12,30 @@ export default function Instructions() {
     <div className="container mx-auto px-4 py-8 text-base-content">
       <h1 className="text-3xl font-bold mb-6">操作說明</h1>
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden">
+      <div className="bg-base-200 rounded-lg shadow-md overflow-hidden">
         {/* 分頁選單 */}
         <div className="flex border-b">
           <button
-            className={`px-6 py-3 font-medium text-sm ${activeTab === 'general' ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`px-6 py-3 font-medium text-sm ${activeTab === 'general' ? 'bg-base-200 text-blue-600 border-b-2 border-blue-600' : 'text-base-content hover:bg-base-300'}`}
             onClick={() => setActiveTab('general')}
           >
             基本操作
           </button>
           <button
-            className={`px-6 py-3 font-medium text-sm ${activeTab === 'reports' ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`px-6 py-3 font-medium text-sm ${activeTab === 'reports' ? 'bg-base-200 text-blue-600 border-b-2 border-blue-600' : 'text-base-content hover:bg-base-300'}`}
             onClick={() => setActiveTab('reports')}
           >
             報告管理
           </button>
           <button
-            className={`px-6 py-3 font-medium text-sm ${activeTab === 'tracking' ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+            className={`px-6 py-3 font-medium text-sm ${activeTab === 'tracking' ? 'bg-base-200  text-blue-600 border-b-2 border-blue-600' : 'text-base-content hover:bg-base-300'}`}
             onClick={() => setActiveTab('tracking')}
           >
             問題追蹤
           </button>
           {userRole === 'government' || userRole === 'expert' ? (
             <button
-              className={`px-6 py-3 font-medium text-sm ${activeTab === 'analytics' ? 'bg-blue-50 text-blue-600 border-b-2 border-blue-600' : 'text-gray-600 hover:bg-gray-50'}`}
+              className={`px-6 py-3 font-medium text-sm ${activeTab === 'analytics' ? 'bg-base-200  text-blue-600 border-b-2 border-blue-600' : 'text-base-content hover:bg-base-300 '}`}
               onClick={() => setActiveTab('analytics')}
             >
               統計分析
@@ -47,17 +47,17 @@ export default function Instructions() {
         <div className="p-6">
           {activeTab === 'general' && (
             <div>
-              <h2 className="text-xl font-semibold mb-4">基本操作說明</h2>
+              <h2 className="text-xl font-semibold mb-4 text-base-content">基本操作說明</h2>
 
-              <div className="mb-6">
+              <div className="mb-6 text-base-content">
                 <h3 className="text-lg font-medium mb-2">登入系統</h3>
                 <p className="mb-3">1. 在首頁輸入您的帳號和密碼</p>
                 <p className="mb-3">2. 首次登入需要變更密碼並設定雙因素認證</p>
                 <p className="mb-3">3. 如忘記密碼，請點擊「忘記密碼」並依照指示進行</p>
                 <div className="my-4 border rounded-lg overflow-hidden">
-                  <div className="bg-gray-100 p-3">登入介面示意</div>
-                  <div className="h-48 bg-gray-200 flex items-center justify-center">
-                    <p className="text-gray-500">登入畫面示意圖</p>
+                  <div className="bg-base-300 p-3">登入介面示意</div>
+                  <div className="h-48 bg-base-300 flex items-center justify-center">
+                    <p className="text-base-content">登入畫面示意圖</p>
                   </div>
                 </div>
               </div>

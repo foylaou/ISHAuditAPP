@@ -4,12 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 import {
   LoginApiRequest,
   LoginForm,
-  RegisterUserDto,
   TokenValidationResponse,
-  RegisterResponse,
-  DomainQueryResponse,
-  ValidateEmailTokenResponse,
-  UserInfo
 } from "@/types/authType";
 import getAuthtoken, {
 
@@ -39,7 +34,6 @@ const api = axios.create({
 });
 
 
-let authErrorCallback = () => {};
 
 // 請求攔截器
 api.interceptors.request.use(async (config) => {
@@ -60,7 +54,7 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       await clearAuthCookies();
-      authErrorCallback();
+
     }
     return Promise.reject(error);
   }
@@ -82,34 +76,9 @@ export async function isAuthenticated(): Promise<boolean> {
   }
 }
 
-export async function registerAuthErrorCallback(callback: () => void) {
-  authErrorCallback = callback;
-}
 
-export async function verifyCaptcha(captchaResponse: string): Promise<{
-  success: boolean;
-  message: string;
-  errors?: string[];
-}> {
-  try {
-    const response = await api.post('/Auth/captcha', null, {
-      params: { cfTurnstileResponse: captchaResponse }
-    });
-    return { success: true, message: response.data.Message };
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      return {
-        success: false,
-        message: error.response.data?.Message || '驗證失敗',
-        errors: error.response.data?.Errors
-      };
-    }
-    return {
-      success: false,
-      message: '驗證過程發生錯誤',
-    };
-  }
-}
+
+
 export async function SendVerificationEmail(email: string): Promise<{ success: boolean; message: string ;errors?: string[] }> {
   try {
     const response = await api.post('/Auth/SendVerificationEmail', {Email: email},{
@@ -297,51 +266,8 @@ export async function validateToken(): Promise<TokenValidationResponse> {
   }
 }
 
-export async function register(userData: RegisterUserDto): Promise<RegisterResponse> {
-  try {
-    const response = await api.post('/Auth/Register', userData);
-    return {
-      success: true,
-      message: response.data.message,
-      user: response.data.user
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      return {
-        success: false,
-        message: error.response.data?.message || '註冊失敗'
-      };
-    }
-    return {
-      success: false,
-      message: '註冊過程發生錯誤'
-    };
-  }
-}
 
 
-
-export async function queryEmailDomain(email: string): Promise<DomainQueryResponse> {
-  try {
-    const response = await api.post('/Auth/DomainQuery', { Email: email });
-    return {
-      success: true,
-      organization: response.data.org,
-      organizationType: response.data.type
-    };
-  } catch (error) {
-    if (axios.isAxiosError(error) && error.response) {
-      return {
-        success: false,
-        message: error.response.data?.message || '域名查詢失敗'
-      };
-    }
-    return {
-      success: false,
-      message: '域名查詢過程發生錯誤'
-    };
-  }
-}
 
 export async function loginWithEmail(email: string): Promise<{
   success: boolean;
@@ -372,19 +298,7 @@ export async function loginWithEmail(email: string): Promise<{
     };
   }
 }
-export async function captcha(token:string): Promise<{ success: boolean; message: string }> {
-  try {
-    const response = await api.post('/Auth/captcha', token);
-    const { success, message } = response.data;
-    if (success) {
-      return {success,message}
-    }else {
-      return {success,message}
-    }
-  }catch(error) {
-    return {success:false,message:"組建發生錯誤"}
-  }
-}
+
 
 export async function validateEmailToken(token: string) {
   try {
@@ -397,7 +311,7 @@ export async function validateEmailToken(token: string) {
 
     if (!accessToken || !refreshToken) {
       console.error("❌ 伺服器未返回完整 Token:", response.data);
-      throw new Error("後端未返回完整 Token");
+       new Error("後端未返回完整 Token");
     }
 
     console.log("✅ 從後端取得 Access Token:", accessToken);
@@ -405,7 +319,7 @@ export async function validateEmailToken(token: string) {
 
     // **確保 accessToken 是標準 JWT**
     if (accessToken.split(".").length !== 3) {
-      throw new Error("無效的 Access Token，格式錯誤");
+       new Error("無效的 Access Token，格式錯誤");
     }
 
     // 存儲 Token 到 Cookie
@@ -433,7 +347,7 @@ export async function validateEmailToken(token: string) {
     // 取得 UserId
     let userId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
     if (!userId) {
-      throw new Error("無法取得使用者 ID");
+       new Error("無法取得使用者 ID");
     }
     userId = userId.toUpperCase();
     console.log("✅ 使用者 ID:", userId);
