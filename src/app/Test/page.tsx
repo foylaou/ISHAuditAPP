@@ -1,8 +1,8 @@
-"use client"
-import React from 'react';
 
 
-export default function LoginPage() {
+
+
+export default function page() {
 
     return (
 <>

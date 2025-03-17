@@ -6,14 +6,14 @@ import FloatingImage from "@/components/Image/FloatingImage";
 
 const Custom404 = () => {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen bg-base-200 flex flex-col items-center justify-center p-4">
       <div
         className="max-w-2xl w-full text-center space-y-8 animate-fade-in-up"
       >
         <div className="space-y-4">
-          <h1 className="text-6xl font-bold text-gray-900">404</h1>
-          <h2 className="text-2xl font-semibold text-gray-700">找不到頁面</h2>
-          <p className="text-gray-600">抱歉，您訪問的頁面似乎已經離家出走了...</p>
+          <h1 className="text-6xl font-bold text-base-content">404</h1>
+          <h2 className="text-2xl font-semibold text-neutral-content">找不到頁面</h2>
+          <p className="text-neutral-content">抱歉，您訪問的頁面似乎已經離家出走了...</p>
         </div>
 
         <div className="relative w-full h-64 sm:h-96">
