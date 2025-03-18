@@ -36,6 +36,7 @@ const publicRoutes = [
   '/favicon.ico',
   '/public',  // 添加公開資源目錄
   '/proxy',   // proxy 路徑
+    "/proxy/health",
 ];
 
 // 驗證請求是否為公開路由
