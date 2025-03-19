@@ -10,7 +10,7 @@
  * @member {string} industrialareasId 工業區 ID
  * @member {string} auditCauseId 企業 ID
  * @member {string} auditItemsId 公司 ID
- * @member {string} disasterType 災害類型 ID（逗號分隔）
+ * @member {string} AccidentCause 災害類型 ID（逗號分隔）
  * @member {string} auditDate 督導年份
  * @member {string} enterpriseId 企業 ID
  * @member {string} companyId 公司 ID
@@ -27,8 +27,9 @@ export interface AuditQuery {
   industrialareasId: string;
   auditCauseId: string;
   auditItemsId: string;
-  disasterType: string;
-  auditDate: string;
+  AccidentCause: string;
+  auditDate?: string;
+  auditDateRange?: string;
   enterpriseId: string;
   companyId: string;
   factoryId: string;

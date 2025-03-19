@@ -32,10 +32,13 @@ export default function SearchBar() {
   cityInfoId: "", // 城市 ID
   townshipsId: "", // 鄉鎮 ID
   industrialareasId: "", // 工業區 ID
+
   auditCauseId: "", // 企業 ID
   auditItemsId: "", // 公司 ID
-  disasterType: "", // 災害類型 ID（逗號分隔）
+
+  AccidentCause: "", // 災害類型 ID（逗號分隔）
   auditDate: "", // 督導年份
+  auditDateRange: "", // 督導時間範圍
   enterpriseId:"",
   companyId:"",
   factoryId: "", // 工廠 ID
@@ -224,8 +227,8 @@ export default function SearchBar() {
                           onChange={(e) => setIsPenalty(e.target.value)}
                       >
                         <option disabled value="--請選擇--">--請選擇--</option>
-                        <option value="是">是</option>
-                        <option value="否">否</option>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
                       </select>
                     </div>
 
@@ -237,8 +240,8 @@ export default function SearchBar() {
                           onChange={(e) => setIsWorkStopped(e.target.value)}
                       >
                         <option disabled value="--請選擇--">--請選擇--</option>
-                        <option value="Y">是</option>
-                        <option value="N">否</option>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
                       </select>
                     </div>
 
@@ -250,8 +253,8 @@ export default function SearchBar() {
                           onChange={(e) => setIsParticipate(e.target.value)}
                       >
                         <option disabled value="--請選擇--">--請選擇--</option>
-                        <option value="Y">是</option>
-                        <option value="N">否</option>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
                       </select>
                     </div>
 
@@ -263,8 +266,8 @@ export default function SearchBar() {
                           onChange={(e) => setIsImproveStatus(e.target.value)}
                       >
                         <option disabled value="--請選擇--">--請選擇--</option>
-                        <option value="Y">是</option>
-                        <option value="N">否</option>
+                        <option value="1">是</option>
+                        <option value="0">否</option>
                       </select>
                     </div>
                   </div>
