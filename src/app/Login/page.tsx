@@ -86,7 +86,7 @@ const [isMobile, setIsMobile] = useState(false);
   }
 
   // 如果組件尚未加載，返回加載狀態
-  if (isLoaded) {
+  if (!isLoaded) {
     return <>
         <div className="flex items-center justify-center min-h-screen bg-base-100 p-4">
 
