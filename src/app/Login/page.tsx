@@ -36,10 +36,9 @@ const [isMobile, setIsMobile] = useState(false);
   // 組件掛載後設置加載狀態
   useEffect(() => {
     setIsLoaded(true)
-if (typeof window !== 'undefined' && isLoggedIn) {
-          router.push("/Home")
-      }
-    console.log("Page component mounted")
+    if (typeof window !== 'undefined' && isLoggedIn) {
+              router.push("/Home")
+          }
  }, [isLoggedIn, router]) // 添加依賴項確保效果正確運行
 
   // 切換到註冊流程
@@ -87,96 +86,114 @@ if (typeof window !== 'undefined' && isLoggedIn) {
   }
 
   // 如果組件尚未加載，返回加載狀態
-  if (!isLoaded) {
+  if (isLoaded) {
     return <>
-        <div className="w-full max-w-md flex flex-col space-y-4 md:space-y-6 p-3 md:p-4 mx-auto">
-            <div className="card bg-base-200 shadow-md">
-                {/* 頁面標題區塊骨架 */}
-                <div className="p-4 border-b border-base-300">
-                    <div className="skeleton h-8 w-40 mx-auto"></div>
-                </div>
+        <div className="flex items-center justify-center min-h-screen bg-base-100 p-4">
 
-                {/* 標籤區域骨架 */}
-                <div
-                    className={`tabs tabs-bordered ${isMobile ? 'flex flex-nowrap overflow-x-auto text-xs' : 'tabs-lg'}`}>
-                    <div className="skeleton h-10 w-20 mx-1"></div>
-                    <div className="skeleton h-10 w-20 mx-1"></div>
-                    <div className="skeleton h-10 w-20 mx-1"></div>
-                </div>
+                {/* 卡片容器 */}
+                <div className="bg-base-200 rounded-2xl shadow-xl overflow-hidden">
+                    {/* 頂部裝飾元素 */}
+                    <div className="h-2 bg-gradient-to-r from-primary to-secondary"></div>
 
-                {/* 表單區域骨架 */}
-                <div className="p-3 md:p-5">
-                    <div className="skeleton h-6 w-32 mb-4"></div>
+                    {/* 標籤區域 */}
+                    <div className="px-4 pt-6 border-b border-base-300">
+                        <div className="flex justify-center space-x-4">
+                            <div className="skeleton w-24 h-5 rounded-full"></div>
+                            <div className="skeleton w-24 h-5 rounded-full opacity-50"></div>
+                            <div className="skeleton w-24 h-5 rounded-full opacity-50"></div>
+                        </div>
+                        {/* 標籤指示器 */}
+                        <div className="mt-2 relative flex justify-start">
+                            <div className="h-1 w-24 bg-primary rounded"></div>
+                        </div>
+                    </div>
 
-                    <div className="flex flex-col gap-4 md:gap-5">
-                        {/* 表單欄位骨架 - 帳號 */}
-                        <div className="form-control">
-                            <div className="skeleton h-4 w-16 mb-2"></div>
-                            <div className="skeleton h-12 w-full"></div>
+                    {/* 表單區域 */}
+                    <div className="p-6 space-y-6">
+                        {/*標題*/}
+                        <div className="skeleton w-20 h-10 rounded"></div>
+                        {/* 輸入欄位 */}
+                        <div className="space-y-2">
+                            <div className="space-y-1">
+                                <div className="skeleton w-20 h-4 rounded"></div>
+                                <div className="skeleton w-full h-12 rounded-lg"></div>
+                            </div>
+
+                            <div className="space-y-1">
+                                <div className="skeleton w-20 h-4 rounded"></div>
+                                <div className="skeleton w-full h-12 rounded-lg"></div>
+                            </div>
+                            <div className="flex justify-center">
+                                {/* 驗證區域 */}
+                                <div className="skeleton w-10/12 h-14 rounded-lg mt-4"></div>
+                            </div>
                         </div>
 
-                                    {/* 表單欄位骨架 - 密碼 */}
-            <div className="form-control">
-              <div className="skeleton h-4 w-16 mb-2"></div>
-              <div className="skeleton h-12 w-full"></div>
-            </div>
-                                    {/* 驗證區域骨架 */}
-            <div className="mt-2">
-              <div className="skeleton h-20 w-full md:w-3/4 mx-auto"></div>
-            </div>
-            </div>
-      </div>
-      </div>
-    </div>
-                    </>
-                    }
+                        {/* 按鈕區域 */}
+                        <div className=" flex justify-end">
+                            <div className="skeleton items-end w-20 h-12 rounded-lg"></div>
+                        </div>
+                    </div>
 
-                    return (
-                    <div className="flex items-center justify-center p-12">
-                        {/* 添加調試信息 */}
-                        <div className="hidden">當前狀態: {showRegister ? '註冊' : '登入'}</div>
+                    {/* 底部區域 */}
+                    <div className="p-4 flex justify-center border-t border-base-300 bg-base-200/50">
+                        <div className="flex items-center space-x-2">
+                            <div className="skeleton w-36 h-4 rounded"></div>
+                            <div className="skeleton w-20 h-4 rounded bg-primary/30"></div>
+                        </div>
+                    </div>
+                </div>
 
-                        <AnimatePresence mode="wait" initial={false}>
-                            {!showRegister ? (
-                                <motion.div
-                                    key="login"
-                                    initial={{opacity: 0, y: 20}}
-                                    animate={{opacity: 1, y: 0}}
-                                    exit={{opacity: 0, y: -20}}
-                                    transition={{duration: 0.3}}
+        </div>
+    </>
+  }
+
+    return (
+        <div className="flex items-center justify-center p-12">
+            {/* 添加調試信息 */}
+            <div className="hidden">當前狀態: {showRegister ? '註冊' : '登入'}</div>
+
+            <AnimatePresence mode="wait" initial={false}>
+                {!showRegister ? (
+                    <motion.div
+                        key="login"
+                        initial={{opacity: 0, y: 20}}
+                        animate={{opacity: 1, y: 0}}
+                        exit={{opacity: 0, y: -20}}
+                        transition={{duration: 0.3}}
+                    >
+                        <CustomLoginUITabs/>
+                    </motion.div>
+                ) : (
+                    <motion.div
+                        key="register"
+                        initial={{opacity: 0, y: 20}}
+                        animate={{opacity: 1, y: 0}}
+                        exit={{opacity: 0, y: -20}}
+                        transition={{duration: 0.3}}
+                        className="w-full min-h-[400px]"
+                    >
+                        <div className="p-4">
+                            <button
+                                onClick={handleBackToLogin}
+                                className="flex items-center text-base-content hover:text-neutral-content"
+                                type="button" // 明確指定按鈕類型
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    className="h-5 w-5 mr-1"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke="currentColor"
                                 >
-                                    <CustomLoginUITabs/>
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    key="register"
-                                    initial={{opacity: 0, y: 20}}
-                                    animate={{opacity: 1, y: 0}}
-                                    exit={{opacity: 0, y: -20}}
-                                    transition={{duration: 0.3}}
-                                    className="w-full min-h-[400px]"
-                                >
-                                    <div className="p-4">
-                                        <button
-                                            onClick={handleBackToLogin}
-                                            className="flex items-center text-base-content hover:text-neutral-content"
-                                            type="button" // 明確指定按鈕類型
-                                        >
-                                            <svg
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                className="h-5 w-5 mr-1"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                stroke="currentColor"
-                                            >
-                                                <path
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                    strokeWidth={2}
-                                                    d="M15 19l-7-7 7-7"
-                                                />
-                                            </svg>
-                                            返回登入
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M15 19l-7-7 7-7"
+                                    />
+                                </svg>
+                                返回登入
                                         </button>
                                     </div>
                                     <Steps/>
