@@ -184,9 +184,5 @@ body {
     font-size: 14px;
   }
 }
-input, textarea {
-  font-size: 16px;
-  transform: scale(0.875); /* 讓它看起來像 14px */
-  transform-origin: left top;
-}
+
 
