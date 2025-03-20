@@ -42,7 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="zh" data-theme={theme ? 'ISHADark' : 'ISHALight'}>
     <head>
         <meta charSet="utf-8"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
         <title>大型石化督導資料庫</title>
         <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
