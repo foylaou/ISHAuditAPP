@@ -37,37 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme ? 'ISHADark' : 'ISHALight');
   }, [theme]);
-//阻止瀏覽器預設縮放
- useEffect(() => {
-    const handleGestureStart = (event: Event) => event.preventDefault();
-    const handleDblClick = (event: MouseEvent) => event.preventDefault();
-    const handleTouchStart = (event: TouchEvent) => {
-      if (event.touches.length > 1) {
-        event.preventDefault();
-      }
-    };
 
-    let lastTouchEnd = 0;
-    const handleTouchEnd = (event: TouchEvent) => {
-      const now = new Date().getTime();
-      if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-      }
-      lastTouchEnd = now;
-    };
-
-    document.addEventListener('gesturestart', handleGestureStart);
-    document.addEventListener('dblclick', handleDblClick);
-    document.addEventListener('touchstart', handleTouchStart, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd, { passive: false });
-
-    return () => {
-      document.removeEventListener('gesturestart', handleGestureStart);
-      document.removeEventListener('dblclick', handleDblClick);
-      document.removeEventListener('touchstart', handleTouchStart);
-      document.removeEventListener('touchend', handleTouchEnd);
-    };
-  }, []);
 
   return (
     <html lang="zh" data-theme={theme ? 'ISHADark' : 'ISHALight'}>
