@@ -14,24 +14,26 @@ import { AG_GRID_LOCALE_TW } from '@ag-grid-community/locale';
 import {useAuditStore} from "@/store/useAuditStore";
 import {AuditBasicResult} from "@/types/AuditQuery/auditQuery";
 import {ROCformatDateTools} from "@/utils/Timetool";
+import {Button} from "@mantine/core";
+import {useRouter} from "next/navigation";
+
+// 如果使用 React Router，則使用：import { useNavigate } from 'react-router-dom';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
 const themeLightWarm = themeQuartz.withPart(colorSchemeLightWarm);
-
 const themeDarkBlue = themeQuartz.withPart(colorSchemeDarkBlue);
 
-
-
-
-const BasicGrid = () => {
+const BasicGrid = ({ onRowSelected }: { onRowSelected: (data: AuditBasicResult | null) => void }) => {
   // 使用全域狀態的布林值主題
   const BasicData = useAuditStore(state => state.auditData?.basics);
-
   // theme 為 true 時表示暗色模式
   const isDarkMode = useGlobalStore().theme;
 
-
+  // 處理行點擊事件 - 只選中行，不跳轉
+  const handleRowClick = (params: { data: AuditBasicResult }) => {
+    onRowSelected(params.data);
+  };
 
   const [colDefs] = useState<ColDef<AuditBasicResult>[]>([
     { field: "industrialArea", headerName: "工業區" },
@@ -55,7 +57,6 @@ const BasicGrid = () => {
       field: "sd",
       headerName: "停工？",
       cellRenderer: (params: ICellRendererParams<AuditBasicResult>) =>
-
         params.value ==='Y' ? (
           <span className="text-accent">是</span>
         ) : (
@@ -80,6 +81,7 @@ const BasicGrid = () => {
     filter: true,
     resizable: true,
   };
+
   const statusBar = useMemo<{
     statusPanels: StatusPanelDef[];
   }>(() => {
@@ -105,7 +107,7 @@ const BasicGrid = () => {
     >
       <AgGridReact
         localeText={AG_GRID_LOCALE_TW}
-        rowStyle={{ overflow: 'visible' }}
+        rowStyle={{ overflow: 'visible', cursor: 'pointer' }} // 添加指針游標
         suppressRowTransform={true}
         rowData={BasicData}
         columnDefs={colDefs}
@@ -116,18 +118,45 @@ const BasicGrid = () => {
         statusBar={statusBar}
         paginationPageSize={20}
         theme={isDarkMode ? themeDarkBlue : themeLightWarm}
-
+        onRowClicked={handleRowClick} // 點擊行時保存選中的行
+        rowSelection="single" // 啟用單行選擇
       />
     </div>
   );
 };
 
 export default function BasicResult() {
+  const router = useRouter();
+  // 如果使用 React Router，則使用：const navigate = useNavigate();
+
+  // 保存選中的行數據
+  const [selectedRow, setSelectedRow] = useState<AuditBasicResult | null>(null);
+
+  // 處理查詢按鈕點擊
+  const handleQuery = () => {
+    if (selectedRow && selectedRow.uuid) {
+      router.push(`/Audit/Auditinfo/${selectedRow.uuid}`);
+      // 如果使用 React Router，則使用：navigate(`/AuditInfo/${selectedRow.uuid}`);
+    } else {
+      // 可能的錯誤處理，如顯示提示"請先選擇一行數據"
+      alert("請先選擇一筆資料");
+    }
+  };
+
   return (
     <StrictMode>
       <div className="w-full">
         <h2 className="text-xl text-base-content mb-4">稽核結果</h2>
-        <BasicGrid />
+        <BasicGrid onRowSelected={setSelectedRow} />
+      </div>
+      <div className="flex justify-end mt-4">
+        <Button
+          className="btn btn-primary btn-lg"
+          onClick={handleQuery}
+          disabled={!selectedRow} // 如果沒有選中行，禁用按鈕
+        >
+          查詢
+        </Button>
       </div>
     </StrictMode>
   );

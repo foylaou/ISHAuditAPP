@@ -13,7 +13,7 @@ import Sidebar from "@/components/Menu/Sidebar";
 import BreadcrumbsIcons from "@/components/Breadcrumbs/BreadcrumbsIcons";
 import {AgChartsEnterpriseModule} from "ag-charts-enterprise";
 import Footer from "@/components/Footer/Footer";
-import Script from "next/script";
+
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     ModuleRegistry.registerModules([
@@ -66,7 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         {children}
                         <ToastContainer
                             draggable={true}
-                            position="bottom-center"
+                            position="top-right"
                             stacked={true}
                         />
                     </MantineProvider>

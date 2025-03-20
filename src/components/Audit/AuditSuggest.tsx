@@ -17,6 +17,7 @@ const SuggestGrid = () => {
     const {theme} = useGlobalStore();
     // rowData
     const SuggestData = useAuditStore(state => state.auditData?.suggests);
+
     // theme 為 true 時表示暗色模式
     const isDarkMode = theme;
     const [colDefs] = useState<ColDef<AuditSuggestResult>[]>([

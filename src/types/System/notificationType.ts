@@ -66,8 +66,8 @@ export interface NotificationProps {
  * @param {NotificationType} type 通知類型
  * @param {string} bgColor 背景顏色
  * @param {(iconName: string, type: NotificationType) => React.ReactNode} getIconComponent 取得對應的圖示組件
- * @param {(id: string) => void} removeNotification 移除指定的通知
- * @param {(id: string) => void} markAsRead 標記通知為已讀
+ * @param {([id]: string) => void} removeNotification 移除指定的通知
+ * @param {([id]: string) => void} markAsRead 標記通知為已讀
  */
 export interface NotificationItemProps {
   notification: Notification;

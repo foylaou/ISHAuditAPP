@@ -84,7 +84,7 @@ export default {
                     "neutral-content": "#939393",
                     "base-100": "#F3F6FA",
                     "base-200": "#FCFCFC",
-                    "base-300": "#cad7f7",
+                    "base-300": "#c5d9fd",
                     "base-content": "#292929",
                     "info": "#76d5ff",
                     "info-content": "#234241",

@@ -21,7 +21,7 @@ interface AuditStore {
  * @returns {AuditStore} 返回督導查詢的狀態管理，包含設置查詢結果 setAuditData 以及清除查詢結果 clearAuditData。
  */
 export const useAuditStore = create<AuditStore>((set) => ({
-  auditData: null,
+  auditData: { basics: [], suggests: [] }, // 預設空陣列而非 null
   setAuditData: (data) => set({ auditData: data }),
-  clearAuditData: () => set({ auditData: null }),
+  clearAuditData: () => set({ auditData: { basics: [], suggests: [] } }), // 清空時也設為空陣列
 }));
