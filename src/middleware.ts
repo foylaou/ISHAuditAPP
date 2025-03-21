@@ -51,8 +51,8 @@ function getCSPWhitelist(): CSPWhitelist {
   return {
     scriptSrc: [
       "'self'",
-      "'unsafe-inline'",  // 重要：允許內聯腳本
-      "'unsafe-eval'",    // Turnstile需要eval
+      // "'unsafe-inline'",  // 重要：允許內聯腳本
+      // "'unsafe-eval'",    // Turnstile需要eval
       "http://localhost:5238",
       "http://127.0.0.1:8000",
       "https://challenges.cloudflare.com",
@@ -64,7 +64,7 @@ function getCSPWhitelist(): CSPWhitelist {
     ],
     styleSrc: [
       "'self'",
-      "'unsafe-inline'",  // Turnstile可能需要內聯樣式
+      // "'unsafe-inline'",  // Turnstile可能需要內聯樣式
       "https://challenges.cloudflare.com"
     ],
     imgSrc: [

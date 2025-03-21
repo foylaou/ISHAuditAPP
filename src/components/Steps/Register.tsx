@@ -9,7 +9,7 @@ import {
   SignUp
 } from "@/services/Auth/clientAuthService";
 
-// 定義接口
+
 interface StepsContainerProps {
   children: ReactNode;
   vertical?: boolean;

@@ -273,27 +273,28 @@ export default function BasicInfo({ data }:BasicInfoProps) {
         </div>
 
         {/* 督導說明 */}
-        <div className="form-control w-full mt-2">
+        <div className="form-control w-full h-full flex flex-col mt-2">
           <label className="label">
             <span className="label-text font-medium">督導說明:</span>
           </label>
           <textarea
-            className="textarea textarea-bordered h-24 w-full text-base-content"
-            placeholder="無"
-            value={incidentDescription || ''}
-            readOnly
+              className="textarea textarea-md textarea-bordered w-full text-base-content h-24 sm:h-full flex-grow"
+              placeholder="無"
+              value={incidentDescription || ''}
+              readOnly
+
           />
         </div>
 
-        {/* 裁罰 */}
-        <div className="form-control w-full mt-2">
-          <label className="label">
-            <span className="label-text font-medium">裁罰:</span>
-          </label>
-          <textarea
-            className="textarea textarea-bordered h-24 w-full text-base-content"
-            placeholder="無"
-            value={penaltyAmount == "0" || penaltyAmount == null ? '未裁罰' : MoneyTool.toTaiwanBigMoney(penaltyAmount)}
+          {/* 裁罰 */}
+          <div className="form-control w-full mt-2">
+            <label className="label">
+              <span className="label-text font-medium">裁罰:</span>
+            </label>
+            <textarea
+                className="textarea textarea-bordered h-24 w-full text-base-content"
+                placeholder="無"
+                value={penaltyAmount == "0" || penaltyAmount == null ? '未裁罰' : MoneyTool.toTaiwanBigMoney(penaltyAmount)}
             readOnly
           />
         </div>
