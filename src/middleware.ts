@@ -18,7 +18,7 @@ interface CSPWhitelist {
   imgSrc: string[];
   fontSrc: string[];
   connectSrc: string[];
-  frameSrc: string[];
+  // frameSrc: string[];
   workerSrc: string[]; // 添加workerSrc屬性
 }
 
@@ -83,13 +83,6 @@ function getCSPWhitelist(): CSPWhitelist {
       "https://challenges.cloudflare.com",
       "https://*.cloudflare.com",
       "https://api.cloudflare.com",
-      "https://turnstile.com",
-      "https://*.turnstile.com"
-    ],
-    frameSrc: [
-      "'self'",
-      "https://challenges.cloudflare.com",
-      "https://*.cloudflare.com",
       "https://turnstile.com",
       "https://*.turnstile.com"
     ],
@@ -168,7 +161,6 @@ if (isZapScan) {
     'img-src': ["'self'", "data:", "blob:", "http:", "https:"],
     'font-src': whitelist.fontSrc,
     'connect-src': [...whitelist.connectSrc, apiUrl, ragApiUrl, "ws:", "wss:", "*"].filter(Boolean),
-    'frame-src': [...whitelist.frameSrc],
     'object-src': ["'none'"],
     'base-uri': ["'self'"],
     'form-action': ["'self'"]
@@ -182,7 +174,6 @@ if (isZapScan) {
       'img-src': whitelist.imgSrc,
       'font-src': whitelist.fontSrc,
       'connect-src': [...whitelist.connectSrc, apiUrl, ragApiUrl].filter(Boolean),
-      'frame-src': [...whitelist.frameSrc],
       'object-src': ["'none'"],
       'base-uri': ["'self'"],
       'form-action': ["'self'"],
