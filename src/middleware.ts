@@ -55,6 +55,7 @@ function getCSPWhitelist(): CSPWhitelist {
       // "'unsafe-eval'",    // Turnstile需要eval
       "http://localhost:5238",
       "http://127.0.0.1:8000",
+        "http://ishabackend:8080/",
       "https://challenges.cloudflare.com",
       "https://*.cloudflare.com",  // 所有cloudflare子域名
       "https://static.cloudflareinsights.com",
@@ -72,7 +73,8 @@ function getCSPWhitelist(): CSPWhitelist {
       "data:",
       "blob:",
       "https://challenges.cloudflare.com",
-      "https://*.cloudflare.com"
+      "https://*.cloudflare.com",
+      "http://ishabackend:8080/",
     ],
     fontSrc: [
       "'self'",
@@ -84,19 +86,22 @@ function getCSPWhitelist(): CSPWhitelist {
       "https://*.cloudflare.com",
       "https://api.cloudflare.com",
       "https://turnstile.com",
-      "https://*.turnstile.com"
+      "https://*.turnstile.com",
+      "http://ishabackend:8080/",
     ],
     frameSrc: [
       "'self'",
       "https://challenges.cloudflare.com",
       "https://*.cloudflare.com",
       "https://turnstile.com",
-      "https://*.turnstile.com"
+      "https://*.turnstile.com",
+      "http://ishabackend:8080/",
     ],
     workerSrc: [  // 添加worker-src
       "'self'",
       "blob:",
-      "https://challenges.cloudflare.com"
+      "https://challenges.cloudflare.com",
+      "http://ishabackend:8080/",
     ]
   };
 }
