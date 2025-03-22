@@ -231,7 +231,6 @@ export async function refreshToken() {
 export async function validateToken(): Promise<TokenValidationResponse> {
   try {
     const token = await getAuthtoken();
-    console.log(token);
     // 如果沒有 token，直接返回未驗證
     if (!token) {
       return {

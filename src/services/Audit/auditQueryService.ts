@@ -3,12 +3,26 @@ import getAuthtoken from "@/services/Auth/serverAuthService";
 import {BasicInfoData} from "@/components/Audit/AuditInfo/BasicInfo";
 import {DetailType} from "@/components/Audit/AuditInfo/AuditDetailModal";
 import {AuditDetail} from "@/components/Audit/AuditInfo/SupervisionProgress";
-import {AuditQuery, AuditQueryResponse} from "@/types/AuditQuery/auditQuery";
+import {AuditBasicResult, AuditQuery} from "@/types/AuditQuery/auditQuery";
+import {headers} from "next/headers";
+import {AuditEditResult} from "@/components/Auditedit/AuditeditBasicInfo";
+import {AuditInfoSuggest} from "@/components/Auditedit/AuditInfoSuggest";
 
 const api = axios.create({
   baseURL: '/proxy',  // API請求的基礎路徑
   timeout: 10000, // 超時設置
 });
+
+interface AuditeditVerification {
+  auditId:string;
+  email:string;
+  verificationCode:string;
+}
+interface ApiResponse<T> {
+  success: boolean;
+  message?: string;
+  data: T;
+}
 
 // 📌 **請求攔截器：自動附加 `Authorization: Bearer <Token>`**
 api.interceptors.request.use(async (config) => {
@@ -131,6 +145,80 @@ export const auditQueryService = {
         console.error('查詢審核資料時發生錯誤:', error);
         throw error;
       }
+    },
+  async GetOrginfo(id: string|undefined){
+    return true
+  },
+  VerificationEmailwithUrl(data:AuditeditVerification){
+    console.log(data)
+    return {
+      success: true,
+      data: {
+        UserId:"A524B6ED-4E6F-4703-A135-E806CDFCE7CE",
+        UserName: "黃仲儀",
+        Unit: "中油股份有限公司",
+        Position: "組處",
+
+      }
     }
+  },
+  async getBasicInfoByUserId(userId: string): Promise<ApiResponse<AuditEditResult[]>> {
+    try {
+      const response = await axios.post("http://localhost:5238/Audit/GetBasicInfoByUserId", {
+        userId: userId
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "*/*"
+        }
+      });
+
+      if (response.status === 200) {
+        return response.data as ApiResponse<AuditEditResult[]>;
+      } else {
+        return {
+          success: false,
+          message: "查詢基本資料失敗，伺服器回應異常",
+          data: []
+        };
+      }
+    } catch (error) {
+      console.error("查詢基本資料失敗", error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : "查詢基本資料失敗",
+        data: []
+      };
+    }
+  },
+  async GetAuditInfoSuggest(uuid: string): Promise<ApiResponse<AuditInfoSuggest[]>> {
+  try {
+      const response = await axios.post("http://localhost:5238/Audit/GetAuditInfoSuggest", {
+        Uuid: uuid
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "*/*"
+        }
+      });
+
+      if (response.status === 200) {
+        return response.data as ApiResponse<AuditInfoSuggest[]>;
+      } else {
+        return {
+          success: false,
+          message: "查詢基本資料失敗，伺服器回應異常",
+          data: []
+        };
+      }
+    } catch (error) {
+      console.error("查詢基本資料失敗", error);
+      return {
+        success: false,
+        message: error instanceof Error ? error.message : "查詢基本資料失敗",
+        data: []
+      };
+    }
+  },
 
 };
