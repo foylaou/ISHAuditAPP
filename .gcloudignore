@@ -14,3 +14,4 @@
 .gitignore
 # Node.js dependencies:
 node_modules/
+/yarn.lock
