@@ -6,7 +6,8 @@ FROM base AS deps
 WORKDIR /app
 
 # 複製依賴文件
-COPY package.json /
+COPY package.json yarn.lock ./
+
 
 # 安裝依賴
 RUN apk add --no-cache libc6-compat
