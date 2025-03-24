@@ -14,25 +14,8 @@ export default function Page() {
   const [showRegister, setShowRegister] = useState(false)
   // 添加狀態追踪組件是否已加載
   const [isLoaded, setIsLoaded] = useState(false)
-const [isMobile, setIsMobile] = useState(false);
 
-  // 檢查是否為行動裝置
-  useEffect(() => {
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 640) // 640px 是 Tailwind 的 sm 斷點
-    }
 
-    // 初始檢查
-    checkIfMobile()
-
-    // 監聽視窗大小變更
-    window.addEventListener('resize', checkIfMobile)
-
-    // 清理監聽器
-    return () => {
-      window.removeEventListener('resize', checkIfMobile)
-    }
-  }, [])
   // 組件掛載後設置加載狀態
   useEffect(() => {
     setIsLoaded(true)

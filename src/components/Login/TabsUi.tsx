@@ -496,7 +496,7 @@ export default function ResponsiveLoginUITabs({ defaultTab = "一般登入", cla
                                 <Turnstile
                                     options={{
                                       size: isMobile ? 'compact' : 'normal',
-                                      language: "zh-TW",
+                                      language: "zh-tw",
                                       theme: theme ? "dark" : "light",
                                     }}
                                     siteKey="0x4AAAAAABA44qkoEHBUVvap"
