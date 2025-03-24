@@ -4,8 +4,8 @@ import { AgCharts } from "ag-charts-react";
 import { AgChartOptions } from "ag-charts-enterprise";
 import { useGlobalStore } from "@/store/useGlobalStore";
 import "ag-charts-enterprise";
-import {AllCommunityModule, ModuleRegistry} from "ag-grid-enterprise";
-ModuleRegistry.registerModules([AllCommunityModule]);
+
+
 // 測試數據
 const getData = () => [
   { quarter: "Q1'18", iphone: 140, mac: 16, ipad: 14, wearables: 12, services: 20 },

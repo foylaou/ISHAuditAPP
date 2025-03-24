@@ -5,20 +5,18 @@ import { useGlobalStore } from '@/store/useGlobalStore';
 import { MantineProvider } from "@mantine/core";
 import { ModuleRegistry } from "ag-grid-community";
 
-import {AllEnterpriseModule, IntegratedChartsModule, LicenseManager} from "ag-grid-enterprise";
+import {AllEnterpriseModule, LicenseManager} from "ag-grid-enterprise";
 import { ToastContainer } from "react-toastify";
 import { SystemStatusProvider } from "@/contexts/SystemStatusContext";
 import HeaderMenu from "@/components/Menu/HeaderMenu";
 import Sidebar from "@/components/Menu/Sidebar";
 import BreadcrumbsIcons from "@/components/Breadcrumbs/BreadcrumbsIcons";
-import {AgChartsEnterpriseModule} from "ag-charts-enterprise";
 import Footer from "@/components/Footer/Footer";
 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
     ModuleRegistry.registerModules([
-        AllEnterpriseModule,
-        IntegratedChartsModule.with(AgChartsEnterpriseModule)
+        AllEnterpriseModule
     ]);
 
     const {checkIsLoggedIn ,theme} = useGlobalStore();

@@ -2709,6 +2709,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"ag-charts-enterprise@npm:^11.2.0":
+  version: 11.2.0
+  resolution: "ag-charts-enterprise@npm:11.2.0"
+  dependencies:
+    ag-charts-community: 11.2.0
+    ag-charts-core: 11.2.0
+  checksum: 3a941146491da62c05ee52bdde74c9dd79e89d8d3fbab7e679f44cd011fb19041d56924d370adeb93e05e2baeb16f519b2bb4b4953e320b4cc37ab919aac4374
+  languageName: node
+  linkType: hard
+
 "ag-charts-locale@npm:11.1.1":
   version: 11.1.1
   resolution: "ag-charts-locale@npm:11.1.1"
@@ -2723,7 +2733,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ag-charts-react@npm:^11.1.1":
+"ag-charts-react@npm:^11.2.0":
   version: 11.2.0
   resolution: "ag-charts-react@npm:11.2.0"
   dependencies:
@@ -2748,7 +2758,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ag-grid-community@npm:33.1.1, ag-grid-community@npm:^33.0.1":
+"ag-grid-community@npm:33.1.1":
   version: 33.1.1
   resolution: "ag-grid-community@npm:33.1.1"
   dependencies:
@@ -2757,7 +2767,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ag-grid-enterprise@npm:^33.0.3":
+"ag-grid-enterprise@npm:^33.1.1":
   version: 33.1.1
   resolution: "ag-grid-enterprise@npm:33.1.1"
   dependencies:
@@ -2773,7 +2783,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ag-grid-react@npm:^33.0.1":
+"ag-grid-react@npm:^33.1.1":
   version: 33.1.1
   resolution: "ag-grid-react@npm:33.1.1"
   dependencies:
@@ -5670,10 +5680,10 @@ __metadata:
     "@types/react-signature-canvas": ^1.0.6
     "@types/webappsec-credential-management": ^0.6.9
     add: ^2.0.6
-    ag-charts-react: ^11.1.1
-    ag-grid-community: ^33.0.1
-    ag-grid-enterprise: ^33.0.3
-    ag-grid-react: ^33.0.1
+    ag-charts-enterprise: ^11.2.0
+    ag-charts-react: ^11.2.0
+    ag-grid-enterprise: ^33.1.1
+    ag-grid-react: ^33.1.1
     axios: ^1.7.9
     cross-env: ^7.0.3
     daisyui: ^4.12.23
