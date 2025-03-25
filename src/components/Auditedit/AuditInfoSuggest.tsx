@@ -36,7 +36,7 @@ export interface AuditInfoSuggest {
 const SuggestGrid = () => {
     // 使用全域狀態的布林值主題
     const {theme} = useGlobalStore();
-    const { stepData, updateStepData } = useStepContext();
+    const { stepData } = useStepContext();
     const suggestData =
                       (Array.isArray(stepData.SuggestResult) ? stepData.SuggestResult :
                        (stepData.SuggestResult ? [stepData.SuggestResult] : []));

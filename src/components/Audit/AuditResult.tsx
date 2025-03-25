@@ -16,6 +16,7 @@ import {AuditBasicResult} from "@/types/AuditQuery/auditQuery";
 import {ROCformatDateTools} from "@/utils/Timetool";
 import {Button} from "@mantine/core";
 import {useRouter} from "next/navigation";
+import {RowSelectionOptions} from "ag-grid-community/dist/types/src/entities/gridOptions";
 
 // 如果使用 React Router，則使用：import { useNavigate } from 'react-router-dom';
 
@@ -119,7 +120,13 @@ const BasicGrid = ({ onRowSelected }: { onRowSelected: (data: AuditBasicResult |
         paginationPageSize={20}
         theme={isDarkMode ? themeDarkBlue : themeLightWarm}
         onRowClicked={handleRowClick} // 點擊行時保存選中的行
-        rowSelection="single" // 啟用單行選擇
+        rowSelection={{
+          mode: 'multiRow',
+          headerCheckbox: true,
+          groupSelects: 'descendants',
+          enableClickSelection: true,
+          copySelectedRows: true
+        }}
       />
     </div>
   );
@@ -128,12 +135,13 @@ const BasicGrid = ({ onRowSelected }: { onRowSelected: (data: AuditBasicResult |
 export default function BasicResult() {
   const router = useRouter();
   // 如果使用 React Router，則使用：const navigate = useNavigate();
-
+  const [isloading, setIsloading] = useState(false);
   // 保存選中的行數據
   const [selectedRow, setSelectedRow] = useState<AuditBasicResult | null>(null);
 
   // 處理查詢按鈕點擊
   const handleQuery = () => {
+    setIsloading(true);
     if (selectedRow && selectedRow.uuid) {
       router.push(`/Audit/Auditinfo/${selectedRow.uuid}`);
       // 如果使用 React Router，則使用：navigate(`/AuditInfo/${selectedRow.uuid}`);
@@ -151,11 +159,16 @@ export default function BasicResult() {
       </div>
       <div className="flex justify-end mt-4">
         <Button
-          className="btn btn-primary btn-lg"
+         className="btn btn-primary btn-lg"
           onClick={handleQuery}
           disabled={!selectedRow} // 如果沒有選中行，禁用按鈕
         >
-          查詢
+            {isloading ? (
+                <>
+                  <span className="loading loading-spinner"></span>
+                  查詢中...
+                </>
+            ) : '查詢'}
         </Button>
       </div>
     </StrictMode>

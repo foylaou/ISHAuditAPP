@@ -1,4 +1,4 @@
-import React, {StrictMode, useState} from "react";
+import React, {StrictMode, useCallback, useState} from "react";
 import {ColDef, colorSchemeDarkBlue, colorSchemeLightWarm, themeQuartz} from "ag-grid-enterprise";
 import {AllCommunityModule, ModuleRegistry} from "ag-grid-enterprise";
 import {AgGridReact} from "ag-grid-react";
@@ -12,12 +12,22 @@ const themeLightWarm = themeQuartz.withPart(colorSchemeLightWarm);
 const themeDarkBlue = themeQuartz.withPart(colorSchemeDarkBlue);
 
 
-const SuggestGrid = () => {
+
+
+export default function SuggestResult() {
+    const SuggestGrid = () => {
     // 使用全域狀態的布林值主題
     const {theme} = useGlobalStore();
     // rowData
     const SuggestData = useAuditStore(state => state.auditData?.suggests);
-
+    const [filterText, setFilterText] = useState<string>('');
+    const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setFilterText(e.target.value);
+    };
+        // Custom quick filter function
+    const quickFilterParser = useCallback((value: string): string[] => {
+            return value.split(' ').filter(term => term.length > 0);
+    }, []);
     // theme 為 true 時表示暗色模式
     const isDarkMode = theme;
     const [colDefs] = useState<ColDef<AuditSuggestResult>[]>([
@@ -58,6 +68,8 @@ const SuggestGrid = () => {
             }}
         >
             <AgGridReact
+                quickFilterText={filterText}
+                quickFilterParser={quickFilterParser}
                 localeText={AG_GRID_LOCALE_TW}
                 rowData={SuggestData}
                 columnDefs={colDefs}
@@ -71,8 +83,6 @@ const SuggestGrid = () => {
         </div>
     );
 };
-
-export default function SuggestResult() {
     return (
         <StrictMode>
             <div className="w-full">

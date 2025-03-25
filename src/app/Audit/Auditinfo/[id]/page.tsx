@@ -6,6 +6,7 @@ import SupervisionProgress, {AuditDetail} from "@/components/Audit/AuditInfo/Sup
 import {auditQueryService} from "@/services/Audit/auditQueryService";
 import {Button} from "@mantine/core";
 import {toast} from "react-toastify";
+import SuggestResult from "@/components/Audit/AuditInfo/AuditSuggestInfo";
 
 export default function Page({ params }: { params: Promise<{ id: string }> }) {
       const { id: auditId } = React.use(params);
@@ -90,10 +91,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
             label: "執行規劃",
             content: (
                 <>
-                    <div className="p-4">
-                        <h3 className="text-lg font-bold mb-2">執行規劃內容</h3>
-                        <p>此處是執行計劃的詳細信息...</p>
-                    </div>
+                    <SuggestResult id={auditId} />
                 </>
             ),
             disabled: false
@@ -115,7 +113,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
     return (
         <>
-            <div className="container mx-auto p-4">
+            <div className="w-11/12 mx-auto p-4">
                 <h1 className="text-2xl font-bold mb-6 text-base-content">督導管理系統</h1>
 
                 {error && (
