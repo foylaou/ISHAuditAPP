@@ -84,7 +84,7 @@ export async function SendVerificationEmail(email: string): Promise<{ success: b
     const response = await api.post('/Auth/SendVerificationEmail', {Email: email},{
             headers: { 'Content-Type': 'application/json' }
     });
-    console.log(response);
+    console.debug(response);
     if (response.status === 200) {
       return { success: true, message: response.data.Message };
     }
@@ -104,7 +104,7 @@ export async function VerifyEmailCode(email: string,code:string): Promise<{ succ
     const response = await api.post('/Auth/VerifyEmailCode', {Email: email,Code:code},{
             headers: { 'Content-Type': 'application/json' }
     });
-    console.log(response);
+    console.debug(response);
     if (response.status === 200 && response.data.success) {
       return { success: true, message: response.data.Message };
     }
@@ -112,7 +112,7 @@ export async function VerifyEmailCode(email: string,code:string): Promise<{ succ
       return { success: false, message: response.data.Message };
     }
   }catch(error) {
-    console.log(error);
+    console.debug(error);
     return { success: false, message: "功能錯誤" };
   }
 }
@@ -121,7 +121,7 @@ export async function SignUp(username: string,nickname:string,password:string,em
     const response = await api.post('/Auth/SignUp', {userName:username,password:password,nickName:nickname,email:email},{
             headers: { 'Content-Type': 'application/json' }
     });
-    console.log(response);
+    console.debug(response);
     if (response.status === 200 && response.data.success) {
       return { success: true, message: response.data.Message };
     }
@@ -129,7 +129,7 @@ export async function SignUp(username: string,nickname:string,password:string,em
       return { success: false, message: response.data.Message };
     }
   }catch(error) {
-    console.log(error);
+    console.debug(error);
     return { success: false, message: "功能錯誤" };
   }
 }
@@ -180,8 +180,8 @@ export async function login(formData: LoginForm) {
 
     const UserId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"].toUpperCase();
     const email =decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"];
-    console.log(username);
-    console.log(typeof username);
+    console.debug(username);
+    console.debug(typeof username);
     // 更新全域狀態
     useGlobalStore.getState().setUserId(UserId);
     useGlobalStore.getState().setUserName(username);
@@ -301,7 +301,7 @@ export async function loginWithEmail(email: string): Promise<{
 
 export async function validateEmailToken(token: string) {
   try {
-    console.log("📥 接收到的驗證 Token:", token);
+    console.debug("📥 接收到的驗證 Token:", token);
 
     // 發送 API 請求
     const response = await api.post('/Auth/ValidateEmailToken', { Token: token });
@@ -313,8 +313,8 @@ export async function validateEmailToken(token: string) {
        new Error("後端未返回完整 Token");
     }
 
-    console.log("✅ 從後端取得 Access Token:", accessToken);
-    console.log("✅ 從後端取得 Refresh Token:", refreshToken);
+    console.debug("✅ 從後端取得 Access Token:", accessToken);
+    console.debug("✅ 從後端取得 Refresh Token:", refreshToken);
 
     // **確保 accessToken 是標準 JWT**
     if (accessToken.split(".").length !== 3) {
@@ -328,7 +328,7 @@ export async function validateEmailToken(token: string) {
     let decoded: JWTPayload;
     try {
       decoded = jwtDecode<JWTPayload>(accessToken);
-      console.log("✅ 成功解析 JWT:", decoded);
+      console.debug("✅ 成功解析 JWT:", decoded);
     } catch (decodeError) {
       console.error("❌ 解析 JWT 失敗:", decodeError);
       throw new Error("無法解析 Access Token");
@@ -341,7 +341,7 @@ export async function validateEmailToken(token: string) {
       .trim()
       .replace(/\s+/g, " ");
 
-    console.log("✅ 清理後的使用者名稱:", `"${username}"`);
+    console.debug("✅ 清理後的使用者名稱:", `"${username}"`);
 
     // 取得 UserId
     let userId = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"];
@@ -349,11 +349,11 @@ export async function validateEmailToken(token: string) {
        new Error("無法取得使用者 ID");
     }
     userId = userId.toUpperCase();
-    console.log("✅ 使用者 ID:", userId);
+    console.debug("✅ 使用者 ID:", userId);
 
     // 取得 Email
     const email = decoded["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"] || "未提供 Email";
-    console.log("✅ 解析出的 Email:", email);
+    console.debug("✅ 解析出的 Email:", email);
 
     // 更新全域狀態
     useGlobalStore.getState().setUserId(userId);
@@ -362,7 +362,7 @@ export async function validateEmailToken(token: string) {
     userInfoStore.getState().setUsername(username);
     userInfoStore.getState().setEmail(email);
 
-    console.log("🚀 登入資訊已存儲於 Zustand");
+    console.debug("🚀 登入資訊已存儲於 Zustand");
 
     return {
       success: true,

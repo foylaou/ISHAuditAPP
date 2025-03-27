@@ -130,7 +130,7 @@ export default function BreadcrumbsIcons(props: BreadcrumbsIconsProps) {
         return { found: false, breadcrumbs: [] };
       };
 
-      const result = findMatchingItem(menuItems, pathname);
+const result = findMatchingItem(menuItems, pathname || "", []);
       if (result.found && result.breadcrumbs.length > 0) {
         return [...breadcrumbs, ...result.breadcrumbs];
       }
@@ -173,9 +173,9 @@ export default function BreadcrumbsIcons(props: BreadcrumbsIconsProps) {
     // 有連結的項目顯示為連結
     return (
         <li key={index}>
-          <Link href={item.link ?? "#"}> {/* 確保 `item.link` 存在，否則使用 `#` */}
-            {content}
-          </Link>
+        <Link href={(item.link as string) || "#"}>
+          {content}
+        </Link>
         </li>
     );
   }

@@ -7,7 +7,7 @@ import { ModuleRegistry } from "ag-grid-community";
 
 import {AllEnterpriseModule, LicenseManager} from "ag-grid-enterprise";
 import { ToastContainer } from "react-toastify";
-import { SystemStatusProvider } from "@/contexts/SystemStatusContext";
+
 import HeaderMenu from "@/components/Menu/HeaderMenu";
 import Sidebar from "@/components/Menu/Sidebar";
 import BreadcrumbsIcons from "@/components/Breadcrumbs/BreadcrumbsIcons";
@@ -49,7 +49,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
     <body>
     <div className="drawer flex-1 flex flex-col">
-        <SystemStatusProvider>
         <input id="my-drawer-3" type="checkbox" className="drawer-toggle" title="側邊欄按鈕" />
             <div className="h-screen flex flex-col">
               <HeaderMenu />
@@ -73,7 +72,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Footer/>
             </div>
               <Sidebar />
-          </SystemStatusProvider>
         </div>
       </body>
     </html>

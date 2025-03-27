@@ -20,7 +20,7 @@ export async function clearAuthCookies() {
   try {
     const cookieStore = await cookies();
     cookieStore.delete('auth_token');
-    console.log("auth_token 已刪除");
+    console.debug("使用者JWT cookies 已刪除");
   } catch (error) {
     console.error("清除認證 Cookies 時發生錯誤:", error);
   }

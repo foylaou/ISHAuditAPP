@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { AvatarMenuItem, AvatarMenuState, MenuItems, MenuState } from "@/types/Menu/MainMenu";
 import axios from "axios";
+import {useGlobalStore} from "@/store/useGlobalStore";
+
 
 // Helper function to convert "True"/"False" string to boolean
 const parseBoolean = (value: string | boolean | undefined): boolean => {
@@ -46,6 +48,7 @@ const filterHiddenItems = <T extends MenuItems>(items: T[]): T[] => {
 };
 
 export const useMenuStore = create<MenuState>((set, get) => ({
+
   menuItems: [],
 
   // 設置選單項目的方法
@@ -58,6 +61,8 @@ export const useMenuStore = create<MenuState>((set, get) => ({
 
   // 初始化方法，從 API 獲取選單
   fetchMenuItems: async () => {
+   const { isLoggedIn } = useGlobalStore.getState();
+    if(isLoggedIn){
     try {
       const response = await axios.get('/proxy/System/menuitems');
       const processedData = processMenuItemsRecursively(response.data);
@@ -66,6 +71,9 @@ export const useMenuStore = create<MenuState>((set, get) => ({
       return processedData;
     } catch (error) {
       console.error('取得首頁選單發生錯誤:', error);
+      return [];
+    }
+    }else {
       return [];
     }
   },

@@ -131,7 +131,6 @@ export const auditQueryService = {
         ? response.data.data[1]
         : (response.data.data[1]?.suggests || []);
 
-      console.log('轉換後的數據結構:', { basics: basicsData, suggests: suggestsData });
 
       return {
         basics: basicsData,

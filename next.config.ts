@@ -18,17 +18,17 @@ const getEnvironmentConfig = (): EnvironmentConfig => {
   const isDev = NODE_ENV === "development";
 
   if (isDev) {
-    console.log("Environment Configuration:");
-    console.log(`API URL: ${API_URL || "undefined"}`);
-    console.log(`RAG API: ${RAG_API || "undefined"}`);
-    console.log(`Domain: ${DOMAIN}`);
-    console.log(`Environment: ${NODE_ENV}`);
+    console.debug("系統的環境變數:")
+    console.debug(`後端位置: ${API_URL || "undefined"}`);
+    console.debug(`AI 工具位置: ${RAG_API || "undefined"}`);
+    console.debug(`主機域名: ${DOMAIN}`);
+    console.debug(`目前伺服器環境為: ${NODE_ENV}`);
   } else {
-    console.log("Environment Configuration:");
-    console.log(`API URL: ${API_URL || "undefined"}`);
-    console.log(`RAG API: ${RAG_API || "undefined"}`);
-    console.log(`Domain: ${DOMAIN}`);
-    console.log(`Environment: ${NODE_ENV}`);
+    console.debug("系統的環境變數:")
+    console.debug(`後端位置: ${API_URL || "undefined"}`);
+    console.debug(`AI 工具位置: ${RAG_API || "undefined"}`);
+    console.debug(`主機域名: ${DOMAIN}`);
+    console.debug(`目前伺服器環境為: ${NODE_ENV}`);
   }
 
   return {

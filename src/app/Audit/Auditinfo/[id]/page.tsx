@@ -18,7 +18,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
 
     // 定義標籤頁切換處理函數
     const handleTabChange = (tabId: string) => {
-        console.log(`切換到標籤: ${tabId}`);
+        console.debug(`切換到標籤: ${tabId}`);
     };
 
     // Fetch data when component mounts
@@ -32,7 +32,7 @@ export default function Page({ params }: { params: Promise<{ id: string }> }) {
             setSupervisionItems(dayline);
             setError(null);
           } catch (err) {
-            console.error("Error fetching audit data:", err);
+            console.error("無法取得督導資料:", err);
             setError("無法載入督導資訊，請稍後再試");
           } finally {
             setIsLoading(false);

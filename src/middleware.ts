@@ -227,23 +227,23 @@ export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
   // 增加 debug 日誌，可以在 console 查看
-  console.log(`Middleware processing: ${pathname}`);
+  console.debug(`Next中介程序處理中...: ${pathname}`);
 
   // 1. 如果是 API 請求，處理 CORS 和安全性並直接放行
   if (pathname.startsWith('/api') || pathname.startsWith('/proxy')) {
-    console.log('API or Proxy request detected, applying security and passing through');
+    console.debug('偵測到 API 或代理請求，套用安全性並透過');
     return applySecurity(req);
   }
 
   // 2. 如果是靜態資源或公開路由，直接放行
   if (isPublicRoute(pathname) || pathname.match(/\.(jpg|jpeg|png|gif|svg|webp|ico|css|js)$/i)) {
-    console.log('Public route or static resource detected, applying security and passing through');
+    console.debug('偵測到公共路由或靜態資源，應用安全並透過');
     return applySecurity(req);
   }
 
   // 3. 檢查用戶是否已登入 (使用 serverAuthService 的 isAuthenticated)
   if (!await isAuthenticated(req)) {
-    console.log('User not authenticated, redirecting to login page');
+    console.debug('使用者未通過身份驗證，重定向到登入頁面');
     // 未登入用戶重定向到登入頁面
     // 可以保存原始URL作為參數，便於登入後重定向回來
     const url = new URL('/Login', req.url);
@@ -252,7 +252,7 @@ export async function middleware(req: NextRequest) {
   }
 
   // 4. 用戶已登入，應用安全頭並繼續
-  console.log('User authenticated, applying security and continuing');
+  console.debug('用戶已通過身份驗證，應用安全性並繼續');
   return applySecurity(req);
 }
 
